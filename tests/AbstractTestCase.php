@@ -24,11 +24,11 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->connection = new Connection(['dsn' => 'sqlite:tests.db3']); // TODO memory
+        $this->connection = new Connection(['dsn' => 'sqlite::memory:']);
     }
 
     /**
-     * Execute the specified callback while a table named "test_table" is generated.
+     * Execute the specified callback after generation of test tables.
      *
      * @param callable $callback
      */
