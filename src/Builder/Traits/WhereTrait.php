@@ -7,6 +7,8 @@
  */
 namespace Guvra\Builder\Traits;
 
+use Guvra\Builder\BuilderInterface;
+
 /**
  * Where trait.
  */
