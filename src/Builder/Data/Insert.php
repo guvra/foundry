@@ -42,8 +42,8 @@ class Insert extends QueryableBuilder
      */
     public function ignore(bool $value = true)
     {
-        $this->compiled = false;
         $this->ignore = $value;
+        $this->compiled = null;
 
         return $this;
     }
@@ -54,10 +54,10 @@ class Insert extends QueryableBuilder
      * @param string $table
      * @return $this
      */
-    public function into($table)
+    public function into(string $table)
     {
-        $this->compiled = false;
-        $this->table = (string) $table;
+        $this->table = $table;
+        $this->compiled = null;
 
         return $this;
     }
@@ -70,8 +70,8 @@ class Insert extends QueryableBuilder
      */
     public function columns(array $columns)
     {
-        $this->compiled = false;
         $this->columns = $columns;
+        $this->compiled = null;
 
         return $this;
     }
@@ -84,8 +84,8 @@ class Insert extends QueryableBuilder
      */
     public function values(array $values)
     {
-        $this->compiled = false;
         $this->values = $values;
+        $this->compiled = null;
 
         return $this;
     }
@@ -93,7 +93,7 @@ class Insert extends QueryableBuilder
     /**
      * {@inheritdoc}
      */
-    public function build()
+    public function compile()
     {
         return 'INSERT'
             . $this->buildIgnore()

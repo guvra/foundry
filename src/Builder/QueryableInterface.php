@@ -7,6 +7,8 @@
  */
 namespace Guvra\Builder;
 
+use Guvra\StatementInterface;
+
 /**
  * Query builder interface.
  */
@@ -16,7 +18,7 @@ interface QueryableInterface
      * Execute a SQL statement, returning a result set as a PDOStatement object.
      *
      * @param array $bind
-     * @return \Guvra\StatementInterface
+     * @return StatementInterface
      * @throws \PDOException
      */
     public function query(array $bind = []);
@@ -32,7 +34,7 @@ interface QueryableInterface
     /**
      * Prepare a statement for execution and return a statement object.
      *
-     * @return \Guvra\StatementInterface
+     * @return StatementInterface
      * @throws \PDOException
      */
     public function prepare();

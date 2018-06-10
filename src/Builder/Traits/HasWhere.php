@@ -8,14 +8,15 @@
 namespace Guvra\Builder\Traits;
 
 use Guvra\Builder\BuilderInterface;
+use Guvra\Builder\Clause\ConditionGroup;
 
 /**
  * Where trait.
  */
-trait WhereTrait
+trait HasWhere
 {
     /**
-     * @var \Guvra\Builder\Clause\ConditionGroup
+     * @var ConditionGroup
      */
     protected $whereBuilder;
 
@@ -209,10 +210,10 @@ trait WhereTrait
 
     /**
      * @param string $column
-     * @param array $values
+     * @param BuilderInterface|array|string $values
      * @return $this
      */
-    public function whereIn($column, array $values)
+    public function whereIn($column, $values)
     {
         $this->getWhereBuilder()->where($column, 'in', $values);
 
@@ -221,10 +222,10 @@ trait WhereTrait
 
     /**
      * @param string $column
-     * @param array $values
+     * @param BuilderInterface|array|string $values
      * @return $this
      */
-    public function orWhereIn($column, array $values)
+    public function orWhereIn($column, $values)
     {
         $this->getWhereBuilder()->orWhere($column, 'in', $values);
 
@@ -233,10 +234,10 @@ trait WhereTrait
 
     /**
      * @param string $column
-     * @param array $values
+     * @param BuilderInterface|array|string $values
      * @return $this
      */
-    public function whereNotIn($column, array $values)
+    public function whereNotIn($column, $values)
     {
         $this->getWhereBuilder()->where($column, 'not in', $values);
 
@@ -245,10 +246,10 @@ trait WhereTrait
 
     /**
      * @param string $column
-     * @param array $values
+     * @param BuilderInterface|array|string $values
      * @return $this
      */
-    public function orWhereNotIn($column, array $values)
+    public function orWhereNotIn($column, $values)
     {
         $this->getWhereBuilder()->orWhere($column, 'not in', $values);
 
@@ -257,10 +258,10 @@ trait WhereTrait
 
     /**
      * @param string $column
-     * @param array $values
+     * @param array|string $values
      * @return $this
      */
-    public function whereInSet($column, array $values)
+    public function whereInSet($column, $values)
     {
         $this->getWhereBuilder()->where($column, 'in set', $values);
 
@@ -269,10 +270,10 @@ trait WhereTrait
 
     /**
      * @param string $column
-     * @param array $values
+     * @param array|string $values
      * @return $this
      */
-    public function orWhereInSet($column, array $values)
+    public function orWhereInSet($column, $values)
     {
         $this->getWhereBuilder()->orWhere($column, 'in set', $values);
 
@@ -281,10 +282,10 @@ trait WhereTrait
 
     /**
      * @param string $column
-     * @param array $values
+     * @param array|string $values
      * @return $this
      */
-    public function whereNotInSet($column, array $values)
+    public function whereNotInSet($column, $values)
     {
         $this->getWhereBuilder()->where($column, 'not in set', $values);
 
@@ -293,10 +294,10 @@ trait WhereTrait
 
     /**
      * @param string $column
-     * @param array $values
+     * @param array|string $values
      * @return $this
      */
-    public function orWhereNotInSet($column, array $values)
+    public function orWhereNotInSet($column, $values)
     {
         $this->getWhereBuilder()->orWhere($column, 'not in set', $values);
 
@@ -312,18 +313,18 @@ trait WhereTrait
             return '';
         }
 
-        $result = $this->whereBuilder->build();
+        $result = $this->whereBuilder->toString();
 
         return $result !== '' ? ' WHERE ' . $result : '';
     }
 
     /**
-     * @return \Guvra\Builder\Clause\ConditionGroup
+     * @return ConditionGroup
      */
     protected function getWhereBuilder()
     {
         if (!$this->whereBuilder) {
-            $this->whereBuilder = $this->builderFactory->create('conditionGroup', $this->builderFactory);
+            $this->whereBuilder = $this->connection->getBuilderFactory()->create('conditionGroup');
         }
 
         return $this->whereBuilder;

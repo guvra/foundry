@@ -52,7 +52,7 @@ class Condition extends Builder
     /**
      * {@inheritdoc}
      */
-    public function build()
+    public function compile()
     {
         $column = $this->column;
         $operator = $this->operator;
@@ -113,7 +113,7 @@ class Condition extends Builder
         $condition = $this->connection->getBuilderFactory()->create('conditionGroup');
         call_user_func($callback, $condition);
 
-        return $condition->build();
+        return $condition->toString();
     }
 
     /**
@@ -122,7 +122,7 @@ class Condition extends Builder
      */
     protected function buildRaw($condition)
     {
-        return $condition instanceof BuilderInterface ? $condition->build() : $condition;
+        return $condition instanceof BuilderInterface ? $condition->toString() : $condition;
     }
 
     /**
@@ -132,7 +132,7 @@ class Condition extends Builder
     protected function buildExists($query)
     {
         // Build the condition manually, because __toString method must not throw exceptions
-        $query = $query instanceof BuilderInterface ? $query->build() : $query;
+        $query = $query instanceof BuilderInterface ? $query->toString() : $query;
 
         return "EXISTS ($query)";
     }
@@ -144,13 +144,13 @@ class Condition extends Builder
     protected function buildNotExists($query)
     {
         // Build the condition manually, because __toString method must not throw exceptions
-        $query = $query instanceof BuilderInterface ? $query->build() : $query;
+        $query = $query instanceof BuilderInterface ? $query->toString() : $query;
 
         return "NOT EXISTS ($query)";
     }
 
     /**
-     * @param string $column
+     * @param BuilderInterface|string $column
      * @return string
      */
     protected function buildIsNull($column)
@@ -159,7 +159,7 @@ class Condition extends Builder
     }
 
     /**
-     * @param string $column
+     * @param BuilderInterface|string $column
      * @return string
      */
     protected function buildIsNotNull($column)
@@ -227,11 +227,15 @@ class Condition extends Builder
 
     /**
      * @param string $column
-     * @param array $values
+     * @param array|string $values
      * @return string
      */
-    protected function buildInSet($column, array $values)
+    protected function buildInSet($column, $values)
     {
+        if (is_array($values)) {
+            $values = implode(',', $this->escapeValues($values));
+        }
+
         $values = implode(',', $this->escapeValues($values));
 
         return "FIND_IN_SET($column, $values)";
@@ -239,12 +243,14 @@ class Condition extends Builder
 
     /**
      * @param string $column
-     * @param array $values
+     * @param array|string $values
      * @return string
      */
-    protected function buildNotInSet($column, array $values)
+    protected function buildNotInSet($column, $values)
     {
-        $values = implode(',', $this->escapeValues($values));
+        if (is_array($values)) {
+            $values = implode(',', $this->escapeValues($values));
+        }
 
         return "NOT FIND_IN_SET($column, $values)";
     }

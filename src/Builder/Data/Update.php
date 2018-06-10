@@ -7,8 +7,9 @@
  */
 namespace Guvra\Builder\Data;
 
-use Guvra\Builder\BuilderFactoryInterface;
 use Guvra\Builder\QueryableBuilder;
+use Guvra\Builder\Traits\HasJoin;
+use Guvra\Builder\Traits\HasWhere;
 use Guvra\ConnectionInterface;
 
 /**
@@ -16,8 +17,8 @@ use Guvra\ConnectionInterface;
  */
 class Update extends QueryableBuilder
 {
-    use \Guvra\Builder\Traits\WhereTrait;
-    use \Guvra\Builder\Traits\JoinTrait;
+    use HasJoin;
+    use HasWhere;
 
     /**
      * @var string
@@ -40,9 +41,10 @@ class Update extends QueryableBuilder
      * @param string $table
      * @return $this
      */
-    public function table($table)
+    public function table(string $table)
     {
-        $this->table = (string) $table;
+        $this->table = $table;
+        $this->compiled = null;
 
         return $this;
     }
@@ -56,6 +58,7 @@ class Update extends QueryableBuilder
     public function values(array $values)
     {
         $this->values = $values;
+        $this->compiled = null;
 
         return $this;
     }
@@ -69,6 +72,7 @@ class Update extends QueryableBuilder
     public function limit(int $max)
     {
         $this->limit = $max;
+        $this->compiled = null;
 
         return $this;
     }
@@ -76,7 +80,7 @@ class Update extends QueryableBuilder
     /**
      * {@inheritdoc}
      */
-    public function build()
+    public function compile()
     {
         return 'UPDATE'
             . $this->buildTable()

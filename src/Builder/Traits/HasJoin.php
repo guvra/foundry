@@ -7,21 +7,22 @@
  */
 namespace Guvra\Builder\Traits;
 
-use \Guvra\Builder\Clause\Condition;
-use \Guvra\Builder\Expression;
+use Guvra\Builder\Clause\Condition;
+use Guvra\Builder\Clause\JoinGroup;
+use Guvra\Builder\Expression;
 
 /**
  * Join trait.
  */
-trait JoinTrait
+trait HasJoin
 {
     /**
-     * @var \Guvra\Builder\Clause\JoinGroup
+     * @var JoinGroup
      */
     protected $joinGroupBuilder;
 
     /**
-     * Add a join clause to the query.
+     * Add an inner join clause to the query.
      *
      * @param string|array $table
      * @param array $args
@@ -30,8 +31,7 @@ trait JoinTrait
     public function join($table, ...$args)
     {
         $condition = $this->prepareJoinCondition($args);
-        $joinBuilder = $this->builderFactory->create('join', 'inner', $table, $condition);
-        $this->getJoinGroupBuilder()->addJoin($joinBuilder);
+        $this->getJoinGroupBuilder()->join($table, $condition);
 
         return $this;
     }
@@ -46,8 +46,7 @@ trait JoinTrait
     public function joinLeft($table, ...$args)
     {
         $condition = $this->prepareJoinCondition($args);
-        $joinBuilder = $this->builderFactory->create('join', 'left', $table, $condition);
-        $this->getJoinGroupBuilder()->addJoin($joinBuilder);
+        $this->getJoinGroupBuilder()->joinLeft($table, $condition);
 
         return $this;
     }
@@ -62,22 +61,33 @@ trait JoinTrait
     public function joinRight($table, ...$args)
     {
         $condition = $this->prepareJoinCondition($args);
-        $joinBuilder = $this->builderFactory->create('join', 'right', $table, $condition);
-        $this->getJoinGroupBuilder()->addJoin($joinBuilder);
+        $this->getJoinGroupBuilder()->joinRight($table, $condition);
 
         return $this;
     }
 
     /**
-     * Add a left join clause to the query.
+     * Add a cross join clause to the query.
      *
      * @param string|array $table
      * @return $this
      */
     public function joinCross($table)
     {
-        $joinBuilder = $this->builderFactory->create('join', 'cross', $table);
-        $this->getJoinGroupBuilder()->addJoin($joinBuilder);
+        $this->getJoinGroupBuilder()->joinCross($table);
+
+        return $this;
+    }
+
+    /**
+     * Add a natural join clause to the query.
+     *
+     * @param string|array $table
+     * @return $this
+     */
+    public function joinNatural($table)
+    {
+        $this->getJoinGroupBuilder()->joinNatural($table);
 
         return $this;
     }
@@ -89,7 +99,7 @@ trait JoinTrait
      */
     protected function buildJoins()
     {
-        $result = $this->getJoinGroupBuilder()->build();
+        $result = $this->getJoinGroupBuilder()->toString();
 
         return $result !== '' ? ' ' . $result : '';
     }
@@ -114,12 +124,12 @@ trait JoinTrait
     }
 
     /**
-     * @return \Guvra\Builder\Clause\JoinGroup
+     * @return JoinGroup
      */
     protected function getJoinGroupBuilder()
     {
         if (!$this->joinGroupBuilder) {
-            $this->joinGroupBuilder = $this->builderFactory->create('joinGroup', $this->builderFactory);
+            $this->joinGroupBuilder = $this->connection->getBuilderFactory()->create('joinGroup');
         }
 
         return $this->joinGroupBuilder;

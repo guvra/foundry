@@ -20,9 +20,9 @@ abstract class Builder implements BuilderInterface
     protected $connection;
 
     /**
-     * @var bool|string
+     * @var string|null
      */
-    protected $compiled = false;
+    protected $compiled;
 
     /**
      * @param ConnectionInterface $connection
@@ -33,12 +33,24 @@ abstract class Builder implements BuilderInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function toString()
+    {
+        if ($this->compiled === null) {
+            $this->compiled = $this->compile();
+        }
+
+        return $this->compiled;
+    }
+
+    /**
      * Get the SQL query string.
      *
      * @return string
      */
     public function __toString()
     {
-        return $this->compiled !== false ? $this->compiled : $this->build();
+        return $this->toString();
     }
 }

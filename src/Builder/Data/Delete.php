@@ -7,8 +7,9 @@
  */
 namespace Guvra\Builder\Data;
 
-use Guvra\Builder\BuilderFactoryInterface;
 use Guvra\Builder\QueryableBuilder;
+use Guvra\Builder\Traits\HasJoin;
+use Guvra\Builder\Traits\HasWhere;
 use Guvra\ConnectionInterface;
 
 /**
@@ -16,8 +17,8 @@ use Guvra\ConnectionInterface;
  */
 class Delete extends QueryableBuilder
 {
-    use \Guvra\Builder\Traits\WhereTrait;
-    use \Guvra\Builder\Traits\JoinTrait;
+    use HasJoin;
+    use HasWhere;
 
     /**
      * @var string
@@ -38,6 +39,7 @@ class Delete extends QueryableBuilder
     public function from(string $table)
     {
         $this->table = $table;
+        $this->compiled = null;
 
         return $this;
     }
@@ -51,6 +53,7 @@ class Delete extends QueryableBuilder
     public function limit(int $max)
     {
         $this->limit = $max;
+        $this->compiled = null;
 
         return $this;
     }
@@ -58,7 +61,7 @@ class Delete extends QueryableBuilder
     /**
      * {@inheritdoc}
      */
-    public function build()
+    public function compile()
     {
         return 'DELETE'
             . $this->buildTable()

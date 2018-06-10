@@ -19,9 +19,9 @@ class Parameter implements ParameterInterface
     protected $name = null;
 
     /**
-     * @param string|null $name
+     * @param string $name
      */
-    public function __construct($name)
+    public function __construct(string $name = '?')
     {
         if (strpos($name, ':') !== 0) {
             $name = ':' . $name;

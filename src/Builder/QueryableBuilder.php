@@ -15,39 +15,11 @@ use Guvra\ConnectionInterface;
 abstract class QueryableBuilder extends Builder implements QueryableInterface
 {
     /**
-     * @var BuilderFactoryInterface
-     */
-    protected $builderFactory;
-
-    /**
-     * @var array
-     */
-    protected $parts;
-
-    /**
      * @param ConnectionInterface $connection
-     * @param BuilderFactoryInterface|null $builderFactory
      */
-    public function __construct(ConnectionInterface $connection, BuilderFactoryInterface $builderFactory = null)
+    public function __construct(ConnectionInterface $connection)
     {
         parent::__construct($connection);
-        // A queryable builder needs other builders to build the query (conditions, order, limit...)
-        $this->builderFactory = $builderFactory ?: new BuilderFactory($connection);
-    }
-
-    public function build()
-    {
-        $query = '';
-
-        foreach ($this->parts as $part) {
-            $compiledPart = $part->build();
-
-            if ($compiledPart) {
-                $query .= ' ' . $compiledPart;
-            }
-        }
-
-        return $query;
     }
 
     /**

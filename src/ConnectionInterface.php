@@ -20,7 +20,7 @@ interface ConnectionInterface
      *
      * @param BuilderInterface|string $query
      * @param array $bind
-     * @return \Guvra\StatementInterface
+     * @return StatementInterface
      * @throws \PDOException
      */
     public function query($query);
@@ -38,7 +38,7 @@ interface ConnectionInterface
      * Prepare a statement for execution and return a statement object.
      *
      * @param BuilderInterface|string $query
-     * @return \Guvra\StatementInterface
+     * @return StatementInterface
      * @throws \PDOException
      */
     public function prepare($query);

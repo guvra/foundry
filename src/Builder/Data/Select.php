@@ -7,8 +7,10 @@
  */
 namespace Guvra\Builder\Data;
 
-use Guvra\Builder\BuilderFactoryInterface;
 use Guvra\Builder\QueryableBuilder;
+use Guvra\Builder\Traits\HasHaving;
+use Guvra\Builder\Traits\HasJoin;
+use Guvra\Builder\Traits\HasWhere;
 use Guvra\ConnectionInterface;
 
 /**
@@ -27,9 +29,9 @@ class Select extends QueryableBuilder
     const PART_LIMIT = 256;
     const PART_UNION = 512;
 
-    use \Guvra\Builder\Traits\WhereTrait;
-    use \Guvra\Builder\Traits\HavingTrait;
-    use \Guvra\Builder\Traits\JoinTrait;
+    use HasJoin;
+    use HasWhere;
+    use HasHaving;
 
     /**
      * @var array
@@ -68,11 +70,10 @@ class Select extends QueryableBuilder
 
     /**
      * @param ConnectionInterface $connection
-     * @param BuilderFactoryInterface|null $builderFactory
      */
-    public function __construct(ConnectionInterface $connection, BuilderFactoryInterface $builderFactory = null)
+    public function __construct(ConnectionInterface $connection)
     {
-        parent::__construct($connection, $builderFactory);
+        parent::__construct($connection);
     }
 
     /**
@@ -84,6 +85,7 @@ class Select extends QueryableBuilder
     public function columns(array $columns)
     {
         $this->columns = $columns;
+        $this->compiled = null;
 
         return $this;
     }
@@ -94,9 +96,10 @@ class Select extends QueryableBuilder
      * @param bool $value
      * @return $this
      */
-    public function distinct($value = true)
+    public function distinct(bool $value = true)
     {
-        $this->distinct = (bool) $value;
+        $this->distinct = $value;
+        $this->compiled = null;
 
         return $this;
     }
@@ -114,6 +117,7 @@ class Select extends QueryableBuilder
         }
 
         $this->tables = $tables;
+        $this->compiled = null;
 
         return $this;
     }
@@ -131,6 +135,7 @@ class Select extends QueryableBuilder
         }
 
         $this->groups = array_unique(array_merge($this->columns, $columns));
+        $this->compiled = null;
 
         return $this;
     }
@@ -145,6 +150,7 @@ class Select extends QueryableBuilder
     public function order(string $column, string $direction = 'ASC')
     {
         $this->orders[] = compact('column', 'direction');
+        $this->compiled = null;
 
         return $this;
     }
@@ -159,6 +165,7 @@ class Select extends QueryableBuilder
     public function limit(int $max, int $start = 0)
     {
         $this->limit = compact('max', 'start');
+        $this->compiled = null;
 
         return $this;
     }
@@ -166,17 +173,14 @@ class Select extends QueryableBuilder
     /**
      * Add a union clause to the query.
      *
-     * @param Select $query
-     * @param bool   $all
+     * @param BuilderInterface|string $query
+     * @param bool $all
      * @return $this
      */
-    public function union(Select $query, $all = false)
+    public function union($query, $all = false)
     {
-        if ($this->unionBuilder === null) {
-            $this->unionBuilder = $this->builderFactory->create('selectOrderGroup');
-        }
-
         $this->unions[] = compact('query', 'all');
+        $this->compiled = null;
 
         return $this;
     }
@@ -184,7 +188,7 @@ class Select extends QueryableBuilder
     /**
      * {@inheritdoc}
      */
-    public function build()
+    public function compile()
     {
         if (empty($this->columns)) {
             $this->columns = ['*'];
@@ -227,7 +231,7 @@ class Select extends QueryableBuilder
 
         foreach ($this->columns as $alias => $column) {
             if (is_object($column) && $column instanceof Builder) {
-                $column = "({$column->build()})";
+                $column = "({$column->toString()})";
             }
 
             $values[] = is_string($alias) && $alias !== '' ? "$column AS $alias" : "$column";
@@ -247,7 +251,7 @@ class Select extends QueryableBuilder
 
         $values = [];
         foreach ($this->tables as $alias => $table) {
-            $values[] = (is_string($alias) && $alias !== '') ? "$table AS $alias" : "$table";
+            $values[] = is_string($alias) && $alias !== '' ? "$table AS $alias" : "$table";
         }
 
         return ' FROM ' . implode(', ', $values);
@@ -314,7 +318,7 @@ class Select extends QueryableBuilder
     {
         $value = '';
         foreach ($this->unions as $union) {
-            $value .= ($union['all']) ? " union all {$union['query']}" : " union {$union['query']}";
+            $value .= $union['all'] ? " UNION ALL {$union['query']}" : " UNION {$union['query']}";
         }
 
         return $value;

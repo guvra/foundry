@@ -13,9 +13,16 @@ namespace Guvra\Builder;
 interface BuilderInterface
 {
     /**
-     * Build the SQL query string.
+     * Outputs the compiled SQL query.
      *
      * @return string
      */
-    public function build();
+    public function toString();
+
+    /**
+     * Forces a recompilation of the SQL query.
+     *
+     * @return $this
+     */
+    public function compile();
 }

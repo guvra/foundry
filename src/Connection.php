@@ -10,6 +10,10 @@ namespace Guvra;
 use Guvra\Builder\BuilderFactory;
 use Guvra\Builder\BuilderFactoryInterface;
 use Guvra\Builder\BuilderInterface;
+use Guvra\Builder\Data\Delete;
+use Guvra\Builder\Data\Insert;
+use Guvra\Builder\Data\Select;
+use Guvra\Builder\Data\Update;
 use Guvra\Builder\ExpressionInterface;
 use Guvra\Builder\ParameterInterface;
 
@@ -75,7 +79,7 @@ class Connection implements ConnectionInterface
     public function query($query)
     {
         if (is_object($query) && $query instanceof BuilderInterface) {
-            $query = $query->build();
+            $query = $query->toString();
         }
 
         $pdoStatement = $this->pdo->query($query);
@@ -89,7 +93,7 @@ class Connection implements ConnectionInterface
     public function exec($query)
     {
         if (is_object($query) && $query instanceof BuilderInterface) {
-            $query = $query->build();
+            $query = $query->toString();
         }
 
         return $this->pdo->exec($query);
@@ -101,7 +105,7 @@ class Connection implements ConnectionInterface
     public function prepare($query)
     {
         if (is_object($query) && $query instanceof BuilderInterface) {
-            $query = $query->build();
+            $query = $query->toString();
         }
 
         $pdoStatement = $this->pdo->prepare($query);
@@ -156,41 +160,41 @@ class Connection implements ConnectionInterface
     /**
      * Create a select query.
      *
-     * @return \Guvra\Builder\Data\Select
+     * @return Select
      */
     public function select()
     {
-        return $this->builderFactory->create('select', $this->builderFactory);
+        return $this->builderFactory->create('select');
     }
 
     /**
      * Create an insert query.
      *
-     * @return \Guvra\Builder\Data\Insert
+     * @return Insert
      */
     public function insert()
     {
-        return $this->builderFactory->create('insert', $this->builderFactory);
+        return $this->builderFactory->create('insert');
     }
 
     /**
      * Create an update query.
      *
-     * @return \Guvra\Builder\Data\Update
+     * @return Update
      */
     public function update()
     {
-        return $this->builderFactory->create('update', $this->builderFactory);
+        return $this->builderFactory->create('update');
     }
 
     /**
      * Create a delete query.
      *
-     * @return \Guvra\Builder\Data\Delete
+     * @return Delete
      */
     public function delete()
     {
-        return $this->builderFactory->create('delete', $this->builderFactory);
+        return $this->builderFactory->create('delete');
     }
 
     /**

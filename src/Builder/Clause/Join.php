@@ -8,7 +8,6 @@
 namespace Guvra\Builder\Clause;
 
 use Guvra\Builder\Builder;
-use Guvra\Builder\BuilderFactoryInterface;
 use Guvra\Builder\Expression;
 use Guvra\ConnectionInterface;
 
@@ -41,7 +40,7 @@ class Join extends Builder
      * @param ConnectionInterface $connection
      * @param string $type
      * @param string|array $table
-     * @param mixed|null $value
+     * @param Condition|null $condition
      */
     public function __construct(ConnectionInterface $connection, string $type, $table, Condition $condition = null)
     {
@@ -54,7 +53,7 @@ class Join extends Builder
     /**
      * {@inheritdoc}
      */
-    public function build()
+    public function compile()
     {
         $clause = $this->getClauseName($this->type);
         $result = "$clause $this->table";
@@ -64,7 +63,7 @@ class Join extends Builder
         }
 
         if ($this->condition) {
-            $conditionResult =  $this->condition->build();
+            $conditionResult =  $this->condition->toString();
             if ($conditionResult !== '') {
                 $result .= ' ON ' . $conditionResult;
             }
@@ -80,11 +79,11 @@ class Join extends Builder
     protected function setTable($table)
     {
         if (is_array($table)) {
-            $tableIndex = key($table);
-            if (!is_numeric($tableIndex)) {
-                $this->alias = key($table);
+            $alias = reset($table);
+            if (is_string($alias) && $alias !== '') {
+                $this->alias = $alias;
             }
-            $this->table = $table[$tableIndex];
+            $this->table = $table[$alias];
         } else {
             $this->table = $table;
         }

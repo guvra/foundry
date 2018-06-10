@@ -8,14 +8,15 @@
 namespace Guvra\Builder\Traits;
 
 use Guvra\Builder\BuilderInterface;
+use Guvra\Builder\Clause\ConditionGroup;
 
 /**
  * Having trait.
  */
-trait HavingTrait
+trait HasHaving
 {
     /**
-     * @var \Guvra\Builder\Clause\ConditionGroup
+     * @var ConditionGroup
      */
     protected $havingBuilder;
 
@@ -112,7 +113,7 @@ trait HavingTrait
     }
 
     /**
-     * @param string $column
+     * @param BuilderInterface|string $column
      * @return $this
      */
     public function havingIsNull($column)
@@ -123,7 +124,7 @@ trait HavingTrait
     }
 
     /**
-     * @param string $column
+     * @param BuilderInterface|string $column
      * @return $this
      */
     public function orHavingIsNull($column)
@@ -134,7 +135,7 @@ trait HavingTrait
     }
 
     /**
-     * @param string $column
+     * @param BuilderInterface|string $column
      * @return $this
      */
     public function havingNotNull($column)
@@ -145,7 +146,7 @@ trait HavingTrait
     }
 
     /**
-     * @param string $column
+     * @param BuilderInterface|string $column
      * @return $this
      */
     public function orHavingNotNull($column)
@@ -209,10 +210,10 @@ trait HavingTrait
 
     /**
      * @param string $column
-     * @param array $values
+     * @param BuilderInterface|array|string $values
      * @return $this
      */
-    public function havingIn($column, array $values)
+    public function havingIn($column, $values)
     {
         $this->getHavingBuilder()->where($column, 'in', $values);
 
@@ -221,10 +222,10 @@ trait HavingTrait
 
     /**
      * @param string $column
-     * @param array $values
+     * @param BuilderInterface|array|string $values
      * @return $this
      */
-    public function orHavingIn($column, array $values)
+    public function orHavingIn($column, $values)
     {
         $this->getHavingBuilder()->orWhere($column, 'in', $values);
 
@@ -233,10 +234,10 @@ trait HavingTrait
 
     /**
      * @param string $column
-     * @param array $values
+     * @param BuilderInterface|array|string $values
      * @return $this
      */
-    public function havingNotIn($column, array $values)
+    public function havingNotIn($column, $values)
     {
         $this->getHavingBuilder()->where($column, 'not in', $values);
 
@@ -245,10 +246,10 @@ trait HavingTrait
 
     /**
      * @param string $column
-     * @param array $values
+     * @param BuilderInterface|array|string $values
      * @return $this
      */
-    public function orHavingNotIn($column, array $values)
+    public function orHavingNotIn($column, $values)
     {
         $this->getHavingBuilder()->orWhere($column, 'not in', $values);
 
@@ -257,10 +258,10 @@ trait HavingTrait
 
     /**
      * @param string $column
-     * @param array $values
+     * @param array|string $values
      * @return $this
      */
-    public function havingInSet($column, array $values)
+    public function havingInSet($column, $values)
     {
         $this->getHavingBuilder()->where($column, 'in set', $values);
 
@@ -269,10 +270,10 @@ trait HavingTrait
 
     /**
      * @param string $column
-     * @param array $values
+     * @param array|string $values
      * @return $this
      */
-    public function orHavingInSet($column, array $values)
+    public function orHavingInSet($column, $values)
     {
         $this->getHavingBuilder()->orWhere($column, 'in set', $values);
 
@@ -281,10 +282,10 @@ trait HavingTrait
 
     /**
      * @param string $column
-     * @param array $values
+     * @param array|string $values
      * @return $this
      */
-    public function havingNotInSet($column, array $values)
+    public function havingNotInSet($column, $values)
     {
         $this->getHavingBuilder()->where($column, 'not in set', $values);
 
@@ -293,10 +294,10 @@ trait HavingTrait
 
     /**
      * @param string $column
-     * @param array $values
+     * @param array|string $values
      * @return $this
      */
-    public function orHavingNotInSet($column, array $values)
+    public function orHavingNotInSet($column, $values)
     {
         $this->getHavingBuilder()->orWhere($column, 'not in set', $values);
 
@@ -312,18 +313,18 @@ trait HavingTrait
             return '';
         }
 
-        $result = $this->havingBuilder->build();
+        $result = $this->havingBuilder->toString();
 
         return $result !== '' ? ' HAVING ' . $result : '';
     }
 
     /**
-     * @return \Guvra\Builder\Clause\ConditionGroup
+     * @return ConditionGroup
      */
     protected function getHavingBuilder()
     {
         if (!$this->havingBuilder) {
-            $this->havingBuilder = $this->builderFactory->create('conditionGroup', $this->builderFactory);
+            $this->havingBuilder = $this->connection->getBuilderFactory()->create('conditionGroup');
         }
 
         return $this->havingBuilder;

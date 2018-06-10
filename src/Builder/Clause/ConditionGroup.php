@@ -35,9 +35,8 @@ class ConditionGroup extends Builder implements \IteratorAggregate, \Countable
     public function where($column, $operator = null, $value = null)
     {
         $condition = $this->connection->getBuilderFactory()->create('condition', $column, $operator, $value);
-        $this->addCondition($condition);
 
-        return $this;
+        return $this->addCondition($condition);
     }
 
     /**
@@ -49,33 +48,30 @@ class ConditionGroup extends Builder implements \IteratorAggregate, \Countable
     public function orWhere($column, $operator = null, $value = null)
     {
         $condition = $this->connection->getBuilderFactory()->create('condition', $column, $operator, $value);
-        $this->addOrCondition($condition);
 
-        return $this;
+        return $this->addOrCondition($condition);
     }
 
     /**
-     * Add a "AND" condition to the group.
-     *
      * @param Condition $condition
      * @return $this
      */
-    protected function addCondition(Condition $condition)
+    public function addCondition(Condition $condition)
     {
         $this->conditions[] = ['and', $condition];
+        $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * Add a "OR" condition to the group.
-     *
      * @param Condition $condition
      * @return $this
      */
-    protected function addOrCondition(Condition $condition)
+    public function addOrCondition(Condition $condition)
     {
         $this->conditions[] = ['or', $condition];
+        $this->compiled = null;
 
         return $this;
     }
@@ -94,14 +90,14 @@ class ConditionGroup extends Builder implements \IteratorAggregate, \Countable
     /**
      * {@inheritdoc}
      */
-    public function build()
+    public function compile()
     {
         $first = true;
         $result = '';
 
         foreach ($this as $conditionData) {
             $type = $conditionData[0];
-            $compiledCondition = $conditionData[1]->build();
+            $compiledCondition = $conditionData[1]->toString();
 
             if ($compiledCondition === '') {
                 continue;

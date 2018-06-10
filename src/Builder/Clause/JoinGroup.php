@@ -9,7 +9,6 @@ namespace Guvra\Builder\Clause;
 
 use Guvra\Builder\Builder;
 use Guvra\Builder\BuilderFactory;
-use Guvra\Builder\BuilderFactoryInterface;
 use Guvra\Builder\BuilderInterface;
 use Guvra\ConnectionInterface;
 
@@ -19,34 +18,99 @@ use Guvra\ConnectionInterface;
 class JoinGroup extends Builder implements \IteratorAggregate, \Countable
 {
     /**
-     * @var BuilderFactoryInterface
-     */
-    protected $builderFactory;
-
-    /**
      * @var array
      */
     protected $joins = [];
 
     /**
      * @param ConnectionInterface $connection
-     * @param BuilderFactoryInterface|null $builderFactory
      */
-    public function __construct(ConnectionInterface $connection, BuilderFactoryInterface $builderFactory = null)
+    public function __construct(ConnectionInterface $connection)
     {
         parent::__construct($connection);
-        $this->builderFactory = $builderFactory;
+    }
+
+    /**
+     * Add an inner join to the group.
+     *
+     * @param string|array $table
+     * @param Condition|null $condition
+     * @return $this
+     */
+    public function join($table, Condition $condition)
+    {
+        $join = $this->connection->getBuilderFactory()->create('join', 'inner', $table, $condition);
+
+        return $this->addJoin($join);
+    }
+
+    /**
+     * Add a left join to the group.
+     *
+     * @param string|array $table
+     * @param Condition|null $condition
+     * @return $this
+     */
+    public function joinLeft($table, Condition $condition)
+    {
+        $join = $this->connection->getBuilderFactory()->create('join', 'left', $table, $condition);
+
+        return $this->addJoin($join);
+    }
+
+    /**
+     * Add a right join to the group.
+     *
+     * @param string|array $table
+     * @param Condition|null $condition
+     * @return $this
+     */
+    public function joinRight($table, Condition $condition)
+    {
+        $join = $this->connection->getBuilderFactory()->create('join', 'right', $table, $condition);
+
+        return $this->addJoin($join);
+    }
+
+    /**
+     * Add a cross join to the group.
+     *
+     * @param string|array $table
+     * @param Condition|null $condition
+     * @return $this
+     */
+    public function joinCross($table)
+    {
+        $join = $this->connection->getBuilderFactory()->create('cross', 'cross', $table);
+
+        return $this->addJoin($join);
+    }
+
+    /**
+     * Add a natural join to the group.
+     *
+     * @param string|array $table
+     * @param Condition|null $condition
+     * @return $this
+     */
+    public function joinNatural($table)
+    {
+        $join = $this->connection->getBuilderFactory()->create('join', 'natural', $table);
+
+        return $this->addJoin($join);
     }
 
     /**
      * Add a join to the group.
      *
-     * @param Join $join
+     * @param string|array $table
+     * @param Condition|null $condition
      * @return $this
      */
     public function addJoin(Join $join)
     {
         $this->joins[] = $join;
+        $this->compiled = null;
 
         return $this;
     }
@@ -54,13 +118,13 @@ class JoinGroup extends Builder implements \IteratorAggregate, \Countable
     /**
      * {@inheritdoc}
      */
-    public function build()
+    public function compile()
     {
         $result = '';
         $first = true;
 
         foreach ($this as $join) {
-            $compiledJoin = $join->build();
+            $compiledJoin = $join->toString();
 
             if ($compiledJoin === '') {
                 continue;

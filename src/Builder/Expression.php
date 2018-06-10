@@ -21,9 +21,9 @@ class Expression implements ExpressionInterface
     /**
      * @param string $value
      */
-    public function __construct($value)
+    public function __construct(string $value)
     {
-        $this->value = (string) $value;
+        $this->value = $value;
     }
 
     /**
