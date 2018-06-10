@@ -8,6 +8,7 @@
 namespace Guvra;
 
 use Guvra\Builder\BuilderInterface;
+use Guvra\Builder\BuilderFactoryInterface;
 use Guvra\StatementInterface;
 
 /**
@@ -138,4 +139,11 @@ interface ConnectionInterface
      * @return string
      */
     public function getDriver();
+
+    /**
+     * Get the query builder factory.
+     *
+     * @return BuilderFactoryInterface
+     */
+    public function getBuilderFactory();
 }

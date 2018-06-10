@@ -222,9 +222,7 @@ class Connection implements ConnectionInterface
     }
 
     /**
-     * Get the query builder factory.
-     *
-     * @return BuilderFactoryInterface
+     * {@inheritdoc}
      */
     public function getBuilderFactory()
     {
