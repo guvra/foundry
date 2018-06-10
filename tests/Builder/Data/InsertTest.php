@@ -2,7 +2,7 @@
 /**
  * PHP Query Builder.
  *
- * @copyright 2017 guvra
+ * @copyright 2018 guvra
  * @license   MIT Licence
  */
 namespace Tests\Builder\Data;
