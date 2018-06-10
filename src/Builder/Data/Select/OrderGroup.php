@@ -5,15 +5,15 @@
  * @copyright 2017 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder\Clause;
+namespace Guvra\Builder\Data\Select;
 
-use Guvra\Builder\AbstractBuilder;
+use Guvra\Builder\Builder;
 use Guvra\ConnectionInterface;
 
 /**
- * Order clause.
+ * Order builder.
  */
-class Order extends AbstractBuilder
+class OrderGroup extends Builder
 {
     /**
      * @var array
@@ -37,7 +37,7 @@ class Order extends AbstractBuilder
      * @param string $direction
      * @return $this
      */
-    public function addOrder($column, $direction = 'ASC')
+    public function addOrder($column, $direction = 'asc')
     {
         $this->orders[] = [$column, $direction];
     }
@@ -61,7 +61,7 @@ class Order extends AbstractBuilder
                 continue;
             }
 
-            $parts[] = "$column $direction";
+            $parts[] = $direction !== '' ? "$column $direction" : $column;
         }
 
         return 'ORDER BY ' . implode(', ', $parts);

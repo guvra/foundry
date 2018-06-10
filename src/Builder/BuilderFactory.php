@@ -51,17 +51,9 @@ class BuilderFactory implements BuilderFactoryInterface
 
             // Clause builders
             'join' => 'Guvra\Builder\{driver\}Clause\Join',
-            'where' => 'Guvra\Builder\{driver\}Clause\Where',
-            'group' => 'Guvra\Builder\{driver\}Clause\Group',
-            'group' => 'Guvra\Builder\{driver\}Clause\Group',
-            'having' => 'Guvra\Builder\{driver\}Clause\Having',
-            'order' => 'Guvra\Builder\{driver\}Clause\Order',
-            'limit' => 'Guvra\Builder\{driver\}Clause\Limit',
-            'union' => 'Guvra\Builder\{driver\}Clause\Union',
-
-            // Condition builders
-            'condition' => 'Guvra\Builder\{driver\}Clause\Where\Condition',
-            'conditionGroup' => 'Guvra\Builder\{driver\}Clause\Where\ConditionGroup',
+            'joinGroup' => 'Guvra\Builder\{driver\}Clause\JoinGroup',
+            'condition' => 'Guvra\Builder\{driver\}Clause\Condition',
+            'conditionGroup' => 'Guvra\Builder\{driver\}Clause\ConditionGroup',
         ];
     }
 

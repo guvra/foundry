@@ -8,7 +8,6 @@
 namespace Guvra\Builder\Data;
 
 use Guvra\Builder\BuilderFactoryInterface;
-use Guvra\Builder\Condition\ConditionGroup;
 use Guvra\Builder\QueryableBuilder;
 use Guvra\ConnectionInterface;
 
@@ -18,6 +17,7 @@ use Guvra\ConnectionInterface;
 class Delete extends QueryableBuilder
 {
     use \Guvra\Builder\Traits\WhereTrait;
+    use \Guvra\Builder\Traits\JoinTrait;
 
     /**
      * @var string
@@ -25,14 +25,9 @@ class Delete extends QueryableBuilder
     protected $table = '';
 
     /**
-     * {@inheritdoc}
+     * @var int
      */
-    public function build()
-    {
-        return 'DELETE'
-               . $this->buildTable($this->table, 'FROM')
-               . $this->buildWhere();
-    }
+    protected $limit = 0;
 
     /**
      * Set the FROM clause.
@@ -40,10 +35,59 @@ class Delete extends QueryableBuilder
      * @param string $table
      * @return $this
      */
-    public function from($table)
+    public function from(string $table)
     {
-        $this->table = (string) $table;
+        $this->table = $table;
 
         return $this;
+    }
+
+    /**
+     * Add a limit clause to the query.
+     *
+     * @param int $max
+     * @return $this
+     */
+    public function limit(int $max)
+    {
+        $this->limit = $max;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function build()
+    {
+        return 'DELETE'
+            . $this->buildTable()
+            . $this->buildJoins()
+            . $this->buildWhere()
+            . $this->buildLimit();
+    }
+
+    /**
+     * Build the table name.
+     *
+     * @return string
+     */
+    protected function buildTable()
+    {
+        if (empty($this->table)) {
+            return '';
+        }
+
+        return " FROM {$this->table}";
+    }
+
+    /**
+     * Build the limit clause.
+     *
+     * @return string
+     */
+    protected function buildLimit()
+    {
+        return $this->limit > 0 ? " LIMIT {$this->limit}" : '';
     }
 }

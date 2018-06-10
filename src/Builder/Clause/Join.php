@@ -7,23 +7,16 @@
  */
 namespace Guvra\Builder\Clause;
 
-use Guvra\Builder\AbstractBuilder;
+use Guvra\Builder\Builder;
 use Guvra\Builder\BuilderFactoryInterface;
 use Guvra\Builder\Expression;
 use Guvra\ConnectionInterface;
 
 /**
- * Join clause.
- * TODO: joins array, use compact function to add values to the array
- *       foreach on the array in build method
+ * Join builder.
  */
-class Join extends AbstractBuilder
+class Join extends Builder
 {
-    /**
-     * @var BuilderFactoryInterface
-     */
-    protected $builderFactory;
-
     /**
      * @var string
      */
@@ -40,49 +33,22 @@ class Join extends AbstractBuilder
     protected $alias = '';
 
     /**
-     * @var \Guvra\Builder\Condition\ConditionGroup|null
+     * @var Condition|null
      */
     protected $condition;
 
     /**
      * @param ConnectionInterface $connection
-     * @param BuilderFactoryInterface $builderFactory
-     * @param array $joins
+     * @param string $type
+     * @param string|array $table
+     * @param mixed|null $value
      */
-    public function __construct(
-        ConnectionInterface $connection,
-        BuilderFactoryInterface $builderFactory
-    ) {
-        parent::__construct($connection);
-        $this->builderFactory = $builderFactory;
-    }
-
-    public function join($type, $table, ...$args)
+    public function __construct(ConnectionInterface $connection, string $type, $table, Condition $condition = null)
     {
-        $args = func_get_args();
-
-        // Join type
+        parent::__construct($connection);
         $this->type = $type;
-
-        // Join table/alias
-        if (is_array($table)) {
-            $this->alias = $table[0];
-            $this->table = $table[1];
-        } else {
-            $this->table = $table;
-        }
-
-        // Join condition
-        if (isset($args[2])) {
-            $column = $args[2];
-            $operator = isset($args[3]) ? $args[3] : null;
-            $value = isset($args[4]) ? new Expression($args[4]) : null;
-
-            $this->condition = $this->builderFactory->create('conditionGroup', $this->builderFactory);
-            $this->condition->where($column, $operator, $value);
-        }
-
-        return $this;
+        $this->condition = $condition;
+        $this->setTable($table);
     }
 
     /**
@@ -98,10 +64,30 @@ class Join extends AbstractBuilder
         }
 
         if ($this->condition) {
-            $result .= ' ON ' . $this->condition->build();
+            $conditionResult =  $this->condition->build();
+            if ($conditionResult !== '') {
+                $result .= ' ON ' . $conditionResult;
+            }
+
         }
 
         return $result;
+    }
+
+    /**
+     * @param string|array $table
+     */
+    protected function setTable($table)
+    {
+        if (is_array($table)) {
+            $tableIndex = key($table);
+            if (!is_numeric($tableIndex)) {
+                $this->alias = key($table);
+            }
+            $this->table = $table[$tableIndex];
+        } else {
+            $this->table = $table;
+        }
     }
 
     /**
@@ -121,6 +107,9 @@ class Join extends AbstractBuilder
 
             case 'cross':
                 return 'CROSS JOIN';
+
+            case 'natural':
+                return 'NATURAL JOIN';
 
             default:
                 return 'JOIN';

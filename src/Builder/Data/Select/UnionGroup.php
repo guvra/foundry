@@ -5,15 +5,15 @@
  * @copyright 2017 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder\Clause;
+namespace Guvra\Builder\Data\Select;
 
-use Guvra\Builder\AbstractBuilder;
+use Guvra\Builder\Builder;
 use Guvra\ConnectionInterface;
 
 /**
- * Union clause.
+ * Union builder.
  */
-class Union extends AbstractBuilder
+class UnionGroup extends Builder
 {
     /**
      * @var array

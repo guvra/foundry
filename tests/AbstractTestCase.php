@@ -8,6 +8,8 @@
 namespace Tests;
 
 use Guvra\Connection;
+use Guvra\ConnectionInterface;
+use Guvra\Builder\BuilderFactoryInterface;
 
 /**
  * Test Connection/Bag/Builder classes.
@@ -15,7 +17,7 @@ use Guvra\Connection;
 abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var Connection
+     * @var ConnectionInterface
      */
     protected $connection;
 
@@ -85,6 +87,16 @@ abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
         // Drop the tables
         $this->connection->query('DROP TABLE accounts');
         $this->connection->query('DROP TABLE transactions');
+    }
+
+    /**
+     * Get the builder factory.
+     *
+     * @return BuilderFactoryInterface
+     */
+    public function getBuilderFactory()
+    {
+        return $this->connection->getBuilderFactory();
     }
 
     /**

@@ -5,23 +5,17 @@
  * @copyright 2017 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder\Clause\Where;
+namespace Guvra\Builder\Clause;
 
-use Guvra\Builder\AbstractBuilder;
-use Guvra\Builder\BuilderFactoryInterface;
+use Guvra\Builder\Builder;
 use Guvra\Builder\BuilderInterface;
 use Guvra\ConnectionInterface;
 
 /**
  * Condition builder.
  */
-class Condition extends AbstractBuilder
+class Condition extends Builder
 {
-    /**
-     * @var BuilderFactoryInterface
-     */
-    protected $builderFactory;
-
     /**
      * @var mixed
      */
@@ -39,20 +33,17 @@ class Condition extends AbstractBuilder
 
     /**
      * @param ConnectionInterface $connection
-     * @param BuilderFactoryInterface $builderFactory
      * @param mixed $column
      * @param mixed|null $operator
      * @param mixed|null $value
      */
     public function __construct(
         ConnectionInterface $connection,
-        BuilderFactoryInterface $builderFactory,
         $column,
         $operator = null,
         $value = null
     ) {
         parent::__construct($connection);
-        $this->builderFactory = $builderFactory;
         $this->column = $column;
         $this->operator = $operator;
         $this->value = $value;
@@ -119,7 +110,7 @@ class Condition extends AbstractBuilder
      */
     protected function buildCallable($callback)
     {
-        $condition = $this->builderFactory->create('conditionGroup', $this->builderFactory);
+        $condition = $this->connection->getBuilderFactory()->create('conditionGroup');
         call_user_func($callback, $condition);
 
         return $condition->build();
@@ -206,24 +197,30 @@ class Condition extends AbstractBuilder
 
     /**
      * @param string $column
-     * @param array $values
+     * @param BuilderInterface|array|string $values
      * @return string
      */
-    protected function buildIn($column, array $values)
+    protected function buildIn($column, $values)
     {
-        $values = implode(',', $this->escapeValues($values));
+        if (is_array($values)) {
+            $values = $this->escapeValues($values);
+            $values = implode(',', $values);
+        }
 
         return "$column IN ($values)";
     }
 
     /**
      * @param string $column
-     * @param array $values
+     * @param BuilderInterface|array|string $values
      * @return string
      */
-    protected function buildNotIn($column, array $values)
+    protected function buildNotIn($column, $values)
     {
-        $values = implode(',', $this->escapeValues($values));
+        if (is_array($values)) {
+            $values = $this->escapeValues($values);
+            $values = implode(',', $this->escapeValues($values));
+        }
 
         return "$column NOT IN ($values)";
     }
@@ -289,8 +286,10 @@ class Condition extends AbstractBuilder
     protected function escapeValues(array $values)
     {
         foreach ($values as $key => $value) {
-            if (is_string($value)) {
-                $values[$key] = $this->connection->quote($value);
+            $escapedValue = $this->escapeValue($value);
+
+            if ($escapedValue !== $value) {
+                $values[$key] = $escapedValue;
             }
         }
 

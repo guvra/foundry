@@ -15,7 +15,7 @@ use Guvra\Builder\BuilderInterface;
 trait HavingTrait
 {
     /**
-     * @var \Guvra\Builder\Clause\Where
+     * @var \Guvra\Builder\Clause\ConditionGroup
      */
     protected $havingBuilder;
 
@@ -46,12 +46,34 @@ trait HavingTrait
     }
 
     /**
+     * @param BuilderInterface|string $condition $value
+     * @return $this
+     */
+    public function havingRaw($condition)
+    {
+        $this->getHavingBuilder()->where($condition);
+
+        return $this;
+    }
+
+    /**
+     * @param BuilderInterface|string $condition $value
+     * @return $this
+     */
+    public function orHavingRaw($condition)
+    {
+        $this->getHavingBuilder()->orWhere($condition);
+
+        return $this;
+    }
+
+    /**
      * @param BuilderInterface|string $query
      * @return $this
      */
     public function havingExists($query)
     {
-        $this->getHavingBuilder()->whereExists($query);
+        $this->getHavingBuilder()->where($query, 'exists');
 
         return $this;
     }
@@ -62,7 +84,7 @@ trait HavingTrait
      */
     public function orHavingExists($query)
     {
-        $this->getHavingBuilder()->orWhereExists($query);
+        $this->getHavingBuilder()->orWhere($query, 'exists');
 
         return $this;
     }
@@ -73,7 +95,7 @@ trait HavingTrait
      */
     public function havingNotExists($query)
     {
-        $this->getHavingBuilder()->whereNotExists($query);
+        $this->getHavingBuilder()->where($query, 'not exists');
 
         return $this;
     }
@@ -84,7 +106,7 @@ trait HavingTrait
      */
     public function orHavingNotExists($query)
     {
-        $this->getHavingBuilder()->orWhereNotExists($query);
+        $this->getHavingBuilder()->orWhere($query, 'not exists');
 
         return $this;
     }
@@ -95,7 +117,7 @@ trait HavingTrait
      */
     public function havingIsNull($column)
     {
-        $this->getHavingBuilder()->whereIsNull($column);
+        $this->getHavingBuilder()->where($query, 'is null');
 
         return $this;
     }
@@ -106,7 +128,7 @@ trait HavingTrait
      */
     public function orHavingIsNull($column)
     {
-        $this->getHavingBuilder()->orWhereIsNull($column);
+        $this->getHavingBuilder()->orWhere($query, 'is null');
 
         return $this;
     }
@@ -117,7 +139,7 @@ trait HavingTrait
      */
     public function havingNotNull($column)
     {
-        $this->getHavingBuilder()->whereNotNull($column);
+        $this->getHavingBuilder()->where($query, 'is not null');
 
         return $this;
     }
@@ -128,7 +150,7 @@ trait HavingTrait
      */
     public function orHavingNotNull($column)
     {
-        $this->getHavingBuilder()->orWhereNotNull($column);
+        $this->getHavingBuilder()->orWhere($query, 'is not null');
 
         return $this;
     }
@@ -141,7 +163,7 @@ trait HavingTrait
      */
     public function havingBetween($column, $lowest, $highest)
     {
-        $this->getHavingBuilder()->whereBetween($column, $lowest, $highest);
+        $this->getHavingBuilder()->where($column, 'between', [$lowest, $highest]);
 
         return $this;
     }
@@ -154,7 +176,7 @@ trait HavingTrait
      */
     public function orHavingBetween($column, $lowest, $highest)
     {
-        $this->getHavingBuilder()->orWhereBetween($column, $lowest, $highest);
+        $this->getHavingBuilder()->orWhere($column, 'between', [$lowest, $highest]);
 
         return $this;
     }
@@ -167,7 +189,7 @@ trait HavingTrait
      */
     public function havingNotBetween($column, $lowest, $highest)
     {
-        $this->getHavingBuilder()->whereNotBetween($column, $lowest, $highest);
+        $this->getHavingBuilder()->where($column, 'not between', [$lowest, $highest]);
 
         return $this;
     }
@@ -180,7 +202,7 @@ trait HavingTrait
      */
     public function orHavingNotBetween($column, $lowest, $highest)
     {
-        $this->getHavingBuilder()->orWhereNotBetween($column, $lowest, $highest);
+        $this->getHavingBuilder()->orWhere($column, 'not between', [$lowest, $highest]);
 
         return $this;
     }
@@ -192,7 +214,7 @@ trait HavingTrait
      */
     public function havingIn($column, array $values)
     {
-        $this->getHavingBuilder()->whereIn($column, $values);
+        $this->getHavingBuilder()->where($column, 'in', $values);
 
         return $this;
     }
@@ -204,7 +226,7 @@ trait HavingTrait
      */
     public function orHavingIn($column, array $values)
     {
-        $this->getHavingBuilder()->orWhereIn($column, $values);
+        $this->getHavingBuilder()->orWhere($column, 'in', $values);
 
         return $this;
     }
@@ -216,7 +238,7 @@ trait HavingTrait
      */
     public function havingNotIn($column, array $values)
     {
-        $this->getHavingBuilder()->whereNotIn($column, $values);
+        $this->getHavingBuilder()->where($column, 'not in', $values);
 
         return $this;
     }
@@ -228,7 +250,7 @@ trait HavingTrait
      */
     public function orHavingNotIn($column, array $values)
     {
-        $this->getHavingBuilder()->orWhereNotIn($column, $values);
+        $this->getHavingBuilder()->orWhere($column, 'not in', $values);
 
         return $this;
     }
@@ -240,7 +262,7 @@ trait HavingTrait
      */
     public function havingInSet($column, array $values)
     {
-        $this->getHavingBuilder()->whereInSet($column, $values);
+        $this->getHavingBuilder()->where($column, 'in set', $values);
 
         return $this;
     }
@@ -252,7 +274,7 @@ trait HavingTrait
      */
     public function orHavingInSet($column, array $values)
     {
-        $this->getHavingBuilder()->orWhereInSet($column, $values);
+        $this->getHavingBuilder()->orWhere($column, 'in set', $values);
 
         return $this;
     }
@@ -264,7 +286,7 @@ trait HavingTrait
      */
     public function havingNotInSet($column, array $values)
     {
-        $this->getHavingBuilder()->whereNotInSet($column, $values);
+        $this->getHavingBuilder()->where($column, 'not in set', $values);
 
         return $this;
     }
@@ -276,7 +298,7 @@ trait HavingTrait
      */
     public function orHavingNotInSet($column, array $values)
     {
-        $this->getHavingBuilder()->orWhereNotInSet($column, $values);
+        $this->getHavingBuilder()->orWhere($column, 'not in set', $values);
 
         return $this;
     }
@@ -290,18 +312,18 @@ trait HavingTrait
             return '';
         }
 
-        $havingOutput = $this->havingBuilder->build();
+        $result = $this->havingBuilder->build();
 
-        return $havingOutput !== '' ? ' ' . $havingOutput : '';
+        return $result !== '' ? ' HAVING ' . $result : '';
     }
 
     /**
-     * @return \Guvra\Builder\Clause\Where
+     * @return \Guvra\Builder\Clause\ConditionGroup
      */
     protected function getHavingBuilder()
     {
         if (!$this->havingBuilder) {
-            $this->havingBuilder = $this->builderFactory->create('having', $this->builderFactory);
+            $this->havingBuilder = $this->builderFactory->create('conditionGroup', $this->builderFactory);
         }
 
         return $this->havingBuilder;

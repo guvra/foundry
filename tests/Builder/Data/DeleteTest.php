@@ -7,6 +7,7 @@
  */
 namespace Tests\Builder\Data;
 
+use Guvra\Builder\Parameter;
 use Tests\AbstractTestCase;
 
 /**
@@ -15,22 +16,18 @@ use Tests\AbstractTestCase;
 class DeleteTest extends AbstractTestCase
 {
     /**
-     * @var \Guvra\Builder\Data\Delete
-     */
-    protected $query;
-
-    /**
      * Test the DELETE query builder.
      */
     public function testDelete()
     {
         $this->withTestTables(function () {
-            $statement = $this->connection
+            $query = $this->connection
                 ->delete()
                 ->from('accounts')
-                ->where('name', '=', 'Account 1')
-                ->query();
+                ->where('name', '=', new Parameter('name'));
 
+            $statement = $this->connection->prepare($query);
+            $statement->execute([':name' => 'Account 1']);
             $this->assertEquals(1, $statement->getRowCount());
             $this->assertEquals(1, $this->connection->getRowCount('accounts'));
         });

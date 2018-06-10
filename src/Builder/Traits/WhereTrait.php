@@ -15,7 +15,7 @@ use Guvra\Builder\BuilderInterface;
 trait WhereTrait
 {
     /**
-     * @var \Guvra\Builder\Clause\Where
+     * @var \Guvra\Builder\Clause\ConditionGroup
      */
     protected $whereBuilder;
 
@@ -46,12 +46,34 @@ trait WhereTrait
     }
 
     /**
+     * @param BuilderInterface|string $condition $value
+     * @return $this
+     */
+    public function whereRaw($condition)
+    {
+        $this->getWhereBuilder()->where($condition);
+
+        return $this;
+    }
+
+    /**
+     * @param BuilderInterface|string $condition $value
+     * @return $this
+     */
+    public function orWhereRaw($condition)
+    {
+        $this->getWhereBuilder()->orWhere($condition);
+
+        return $this;
+    }
+
+    /**
      * @param BuilderInterface|string $query
      * @return $this
      */
     public function whereExists($query)
     {
-        $this->getWhereBuilder()->whereExists($query);
+        $this->getWhereBuilder()->where($query, 'exists');
 
         return $this;
     }
@@ -62,7 +84,7 @@ trait WhereTrait
      */
     public function orWhereExists($query)
     {
-        $this->getWhereBuilder()->orWhereExists($query);
+        $this->getWhereBuilder()->orWhere($query, 'exists');
 
         return $this;
     }
@@ -73,7 +95,7 @@ trait WhereTrait
      */
     public function whereNotExists($query)
     {
-        $this->getWhereBuilder()->whereNotExists($query);
+        $this->getWhereBuilder()->where($query, 'not exists');
 
         return $this;
     }
@@ -84,7 +106,7 @@ trait WhereTrait
      */
     public function orWhereNotExists($query)
     {
-        $this->getWhereBuilder()->orWhereNotExists($query);
+        $this->getWhereBuilder()->orWhere($query, 'not exists');
 
         return $this;
     }
@@ -95,7 +117,7 @@ trait WhereTrait
      */
     public function whereIsNull($column)
     {
-        $this->getWhereBuilder()->whereIsNull($column);
+        $this->getWhereBuilder()->where($query, 'is null');
 
         return $this;
     }
@@ -106,7 +128,7 @@ trait WhereTrait
      */
     public function orWhereIsNull($column)
     {
-        $this->getWhereBuilder()->orWhereIsNull($column);
+        $this->getWhereBuilder()->orWhere($query, 'is null');
 
         return $this;
     }
@@ -117,7 +139,7 @@ trait WhereTrait
      */
     public function whereNotNull($column)
     {
-        $this->getWhereBuilder()->whereNotNull($column);
+        $this->getWhereBuilder()->where($query, 'is not null');
 
         return $this;
     }
@@ -128,7 +150,7 @@ trait WhereTrait
      */
     public function orWhereNotNull($column)
     {
-        $this->getWhereBuilder()->orWhereNotNull($column);
+        $this->getWhereBuilder()->orWhere($query, 'is not null');
 
         return $this;
     }
@@ -141,7 +163,7 @@ trait WhereTrait
      */
     public function whereBetween($column, $lowest, $highest)
     {
-        $this->getWhereBuilder()->whereBetween($column, $lowest, $highest);
+        $this->getWhereBuilder()->where($column, 'between', [$lowest, $highest]);
 
         return $this;
     }
@@ -154,7 +176,7 @@ trait WhereTrait
      */
     public function orWhereBetween($column, $lowest, $highest)
     {
-        $this->getWhereBuilder()->orWhereBetween($column, $lowest, $highest);
+        $this->getWhereBuilder()->orWhere($column, 'between', [$lowest, $highest]);
 
         return $this;
     }
@@ -167,7 +189,7 @@ trait WhereTrait
      */
     public function whereNotBetween($column, $lowest, $highest)
     {
-        $this->getWhereBuilder()->whereNotBetween($column, $lowest, $highest);
+        $this->getWhereBuilder()->where($column, 'not between', [$lowest, $highest]);
 
         return $this;
     }
@@ -180,7 +202,7 @@ trait WhereTrait
      */
     public function orWhereNotBetween($column, $lowest, $highest)
     {
-        $this->getWhereBuilder()->orWhereNotBetween($column, $lowest, $highest);
+        $this->getWhereBuilder()->orWhere($column, 'not between', [$lowest, $highest]);
 
         return $this;
     }
@@ -192,7 +214,7 @@ trait WhereTrait
      */
     public function whereIn($column, array $values)
     {
-        $this->getWhereBuilder()->whereIn($column, $values);
+        $this->getWhereBuilder()->where($column, 'in', $values);
 
         return $this;
     }
@@ -204,7 +226,7 @@ trait WhereTrait
      */
     public function orWhereIn($column, array $values)
     {
-        $this->getWhereBuilder()->orWhereIn($column, $values);
+        $this->getWhereBuilder()->orWhere($column, 'in', $values);
 
         return $this;
     }
@@ -216,7 +238,7 @@ trait WhereTrait
      */
     public function whereNotIn($column, array $values)
     {
-        $this->getWhereBuilder()->whereNotIn($column, $values);
+        $this->getWhereBuilder()->where($column, 'not in', $values);
 
         return $this;
     }
@@ -228,7 +250,7 @@ trait WhereTrait
      */
     public function orWhereNotIn($column, array $values)
     {
-        $this->getWhereBuilder()->orWhereNotIn($column, $values);
+        $this->getWhereBuilder()->orWhere($column, 'not in', $values);
 
         return $this;
     }
@@ -240,7 +262,7 @@ trait WhereTrait
      */
     public function whereInSet($column, array $values)
     {
-        $this->getWhereBuilder()->whereInSet($column, $values);
+        $this->getWhereBuilder()->where($column, 'in set', $values);
 
         return $this;
     }
@@ -252,7 +274,7 @@ trait WhereTrait
      */
     public function orWhereInSet($column, array $values)
     {
-        $this->getWhereBuilder()->orWhereInSet($column, $values);
+        $this->getWhereBuilder()->orWhere($column, 'in set', $values);
 
         return $this;
     }
@@ -264,7 +286,7 @@ trait WhereTrait
      */
     public function whereNotInSet($column, array $values)
     {
-        $this->getWhereBuilder()->whereNotInSet($column, $values);
+        $this->getWhereBuilder()->where($column, 'not in set', $values);
 
         return $this;
     }
@@ -276,7 +298,7 @@ trait WhereTrait
      */
     public function orWhereNotInSet($column, array $values)
     {
-        $this->getWhereBuilder()->orWhereNotInSet($column, $values);
+        $this->getWhereBuilder()->orWhere($column, 'not in set', $values);
 
         return $this;
     }
@@ -290,18 +312,18 @@ trait WhereTrait
             return '';
         }
 
-        $whereOutput = $this->whereBuilder->build();
+        $result = $this->whereBuilder->build();
 
-        return $whereOutput !== '' ? ' ' . $whereOutput : '';
+        return $result !== '' ? ' WHERE ' . $result : '';
     }
 
     /**
-     * @return \Guvra\Builder\Clause\Where
+     * @return \Guvra\Builder\Clause\ConditionGroup
      */
     protected function getWhereBuilder()
     {
         if (!$this->whereBuilder) {
-            $this->whereBuilder = $this->builderFactory->create('where', $this->builderFactory);
+            $this->whereBuilder = $this->builderFactory->create('conditionGroup', $this->builderFactory);
         }
 
         return $this->whereBuilder;

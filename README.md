@@ -19,17 +19,29 @@ $connection = new Connection(['dsn' => 'sqlite:db.sqlite']);
 Select:
 
 ```php
-$statement = $connection
+use Guvra\Builder\Parameter;
+
+$select = $connection
     ->select()
     ->from('transactions')
-    ->join('accounts', 'accounts.account_id,  '=', 'transaction.account_id')
-    ->where('accounts.name', 'like', '%account%')
+    ->join('accounts', 'accounts.account_id',  '=', 'transaction.account_id')
+    ->where('accounts.name', 'like', new Parameter('name'))
     ->orWhere('accounts.balance', 'between', [0, 1000])
     ->limit(3, 1)
-    ->order('record_id', 'desc')
-    ->query();
+    ->order('record_id', 'desc');
 
+$statement = $connection->prepare($select, [':name' => '%account%']);
 $rows = $statement->fetchAll();
+```
+
+Sub queries:
+
+```php
+$subQuery = $connection->select()
+    ->from('transactions')
+    ->where('transactions.amount', '>', 50);
+
+$select->where('transactions.transaction_id', 'in', $subQuery)
 ```
 
 Complex conditions:
@@ -41,39 +53,51 @@ $select->where(function ($condition) {
 })
 ```
 
+Complex joins:
+
+```php
+use Guvra\Builder\Expression;
+
+$select->join('accounts', function ($condition) {
+    $condition->where('accounts', 'accounts.account_id',  '=', new Expression('transaction.account_id'))
+        ->orWhere('store_id', '=', 0);
+})
+```
+
 Insert:
 
 ```php
-$statement = $this->query
+$query = $this->query
+    ->ignore()
     ->into('accounts')
     ->columns(['name', 'balance'])
-    ->values(['Account 4', 500])
-    ->query();
+    ->values(['Account 4', 500]);
 
+$statement = $connection->prepare($select);
 $rowCount = $statement->getRowCount();
 ```
 
 Update:
 
 ```php
-$statement = $this->connection
+$query = $this->connection
     ->update()
     ->table('accounts')
     ->values(['name' => 'Account 5'])
-    ->where('name', '=', 'Account 1')
-    ->query();
+    ->where('name', '=', 'Account 1');
 
+$statement = $connection->prepare($select);
 $rowCount = $statement->getRowCount();
 ```
 
 Delete:
 
 ```php
-$statement = $this->connection
+$query = $this->connection
     ->delete()
     ->from('accounts')
-    ->where('name', '=', 'Account 1')
-    ->query();
+    ->where('name', '=', 'Account 1');
 
+$statement = $connection->prepare($select);
 $rowCount = $statement->getRowCount();
 ```

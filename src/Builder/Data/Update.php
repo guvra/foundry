@@ -8,7 +8,6 @@
 namespace Guvra\Builder\Data;
 
 use Guvra\Builder\BuilderFactoryInterface;
-use Guvra\Builder\Condition\ConditionGroup;
 use Guvra\Builder\QueryableBuilder;
 use Guvra\ConnectionInterface;
 
@@ -18,56 +17,22 @@ use Guvra\ConnectionInterface;
 class Update extends QueryableBuilder
 {
     use \Guvra\Builder\Traits\WhereTrait;
+    use \Guvra\Builder\Traits\JoinTrait;
 
     /**
-     * The target table.
-     *
      * @var string
      */
     protected $table = '';
 
     /**
-     * Columns to update.
-     *
      * @var array
      */
     protected $values = [];
 
     /**
-     * {@inheritdoc}
+     * @var int
      */
-    public function build()
-    {
-        return 'UPDATE'
-               . $this->buildTable($this->table)
-               . $this->buildValues($this->values)
-               . $this->buildWhere();
-    }
-
-    /**
-     * Build the values clause.
-     *
-     * @param array $values
-     * @return string
-     */
-    protected function buildValues(array $values)
-    {
-        $value = '';
-
-        if (!empty($values)) {
-            $value = ' SET ';
-            foreach ($values as $column => $v) {
-                if (is_string($v)) {
-                    $v = $this->connection->quote($v);
-                }
-
-                $values[$column] = "$column = $v";
-            }
-            $value .= implode(', ', $values);
-        }
-
-        return $value;
-    }
+    protected $limit = 0;
 
     /**
      * Set the table to update.
@@ -93,5 +58,74 @@ class Update extends QueryableBuilder
         $this->values = $values;
 
         return $this;
+    }
+
+    /**
+     * Add a limit clause to the query.
+     *
+     * @param int $max
+     * @return $this
+     */
+    public function limit(int $max)
+    {
+        $this->limit = $max;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function build()
+    {
+        return 'UPDATE'
+            . $this->buildTable()
+            . $this->buildValues()
+            . $this->buildJoins()
+            . $this->buildWhere()
+            . $this->buildLimit();
+    }
+
+    /**
+     * Build the table name.
+     *
+     * @return string
+     */
+    protected function buildTable()
+    {
+        return !empty($this->table) ? " {$this->table}" : '';
+    }
+
+    /**
+     * Build the values.
+     *
+     * @return string
+     */
+    protected function buildValues()
+    {
+        if (empty($this->values)) {
+            return '';
+        }
+
+        $values = [];
+
+        foreach ($this->values as $column => $value) {
+            if (is_string($value)) {
+                $value = $this->connection->quote($value);
+            }
+            $values[$column] = "$column = $value";
+        }
+
+        return ' SET ' . implode(', ', $values);
+    }
+
+    /**
+     * Build the limit clause.
+     *
+     * @return string
+     */
+    protected function buildLimit()
+    {
+        return $this->limit > 0 ? " LIMIT {$this->limit}" : '';
     }
 }

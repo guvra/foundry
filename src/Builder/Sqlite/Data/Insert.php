@@ -17,8 +17,8 @@ class Insert extends BaseInsert
     /**
      * {@inheritdoc}
      */
-    protected function buildIgnore($value)
+    protected function buildIgnore()
     {
-        return $value ? ' OR IGNORE' : '';
+        return $this->ignore ? ' OR IGNORE' : '';
     }
 }

@@ -12,7 +12,7 @@ use Guvra\ConnectionInterface;
 /**
  * Queryable query builder.
  */
-abstract class QueryableBuilder extends AbstractBuilder implements QueryableInterface
+abstract class QueryableBuilder extends Builder implements QueryableInterface
 {
     /**
      * @var BuilderFactoryInterface

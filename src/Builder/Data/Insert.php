@@ -15,74 +15,24 @@ use Guvra\Builder\QueryableBuilder;
 class Insert extends QueryableBuilder
 {
     /**
-     * Whether to ignore conflicts with existing rows.
-     *
      * @var bool
      */
     protected $ignore = false;
 
     /**
-     * The target table.
-     *
      * @var string
      */
     protected $table = '';
 
     /**
-     * Columns to look up.
-     *
      * @var array
      */
     protected $columns = [];
 
     /**
-     * Values to insert.
-     *
      * @var array
      */
     protected $values = [];
-
-    /**
-     * {@inheritdoc}
-     */
-    public function build()
-    {
-        $this->compiled = 'INSERT'
-            . $this->buildIgnore($this->ignore)
-            . $this->buildTable($this->table, 'INTO')
-            . $this->buildColumns($this->columns, true, true)
-            . $this->buildValues($this->values);
-
-        return $this->compiled;
-    }
-
-    /**
-     * Build the ignore clause.
-     *
-     * @param bool $value
-     * @return string
-     */
-    protected function buildIgnore($value)
-    {
-        return $value ? ' IGNORE' : '';
-    }
-
-    /**
-     * Build the values clause.
-     *
-     * @param array $values
-     * @return string
-     */
-    protected function buildValues(array $values)
-    {
-        foreach ($values as $key => $value) {
-            if (is_string($value)) {
-                $values[$key] = $this->connection->quote($value);
-            }
-        }
-
-        return ' VALUES (' . implode(', ', $values) . ')';
-    }
 
     /**
      * Build the ignore clause.
@@ -90,10 +40,10 @@ class Insert extends QueryableBuilder
      * @param bool $value
      * @return $this
      */
-    public function ignore($value = true)
+    public function ignore(bool $value = true)
     {
         $this->compiled = false;
-        $this->ignore = (bool) $value;
+        $this->ignore = $value;
 
         return $this;
     }
@@ -138,5 +88,78 @@ class Insert extends QueryableBuilder
         $this->values = $values;
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function build()
+    {
+        return 'INSERT'
+            . $this->buildIgnore()
+            . $this->buildTable()
+            . $this->buildColumns()
+            . $this->buildValues();
+    }
+
+    /**
+     * Build the ignore clause.
+     *
+     * @return string
+     */
+    protected function buildIgnore()
+    {
+        return $this->ignore ? ' IGNORE' : '';
+    }
+
+    /**
+     * Build the table name.
+     *
+     * @return string
+     */
+    protected function buildTable()
+    {
+        if (empty($this->table)) {
+            return '';
+        }
+
+        return " INTO {$this->table}";
+    }
+
+    /**
+     * Build the columns.
+     *
+     * @return string
+     */
+    protected function buildColumns()
+    {
+        if (empty($this->columns)) {
+            return '';
+        }
+
+        return ' (' . implode(', ', $this->columns) . ')';
+    }
+
+    /**
+     * Build the values clause.
+     *
+     * @return string
+     */
+    protected function buildValues()
+    {
+        if (empty($this->values)) {
+            return '';
+        }
+
+        $values = [];
+
+        foreach ($this->values as $value) {
+            if (is_string($value)) {
+                $value = $this->connection->quote($value);
+            }
+            $values[] = $value;
+        }
+
+        return ' VALUES (' . implode(', ', $values) . ')';
     }
 }

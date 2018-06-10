@@ -8,8 +8,10 @@
 namespace Guvra;
 
 use Guvra\Builder\BuilderFactory;
+use Guvra\Builder\BuilderFactoryInterface;
 use Guvra\Builder\BuilderInterface;
 use Guvra\Builder\ExpressionInterface;
+use Guvra\Builder\ParameterInterface;
 
 /**
  * Connection class.
@@ -17,7 +19,7 @@ use Guvra\Builder\ExpressionInterface;
 class Connection implements ConnectionInterface
 {
     /**
-     * @var BuilderFactory
+     * @var BuilderFactoryInterface
      */
     protected $builderFactory;
 
@@ -70,18 +72,13 @@ class Connection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function query($query, array $bind = [])
+    public function query($query)
     {
         if (is_object($query) && $query instanceof BuilderInterface) {
             $query = $query->build();
         }
 
-        if (empty($bind)) {
-            $pdoStatement = $this->pdo->query($query);
-        } else {
-            $pdoStatement = $this->pdo->prepare($query);
-            $pdoStatement->execute($bind);
-        }
+        $pdoStatement = $this->pdo->query($query);
 
         return $this->statementFactory->create($pdoStatement);
     }
@@ -92,7 +89,7 @@ class Connection implements ConnectionInterface
     public function exec($query)
     {
         if (is_object($query) && $query instanceof BuilderInterface) {
-            $query = $query->__toString();
+            $query = $query->build();
         }
 
         return $this->pdo->exec($query);
@@ -104,7 +101,7 @@ class Connection implements ConnectionInterface
     public function prepare($query)
     {
         if (is_object($query) && $query instanceof BuilderInterface) {
-            $query = $query->__toString();
+            $query = $query->build();
         }
 
         $pdoStatement = $this->pdo->prepare($query);
@@ -116,8 +113,8 @@ class Connection implements ConnectionInterface
      */
     public function quote($value)
     {
-        if (is_object($value) && $value instanceof ExpressionInterface) {
-            // Never quote expressions
+        if (is_object($value) && ($value instanceof ExpressionInterface || $value instanceof ParameterInterface)) {
+            // Never quote expressions or parameters
             return $value;
         }
 
@@ -135,7 +132,15 @@ class Connection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function rollback()
+    public function commitTransaction()
+    {
+        return $this->pdo->commit();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rollbackTransaction()
     {
         return $this->pdo->rollback();
     }
@@ -210,6 +215,16 @@ class Connection implements ConnectionInterface
     public function getDriver()
     {
         return $this->driver;
+    }
+
+    /**
+     * Get the query builder factory.
+     *
+     * @return BuilderFactoryInterface
+     */
+    public function getBuilderFactory()
+    {
+        return $this->builderFactory;
     }
 
     /**

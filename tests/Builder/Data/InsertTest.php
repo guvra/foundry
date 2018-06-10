@@ -15,32 +15,18 @@ use Tests\AbstractTestCase;
 class InsertTest extends AbstractTestCase
 {
     /**
-     * @var \Guvra\Builder\Data\Delete
-     */
-    protected $query;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function setUp()
-    {
-        parent::setUp();
-        $this->query = $this->connection->insert();
-    }
-
-    /**
      * Test the INSERT query builder.
      */
     public function testInsert()
     {
-        return;
         $this->withTestTables(function () {
-            $statement = $this->query
+            $query = $this->connection
+                ->insert()
                 ->into('accounts')
                 ->columns(['name', 'balance'])
-                ->values(['Account 4', 500])
-                ->query();
+                ->values(['Account 4', 500]);
 
+            $statement = $query->query();
             $this->assertEquals(1, $statement->getRowCount());
             $this->assertEquals(3, $this->connection->getRowCount('accounts'));
         });
@@ -53,8 +39,8 @@ class InsertTest extends AbstractTestCase
      */
     public function testExceptionOnTableNotExists()
     {
-        throw new \PDOException;
-        $statement = $this->query
+        $statement = $this->connection
+            ->insert()
             ->into('table_not_exists')
             ->columns(['name'])
             ->values(['name1'])
@@ -68,9 +54,9 @@ class InsertTest extends AbstractTestCase
      */
     public function testExceptionOnColumnNotExists()
     {
-        throw new \PDOException;
         $this->withTestTables(function () {
-            $statement = $this->query
+            $statement = $this->connection
+                ->insert()
                 ->into('accounts')
                 ->columns(['column_not_exists'])
                 ->values(['value'])
@@ -86,20 +72,12 @@ class InsertTest extends AbstractTestCase
     public function testExceptionOnDuplicateInsert()
     {
         $this->withTestTables(function () {
-            $statement = $this->query
+            $statement = $this->connection
+                ->insert()
                 ->into('accounts')
                 ->columns(['name'])
                 ->values(['Account 1'])
                 ->query();
         });
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function tearDown()
-    {
-        parent::tearDown();
-        $this->query = null;
     }
 }

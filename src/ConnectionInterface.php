@@ -23,7 +23,7 @@ interface ConnectionInterface
      * @return \Guvra\StatementInterface
      * @throws \PDOException
      */
-    public function query($query, array $bind = []);
+    public function query($query);
 
     /**
      * Execute a SQL statement and return the number of affected rows.
@@ -64,7 +64,7 @@ interface ConnectionInterface
     public function beginTransaction();
 
     /**
-     * Rolls back the current transaction.
+     * Commit the current transaction.
      *
      * Returns false on failure.
      * Throws an exception when there is no active transaction.
@@ -72,7 +72,18 @@ interface ConnectionInterface
      * @return bool
      * @throws \PDOException
      */
-    public function rollback();
+    public function commitTransaction();
+
+    /**
+     * Roll back the current transaction.
+     *
+     * Returns false on failure.
+     * Throws an exception when there is no active transaction.
+     *
+     * @return bool
+     * @throws \PDOException
+     */
+    public function rollbackTransaction();
 
     /**
      * Get the ID of the last inserted row (does not work with UPDATE),
