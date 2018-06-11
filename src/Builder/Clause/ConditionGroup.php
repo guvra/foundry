@@ -27,27 +27,27 @@ class ConditionGroup extends Builder implements \IteratorAggregate, \Countable
     protected $enclose = true;
 
     /**
-     * @param BuilderInterface|string|callable $column
+     * @param mixed $column
      * @param mixed|null $operator
      * @param mixed|null $value
      * @return $this
      */
     public function where($column, $operator = null, $value = null)
     {
-        $condition = $this->connection->getBuilderFactory()->create('condition', $column, $operator, $value);
+        $condition = $this->builderFactory->create('condition', $column, $operator, $value);
 
         return $this->addCondition($condition);
     }
 
     /**
-     * @param BuilderInterface|string|callable $column
+     * @param mixed $column
      * @param mixed|null $operator
      * @param mixed|null $value
      * @return $this
      */
     public function orWhere($column, $operator = null, $value = null)
     {
-        $condition = $this->connection->getBuilderFactory()->create('condition', $column, $operator, $value);
+        $condition = $this->builderFactory->create('condition', $column, $operator, $value);
 
         return $this->addOrCondition($condition);
     }
@@ -58,7 +58,7 @@ class ConditionGroup extends Builder implements \IteratorAggregate, \Countable
      */
     public function addCondition(Condition $condition)
     {
-        $this->conditions[] = ['and', $condition];
+        $this->conditions[] = ['AND', $condition];
         $this->compiled = null;
 
         return $this;
@@ -70,7 +70,7 @@ class ConditionGroup extends Builder implements \IteratorAggregate, \Countable
      */
     public function addOrCondition(Condition $condition)
     {
-        $this->conditions[] = ['or', $condition];
+        $this->conditions[] = ['OR', $condition];
         $this->compiled = null;
 
         return $this;
@@ -95,7 +95,7 @@ class ConditionGroup extends Builder implements \IteratorAggregate, \Countable
         $first = true;
         $result = '';
 
-        foreach ($this as $conditionData) {
+        foreach ($this->conditions as $conditionData) {
             $type = $conditionData[0];
             $compiledCondition = $conditionData[1]->toString();
 

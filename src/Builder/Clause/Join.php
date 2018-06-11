@@ -63,11 +63,10 @@ class Join extends Builder
         }
 
         if ($this->condition) {
-            $conditionResult =  $this->condition->toString();
+            $conditionResult = $this->condition->toString();
             if ($conditionResult !== '') {
                 $result .= ' ON ' . $conditionResult;
             }
-
         }
 
         return $result;
@@ -79,7 +78,7 @@ class Join extends Builder
     protected function setTable($table)
     {
         if (is_array($table)) {
-            $alias = reset($table);
+            $alias = key($table);
             if (is_string($alias) && $alias !== '') {
                 $this->alias = $alias;
             }

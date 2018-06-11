@@ -5,9 +5,9 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder\Data;
+namespace Guvra\Builder\Statement;
 
-use Guvra\Builder\QueryableBuilder;
+use Guvra\Builder\Builder;
 use Guvra\Builder\Traits\HasJoin;
 use Guvra\Builder\Traits\HasWhere;
 use Guvra\ConnectionInterface;
@@ -15,7 +15,7 @@ use Guvra\ConnectionInterface;
 /**
  * Update builder.
  */
-class Update extends QueryableBuilder
+class Update extends Builder
 {
     use HasJoin;
     use HasWhere;
@@ -24,6 +24,11 @@ class Update extends QueryableBuilder
      * @var string
      */
     protected $table = '';
+
+    /**
+     * @var string
+     */
+    protected $alias = '';
 
     /**
      * @var array
@@ -39,11 +44,13 @@ class Update extends QueryableBuilder
      * Set the table to update.
      *
      * @param string $table
+     * @param string $alais
      * @return $this
      */
-    public function table(string $table)
+    public function table(string $table, string $alias = '')
     {
         $this->table = $table;
+        $this->alias = $alias;
         $this->compiled = null;
 
         return $this;
@@ -97,7 +104,11 @@ class Update extends QueryableBuilder
      */
     protected function buildTable()
     {
-        return !empty($this->table) ? " {$this->table}" : '';
+        if (!$this->table) {
+            return '';
+        }
+
+        return $this->alias ? " {$this->table} AS {$this->alias}" : " {$this->table}";
     }
 
     /**

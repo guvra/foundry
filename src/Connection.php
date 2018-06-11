@@ -10,10 +10,10 @@ namespace Guvra;
 use Guvra\Builder\BuilderFactory;
 use Guvra\Builder\BuilderFactoryInterface;
 use Guvra\Builder\BuilderInterface;
-use Guvra\Builder\Data\Delete;
-use Guvra\Builder\Data\Insert;
-use Guvra\Builder\Data\Select;
-use Guvra\Builder\Data\Update;
+use Guvra\Builder\Statement\Delete;
+use Guvra\Builder\Statement\Insert;
+use Guvra\Builder\Statement\Select;
+use Guvra\Builder\Statement\Update;
 use Guvra\Builder\ExpressionInterface;
 use Guvra\Builder\ParameterInterface;
 
@@ -76,10 +76,16 @@ class Connection implements ConnectionInterface
     /**
      * {@inheritdoc}
      */
-    public function query($query)
+    public function query($query, array $bind = [])
     {
         if (is_object($query) && $query instanceof BuilderInterface) {
             $query = $query->toString();
+        }
+
+        if (!empty($bind)) {
+            $statement = $this->prepare($query);
+            $statement->execute($bind);
+            return $statement;
         }
 
         $pdoStatement = $this->pdo->query($query);
@@ -109,6 +115,7 @@ class Connection implements ConnectionInterface
         }
 
         $pdoStatement = $this->pdo->prepare($query);
+
         return $this->statementFactory->create($pdoStatement);
     }
 

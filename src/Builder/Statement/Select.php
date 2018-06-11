@@ -5,9 +5,9 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder\Data;
+namespace Guvra\Builder\Statement;
 
-use Guvra\Builder\QueryableBuilder;
+use Guvra\Builder\Builder;
 use Guvra\Builder\Traits\HasHaving;
 use Guvra\Builder\Traits\HasJoin;
 use Guvra\Builder\Traits\HasWhere;
@@ -16,7 +16,7 @@ use Guvra\ConnectionInterface;
 /**
  * Select builder.
  */
-class Select extends QueryableBuilder
+class Select extends Builder
 {
     const PART_COLUMNS = 1;
     const PART_DISTINCT = 2;
@@ -79,11 +79,15 @@ class Select extends QueryableBuilder
     /**
      * Set the columns to select.
      *
-     * @param array $columns
+     * @param string|array $columns
      * @return $this
      */
-    public function columns(array $columns)
+    public function columns($columns)
     {
+        if (!is_array($columns)) {
+            $columns = [$columns];
+        }
+
         $this->columns = $columns;
         $this->compiled = null;
 
@@ -134,7 +138,7 @@ class Select extends QueryableBuilder
             $columns = [$columns];
         }
 
-        $this->groups = array_unique(array_merge($this->columns, $columns));
+        $this->groups = array_unique(array_merge($this->groups, $columns));
         $this->compiled = null;
 
         return $this;
@@ -274,7 +278,7 @@ class Select extends QueryableBuilder
     /**
      * Build the order clause.
      *
-     * @return sring
+     * @return string
      */
     protected function buildOrder()
     {
@@ -286,7 +290,7 @@ class Select extends QueryableBuilder
 
         foreach ($this->orders as $order) {
             $column = $order['column'];
-            $direction = $order['direction'];
+            $direction = strtoupper($order['direction']);
             $parts[] = "$column $direction";
         }
 
@@ -304,9 +308,17 @@ class Select extends QueryableBuilder
             return '';
         }
 
-        return $this->limit['start'] > 0
-            ? " LIMIT {$this->limit['max']} OFFSET {$this->limit['start']}"
-            : " LIMIT {$this->limit['max']}";
+        $parts = [];
+
+        if ($this->limit['max'] > 0) {
+            $parts[] = 'LIMIT ' . $this->limit['max'];
+        }
+
+        if ($this->limit['start'] > 0) {
+            $parts[] = 'OFFSET ' . $this->limit['start'];
+        }
+
+        return ' ' . implode(' ', $parts);
     }
 
     /**
@@ -325,13 +337,15 @@ class Select extends QueryableBuilder
     }
 
     /**
-     * Reset a part of the query, (or the whole query).
+     * Reset a part of the query (or the whole query).
      *
      * @param int|null $part
      * @return $this
      */
     public function reset($part = null)
     {
+        $this->compiled = null;
+
         if (!$part || $part & self::PART_COLUMNS) {
             $this->columns = [];
         }
@@ -373,57 +387,5 @@ class Select extends QueryableBuilder
         }
 
         return $this;
-    }
-
-    /**
-     * Get a part of the query.
-     *
-     * @param int $part
-     * @return mixed
-     * @throws \UnexpectedValueException
-     */
-    public function getPart(int $part)
-    {
-        if ($part & self::PART_COLUMNS) {
-            return $this->columns;
-        }
-
-        if ($part & self::PART_DISTINCT) {
-            return $this->distinct;
-        }
-
-        if ($part & self::PART_FROM) {
-            return $this->tables;
-        }
-
-        if ($part & self::PART_JOIN) {
-            return $this->joinGroupBuilder;
-        }
-
-        if ($part & self::PART_WHERE) {
-            return $this->whereBuilder;
-        }
-
-        if ($part & self::PART_GROUP) {
-            return $this->groups;
-        }
-
-        if ($part & self::PART_HAVING) {
-            return $this->havingBuilder;
-        }
-
-        if ($part & self::PART_ORDER) {
-            return $this->orders;
-        }
-
-        if ($part & self::PART_LIMIT) {
-            return $this->limit;
-        }
-
-        if ($part & self::PART_UNION) {
-            return $this->unions;
-        }
-
-        throw new \UnexpectedValueException(sprint('The query part "%s" does not exist.', $part));
     }
 }

@@ -32,6 +32,7 @@ trait HasJoin
     {
         $condition = $this->prepareJoinCondition($args);
         $this->getJoinGroupBuilder()->join($table, $condition);
+        $this->compiled = null;
 
         return $this;
     }
@@ -47,6 +48,7 @@ trait HasJoin
     {
         $condition = $this->prepareJoinCondition($args);
         $this->getJoinGroupBuilder()->joinLeft($table, $condition);
+        $this->compiled = null;
 
         return $this;
     }
@@ -62,6 +64,7 @@ trait HasJoin
     {
         $condition = $this->prepareJoinCondition($args);
         $this->getJoinGroupBuilder()->joinRight($table, $condition);
+        $this->compiled = null;
 
         return $this;
     }
@@ -75,6 +78,7 @@ trait HasJoin
     public function joinCross($table)
     {
         $this->getJoinGroupBuilder()->joinCross($table);
+        $this->compiled = null;
 
         return $this;
     }
@@ -88,6 +92,7 @@ trait HasJoin
     public function joinNatural($table)
     {
         $this->getJoinGroupBuilder()->joinNatural($table);
+        $this->compiled = null;
 
         return $this;
     }
@@ -129,7 +134,7 @@ trait HasJoin
     protected function getJoinGroupBuilder()
     {
         if (!$this->joinGroupBuilder) {
-            $this->joinGroupBuilder = $this->connection->getBuilderFactory()->create('joinGroup');
+            $this->joinGroupBuilder = $this->builderFactory->create('joinGroup');
         }
 
         return $this->joinGroupBuilder;

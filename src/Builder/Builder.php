@@ -20,6 +20,11 @@ abstract class Builder implements BuilderInterface
     protected $connection;
 
     /**
+     * @var BuilderFactoryInterface
+     */
+    protected $builderFactory;
+
+    /**
      * @var string|null
      */
     protected $compiled;
@@ -30,6 +35,7 @@ abstract class Builder implements BuilderInterface
     public function __construct(ConnectionInterface $connection)
     {
         $this->connection = $connection;
+        $this->builderFactory = $connection->getBuilderFactory();
     }
 
     /**

@@ -20,7 +20,7 @@ interface BuilderFactoryInterface
      * @return BuilderInterface
      * @throws \UnexpectedValueException
      */
-    public function create($type, ...$args);
+    public function create(string $type, ...$args);
 
     /**
      * Add a query builder type.
@@ -29,7 +29,7 @@ interface BuilderFactoryInterface
      * @param string $className
      * @return $this
      */
-    public function addBuilder($type, $className);
+    public function addBuilder(string $type, string $className);
 
     /**
      * Remove a query builder type.
@@ -37,5 +37,5 @@ interface BuilderFactoryInterface
      * @param string $type
      * @return $this
      */
-    public function removeBuilder($type);
+    public function removeBuilder(string $type);
 }

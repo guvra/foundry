@@ -5,7 +5,7 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests\Builder\Data;
+namespace Tests\Builder\Statement;
 
 use Tests\AbstractTestCase;
 
@@ -20,13 +20,13 @@ class UpdateTest extends AbstractTestCase
     public function testUpdate()
     {
         $this->withTestTables(function () {
-            $statement = $this->connection
+            $query = $this->connection
                 ->update()
                 ->table('accounts')
                 ->values(['name' => 'Account 5'])
-                ->where('name', '=', 'Account 1')
-                ->query();
+                ->where('name', '=', 'Account 1');
 
+            $statement = $this->connection->query($query);
             $this->assertEquals(1, $statement->getRowCount());
         });
     }
@@ -38,11 +38,12 @@ class UpdateTest extends AbstractTestCase
      */
     public function testExceptionOnTableNotExists()
     {
-        $statement = $this->connection
+        $query = $this->connection
             ->update()
             ->table('table_not_exists')
-            ->values(['name' => 'Account 5'])
-            ->query();
+            ->values(['name' => 'Account 5']);
+
+        $this->connection->query($query);
     }
 
     /**
@@ -53,11 +54,12 @@ class UpdateTest extends AbstractTestCase
     public function testExceptionOnColumnNotExists()
     {
         $this->withTestTables(function () {
-            $statement = $this->connection
+            $query = $this->connection
                 ->update()
                 ->table('accounts')
-                ->values(['column_not_exists' => 'value'])
-                ->query();
+                ->values(['column_not_exists' => 'value']);
+
+            $this->connection->query($query);
         });
     }
 }

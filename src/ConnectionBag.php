@@ -10,7 +10,7 @@ namespace Guvra;
 /**
  * Connection bag.
  */
-class ConnectionBag
+class ConnectionBag implements ConnectionBagInterface
 {
     /**
      * Available connections.
@@ -20,26 +20,41 @@ class ConnectionBag
     protected $connections = [];
 
     /**
-     * Get a database connection.
-     *
-     * @param string $name
-     * @return ConnectionInterface|null
+     * {@inheritdoc}
      */
-    public function getConnection($name = 'default')
+    public function getConnection(string $name = 'default')
     {
-        return array_key_exists($name, $this->connections) ? $this->connections[$name] : null;
+        if (!$this->hasConnection($name)) {
+            throw new \UnexpectedValueException(sprintf('The connection "%s" is not defined.'));
+        }
+
+        return $this->connections[$name];
     }
 
     /**
-     * Add a database connection
-     *
-     * @param ConnectionInterface $connection
-     * @param string $name
-     * @return $this
+     * {@inheritdoc}
      */
-    public function addConnection(ConnectionInterface $connection, $name = 'default')
+    public function hasConnection(string $name)
+    {
+        return array_key_exists($name, $this->connections);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function addConnection(ConnectionInterface $connection, string $name = 'default')
     {
         $this->connections[$name] = $connection;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeConnection(string $name)
+    {
+        unset($this->connections[$name]);
 
         return $this;
     }

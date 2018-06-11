@@ -37,9 +37,9 @@ class JoinGroup extends Builder implements \IteratorAggregate, \Countable
      * @param Condition|null $condition
      * @return $this
      */
-    public function join($table, Condition $condition)
+    public function join($table, Condition $condition = null)
     {
-        $join = $this->connection->getBuilderFactory()->create('join', 'inner', $table, $condition);
+        $join = $this->builderFactory->create('join', 'inner', $table, $condition);
 
         return $this->addJoin($join);
     }
@@ -51,9 +51,9 @@ class JoinGroup extends Builder implements \IteratorAggregate, \Countable
      * @param Condition|null $condition
      * @return $this
      */
-    public function joinLeft($table, Condition $condition)
+    public function joinLeft($table, Condition $condition = null)
     {
-        $join = $this->connection->getBuilderFactory()->create('join', 'left', $table, $condition);
+        $join = $this->builderFactory->create('join', 'left', $table, $condition);
 
         return $this->addJoin($join);
     }
@@ -65,9 +65,9 @@ class JoinGroup extends Builder implements \IteratorAggregate, \Countable
      * @param Condition|null $condition
      * @return $this
      */
-    public function joinRight($table, Condition $condition)
+    public function joinRight($table, Condition $condition = null)
     {
-        $join = $this->connection->getBuilderFactory()->create('join', 'right', $table, $condition);
+        $join = $this->builderFactory->create('join', 'right', $table, $condition);
 
         return $this->addJoin($join);
     }
@@ -81,7 +81,7 @@ class JoinGroup extends Builder implements \IteratorAggregate, \Countable
      */
     public function joinCross($table)
     {
-        $join = $this->connection->getBuilderFactory()->create('cross', 'cross', $table);
+        $join = $this->builderFactory->create('join', 'cross', $table);
 
         return $this->addJoin($join);
     }
@@ -95,7 +95,7 @@ class JoinGroup extends Builder implements \IteratorAggregate, \Countable
      */
     public function joinNatural($table)
     {
-        $join = $this->connection->getBuilderFactory()->create('join', 'natural', $table);
+        $join = $this->builderFactory->create('join', 'natural', $table);
 
         return $this->addJoin($join);
     }
@@ -123,7 +123,7 @@ class JoinGroup extends Builder implements \IteratorAggregate, \Countable
         $result = '';
         $first = true;
 
-        foreach ($this as $join) {
+        foreach ($this->joins as $join) {
             $compiledJoin = $join->toString();
 
             if ($compiledJoin === '') {
@@ -150,6 +150,6 @@ class JoinGroup extends Builder implements \IteratorAggregate, \Countable
      */
     public function count()
     {
-        return count($this->conditions);
+        return count($this->joins);
     }
 }

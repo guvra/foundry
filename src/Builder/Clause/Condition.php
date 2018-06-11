@@ -34,13 +34,13 @@ class Condition extends Builder
     /**
      * @param ConnectionInterface $connection
      * @param mixed $column
-     * @param mixed|null $operator
+     * @param string|null $operator
      * @param mixed|null $value
      */
     public function __construct(
         ConnectionInterface $connection,
         $column,
-        $operator = null,
+        string $operator = null,
         $value = null
     ) {
         parent::__construct($connection);
@@ -58,16 +58,35 @@ class Condition extends Builder
         $operator = $this->operator;
         $value = $this->value;
 
-        if (is_callable($column)) {
-            // Execute the callback with a new condition group as a parameter
-            return $this->buildCallable($column);
+        // Hard cast the column to string if is a builder object, because __toString must not throw exceptions
+        if ($column instanceof BuilderInterface) {
+            $column = $column->toString();
         }
 
         if (!$operator) {
-            // No operator specified, the column param is either a string or a builder object
-            return $this->buildRaw($column);
+            if (is_callable($column)) {
+                // Execute the callback with a new condition group as a parameter
+                return $this->buildCallable($column, 'conditionGroup');
+            }
+
+            return $column;
         }
 
+        // Allow building sub queries with callback functions
+        if (is_callable($column)) {
+            $column = $this->buildCallable($column, 'select');
+        }
+
+        return $this->buildCondition($column, $operator, $value);
+    }
+
+    /**
+    * @param mixed $column
+    * @param string $operator
+    * @param mixed $value
+     */
+    protected function buildCondition($column, string $operator, $value)
+    {
         switch ($operator) {
             case 'exists':
                 return $this->buildExists($column);
@@ -93,64 +112,31 @@ class Condition extends Builder
             case 'not in':
                 return $this->buildNotIn($column, $value);
 
-            case 'in set':
-                return $this->buildInSet($column, $value);
-
-            case 'not in set':
-                return $this->buildNotInSet($column, $value);
-
             default:
                 return $this->buildDefault($column, $operator, $value);
         }
     }
 
     /**
-     * @param callable $callback
-     * @return string
-     */
-    protected function buildCallable($callback)
-    {
-        $condition = $this->connection->getBuilderFactory()->create('conditionGroup');
-        call_user_func($callback, $condition);
-
-        return $condition->toString();
-    }
-
-    /**
-     * @param BuilderInterface|string $condition
-     * @return string
-     */
-    protected function buildRaw($condition)
-    {
-        return $condition instanceof BuilderInterface ? $condition->toString() : $condition;
-    }
-
-    /**
-     * @param BuilderInterface|string $query
+     * @param mixed $query
      * @return string
      */
     protected function buildExists($query)
     {
-        // Build the condition manually, because __toString method must not throw exceptions
-        $query = $query instanceof BuilderInterface ? $query->toString() : $query;
-
         return "EXISTS ($query)";
     }
 
     /**
-     * @param BuilderInterface|string $query
+     * @param mixed $query
      * @return string
      */
     protected function buildNotExists($query)
     {
-        // Build the condition manually, because __toString method must not throw exceptions
-        $query = $query instanceof BuilderInterface ? $query->toString() : $query;
-
         return "NOT EXISTS ($query)";
     }
 
     /**
-     * @param BuilderInterface|string $column
+     * @param mixed $column
      * @return string
      */
     protected function buildIsNull($column)
@@ -159,7 +145,7 @@ class Condition extends Builder
     }
 
     /**
-     * @param BuilderInterface|string $column
+     * @param mixed $column
      * @return string
      */
     protected function buildIsNotNull($column)
@@ -168,104 +154,101 @@ class Condition extends Builder
     }
 
     /**
-     * @param string $column
+     * @param mixed $column
      * @param mixed $lowest
      * @param mixed $highest
      * @return string
      */
     protected function buildBetween($column, $lowest, $highest)
     {
-        $lowest = $this->escapeValue($lowest);
-        $highest = $this->escapeValue($highest);
+        $lowest = $this->buildValue($lowest);
+        $highest = $this->buildValue($highest);
 
         return "$column BETWEEN $lowest AND $highest";
     }
 
     /**
-     * @param string $column
+     * @param mixed $column
      * @param mixed $lowest
      * @param mixed $highest
      * @return string
      */
     protected function buildNotBetween($column, $lowest, $highest)
     {
-        $lowest = $this->escapeValue($lowest);
-        $highest = $this->escapeValue($highest);
+        $lowest = $this->buildValue($lowest);
+        $highest = $this->buildValue($highest);
 
         return "$column NOT BETWEEN $lowest AND $highest";
     }
 
     /**
      * @param string $column
-     * @param BuilderInterface|array|string $values
+     * @param mixed $values
      * @return string
      */
     protected function buildIn($column, $values)
     {
-        if (is_array($values)) {
-            $values = $this->escapeValues($values);
-            $values = implode(',', $values);
-        }
+        $value = is_array($values) ? implode(',', $this->escapeValues($values)) : $this->buildValue($values);
 
-        return "$column IN ($values)";
+        return "$column IN ($value)";
     }
 
     /**
-     * @param string $column
-     * @param BuilderInterface|array|string $values
+     * @param mixed $column
+     * @param mixed $values
      * @return string
      */
     protected function buildNotIn($column, $values)
     {
-        if (is_array($values)) {
-            $values = $this->escapeValues($values);
-            $values = implode(',', $this->escapeValues($values));
-        }
+        $value = is_array($values) ? implode(',', $this->escapeValues($values)) : $this->buildValue($values);
 
-        return "$column NOT IN ($values)";
+        return "$column NOT IN ($value)";
     }
 
     /**
-     * @param string $column
-     * @param array|string $values
+     * @param callable $callback
+     * @param string $type
      * @return string
      */
-    protected function buildInSet($column, $values)
+    protected function buildCallable($callback, string $type)
     {
-        if (is_array($values)) {
-            $values = implode(',', $this->escapeValues($values));
-        }
+        $subQuery = $this->builderFactory->create($type);
+        call_user_func($callback, $subQuery);
 
-        $values = implode(',', $this->escapeValues($values));
-
-        return "FIND_IN_SET($column, $values)";
+        return $subQuery->toString();
     }
 
     /**
-     * @param string $column
-     * @param array|string $values
-     * @return string
-     */
-    protected function buildNotInSet($column, $values)
-    {
-        if (is_array($values)) {
-            $values = implode(',', $this->escapeValues($values));
-        }
-
-        return "NOT FIND_IN_SET($column, $values)";
-    }
-
-    /**
-     * @param string $column
+     * @param mixed $column
      * @param string $operator
      * @param mixed $value
      * @return string
      */
-    protected function buildDefault($column, $operator, $value)
+    protected function buildDefault($column, string $operator, $value)
     {
-        $value = $this->escapeValue($value);
+        $operator = strtoupper($operator);
+        $value = $this->buildValue($value);
 
         return "$column $operator $value";
+    }
+
+    /**
+     * Escape a value.
+     *
+     * @param mixed $value
+     * @return string
+     */
+    protected function buildValue($value)
+    {
+        if (is_callable($value)) {
+            return $this->buildCallable($value);
+        }
+
+        if ($value instanceof BuilderInterface) {
+            return $value->toString();
+        }
+
+        return $this->escapeValue($value);
     }
 
     /**

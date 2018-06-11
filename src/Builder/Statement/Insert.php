@@ -5,14 +5,14 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder\Data;
+namespace Guvra\Builder\Statement;
 
-use Guvra\Builder\QueryableBuilder;
+use Guvra\Builder\Builder;
 
 /**
  * Insert builder.
  */
-class Insert extends QueryableBuilder
+class Insert extends Builder
 {
     /**
      * @var bool
@@ -33,6 +33,11 @@ class Insert extends QueryableBuilder
      * @var array
      */
     protected $values = [];
+
+    /**
+     * @var string|null
+     */
+    protected $insertMode;
 
     /**
      * Build the ignore clause.
@@ -151,15 +156,58 @@ class Insert extends QueryableBuilder
             return '';
         }
 
-        $values = [];
+        $isMultipleInsert = null;
+        $parts = [];
 
         foreach ($this->values as $value) {
-            if (is_string($value)) {
-                $value = $this->connection->quote($value);
+            $isArray = is_array($value);
+
+            // Check if we need to insert a single set of values, or multiple sets of values
+            if ($isMultipleInsert === null) {
+                $isMultipleInsert = $isArray;
             }
-            $values[] = $value;
+
+            // Escape values and prepare them for inclusion in a string value
+            $parts[] = $isMultipleInsert ? $this->prepareValues($value) : $this->escapeValue($value);
         }
 
-        return ' VALUES (' . implode(', ', $values) . ')';
+        return $isMultipleInsert
+            ? ' VALUES ' . implode(',', $parts)
+            : ' VALUES (' . implode(',', $parts) . ')';
+    }
+
+    /**
+     * Convert the values to an inline string.
+     *
+     * @param array $values
+     * @return string
+     * @throws \LogicException
+     */
+    protected function prepareValues($values)
+    {
+        if (!is_array($values)) {
+            throw new \LogicException('In multiple insertion mode, all values must be arrays.');
+        }
+
+        foreach ($values as $key => $value) {
+            $values[$key] = $this->escapeValue($value);
+        }
+
+        return '(' . implode(',', $values) . ')';
+    }
+
+    /**
+     * Escape the value.
+     *
+     * @param mixed $value
+     * @return string
+     */
+    protected function escapeValue($value)
+    {
+        if (is_string($value)) {
+            $value = $this->connection->quote($value);
+        }
+
+        return $value;
     }
 }

@@ -5,7 +5,7 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests\Builder\Data;
+namespace Tests\Builder\Statement;
 
 use Guvra\Builder\Parameter;
 use Tests\AbstractTestCase;
@@ -40,10 +40,11 @@ class DeleteTest extends AbstractTestCase
      */
     public function testExceptionOnTableNotExists()
     {
-        $statement = $this->connection
+        $query = $this->connection
             ->delete()
-            ->from('table_not_exists')
-            ->query();
+            ->from('table_not_exists');
+
+        $this->connection->query($query);
     }
 
     /**
@@ -54,11 +55,12 @@ class DeleteTest extends AbstractTestCase
     public function testExceptionOnColumnNotExists()
     {
         $this->withTestTables(function () {
-            $statement = $this->connection
+            $query = $this->connection
                 ->delete()
                 ->from('accounts')
-                ->where('column_not_exists', '=', 'value')
-                ->query();
+                ->where('column_not_exists', '=', 'value');
+
+            $this->connection->query($query);
         });
     }
 }

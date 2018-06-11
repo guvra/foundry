@@ -7,7 +7,7 @@
  */
 namespace Tests;
 
-use Guvra\Builder\Data\Select;
+use Guvra\Builder\Statement\Select;
 
 /**
  * Test the connection bag.
@@ -27,10 +27,10 @@ class ConnectionTest extends AbstractTestCase
      */
     public function testQueryBuilders()
     {
-        $this->assertInstanceOf('Guvra\Builder\Data\Select', $this->connection->select());
-        $this->assertInstanceOf('Guvra\Builder\Data\Insert', $this->connection->insert());
-        $this->assertInstanceOf('Guvra\Builder\Data\Update', $this->connection->update());
-        $this->assertInstanceOf('Guvra\Builder\Data\Delete', $this->connection->delete());
+        $this->assertInstanceOf('Guvra\Builder\Statement\Select', $this->connection->select());
+        $this->assertInstanceOf('Guvra\Builder\Statement\Insert', $this->connection->insert());
+        $this->assertInstanceOf('Guvra\Builder\Statement\Update', $this->connection->update());
+        $this->assertInstanceOf('Guvra\Builder\Statement\Delete', $this->connection->delete());
     }
 
     /**

@@ -5,9 +5,9 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder\Data;
+namespace Guvra\Builder\Statement;
 
-use Guvra\Builder\QueryableBuilder;
+use Guvra\Builder\Builder;
 use Guvra\Builder\Traits\HasJoin;
 use Guvra\Builder\Traits\HasWhere;
 use Guvra\ConnectionInterface;
@@ -15,7 +15,7 @@ use Guvra\ConnectionInterface;
 /**
  * Delete builder.
  */
-class Delete extends QueryableBuilder
+class Delete extends Builder
 {
     use HasJoin;
     use HasWhere;

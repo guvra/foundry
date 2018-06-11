@@ -17,14 +17,14 @@ use Guvra\StatementInterface;
 interface ConnectionInterface
 {
     /**
-     * Execute a SQL statement, returning a result set as a PDOStatement object.
+     * Execute a SQL statement and return a statement object.
      *
      * @param BuilderInterface|string $query
      * @param array $bind
      * @return StatementInterface
      * @throws \PDOException
      */
-    public function query($query);
+    public function query($query, array $bind = []);
 
     /**
      * Execute a SQL statement and return the number of affected rows.
@@ -96,28 +96,28 @@ interface ConnectionInterface
     public function lastInsertId($name = null);
 
     /**
-     * Create a select query.
+     * Create a select query builder.
      *
      * @return BuilderInterface
      */
     public function select();
 
     /**
-     * Create an insert query.
+     * Create an insert query builder.
      *
      * @return BuilderInterface
      */
     public function insert();
 
     /**
-     * Create an update query.
+     * Create an update query builder.
      *
      * @return BuilderInterface
      */
     public function update();
 
     /**
-     * Create a delete query.
+     * Create a delete query builder.
      *
      * @return BuilderInterface
      */

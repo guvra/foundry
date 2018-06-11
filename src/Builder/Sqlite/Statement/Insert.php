@@ -5,9 +5,9 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder\Sqlite\Data;
+namespace Guvra\Builder\Sqlite\Statement;
 
-use Guvra\Builder\Data\Insert as BaseInsert;
+use Guvra\Builder\Statement\Insert as BaseInsert;
 
 /**
  * Insert builder for Sqlite.

@@ -44,10 +44,10 @@ class BuilderFactory implements BuilderFactoryInterface
         $this->driverNamespace = ucfirst($connection->getDriver());
         $this->builders = $builders + [
             // Query builders
-            'select' => 'Guvra\Builder\{driver\}Data\Select',
-            'insert' => 'Guvra\Builder\{driver\}Data\Insert',
-            'update' => 'Guvra\Builder\{driver\}Data\Update',
-            'delete' => 'Guvra\Builder\{driver\}Data\Delete',
+            'select' => 'Guvra\Builder\{driver\}Statement\Select',
+            'insert' => 'Guvra\Builder\{driver\}Statement\Insert',
+            'update' => 'Guvra\Builder\{driver\}Statement\Update',
+            'delete' => 'Guvra\Builder\{driver\}Statement\Delete',
 
             // Clause builders
             'join' => 'Guvra\Builder\{driver\}Clause\Join',
@@ -60,7 +60,7 @@ class BuilderFactory implements BuilderFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function create($type, ...$args)
+    public function create(string $type, ...$args)
     {
         if (!array_key_exists($type, $this->resolvedBuilders)) {
             if (!array_key_exists($type, $this->builders)) {
@@ -85,7 +85,7 @@ class BuilderFactory implements BuilderFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function addBuilder($type, $className)
+    public function addBuilder(string $type, string $className)
     {
         $this->builders[$type] = $className;
 
@@ -95,7 +95,7 @@ class BuilderFactory implements BuilderFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function removeBuilder($type)
+    public function removeBuilder(string $type)
     {
         unset($this->builders[$type]);
 

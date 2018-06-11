@@ -21,7 +21,7 @@ trait HasWhere
     protected $whereBuilder;
 
     /**
-     * @param BuilderInterface|string|callable $column
+     * @param mixed $column
      * @param mixed|null $operator
      * @param mixed|null $value
      * @return $this
@@ -29,12 +29,13 @@ trait HasWhere
     public function where($column, $operator = null, $value = null)
     {
         $this->getWhereBuilder()->where($column, $operator, $value);
+        $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * @param BuilderInterface|string|callable $column
+     * @param mixed $column
      * @param mixed|null $operator
      * @param mixed|null $value
      * @return $this
@@ -42,122 +43,109 @@ trait HasWhere
     public function orWhere($column, $operator = null, $value = null)
     {
         $this->getWhereBuilder()->orWhere($column, $operator, $value);
+        $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * @param BuilderInterface|string $condition $value
-     * @return $this
-     */
-    public function whereRaw($condition)
-    {
-        $this->getWhereBuilder()->where($condition);
-
-        return $this;
-    }
-
-    /**
-     * @param BuilderInterface|string $condition $value
-     * @return $this
-     */
-    public function orWhereRaw($condition)
-    {
-        $this->getWhereBuilder()->orWhere($condition);
-
-        return $this;
-    }
-
-    /**
-     * @param BuilderInterface|string $query
+     * @param mixed $query
      * @return $this
      */
     public function whereExists($query)
     {
         $this->getWhereBuilder()->where($query, 'exists');
+        $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * @param BuilderInterface|string $query
+     * @param mixed $query
      * @return $this
      */
     public function orWhereExists($query)
     {
         $this->getWhereBuilder()->orWhere($query, 'exists');
+        $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * @param BuilderInterface|string $query
+     * @param mixed $query
      * @return $this
      */
     public function whereNotExists($query)
     {
         $this->getWhereBuilder()->where($query, 'not exists');
+        $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * @param BuilderInterface|string $query
+     * @param mixed $query
      * @return $this
      */
     public function orWhereNotExists($query)
     {
         $this->getWhereBuilder()->orWhere($query, 'not exists');
+        $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * @param string $column
+     * @param mixed $column
      * @return $this
      */
-    public function whereIsNull($column)
+    public function whereNull($column)
     {
-        $this->getWhereBuilder()->where($query, 'is null');
+        $this->getWhereBuilder()->where($column, 'is null');
+        $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * @param string $column
+     * @param mixed $column
      * @return $this
      */
-    public function orWhereIsNull($column)
+    public function orWhereNull($column)
     {
-        $this->getWhereBuilder()->orWhere($query, 'is null');
+        $this->getWhereBuilder()->orWhere($column, 'is null');
+        $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * @param string $column
+     * @param mixed $column
      * @return $this
      */
     public function whereNotNull($column)
     {
-        $this->getWhereBuilder()->where($query, 'is not null');
+        $this->getWhereBuilder()->where($column, 'is not null');
+        $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * @param string $column
+     * @param mixed $column
      * @return $this
      */
     public function orWhereNotNull($column)
     {
-        $this->getWhereBuilder()->orWhere($query, 'is not null');
+        $this->getWhereBuilder()->orWhere($column, 'is not null');
+        $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * @param string $column
+     * @param mixed $column
      * @param mixed $lowest
      * @param mixed $highest
      * @return $this
@@ -165,12 +153,13 @@ trait HasWhere
     public function whereBetween($column, $lowest, $highest)
     {
         $this->getWhereBuilder()->where($column, 'between', [$lowest, $highest]);
+        $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * @param string $column
+     * @param mixed $column
      * @param mixed $lowest
      * @param mixed $highest
      * @return $this
@@ -178,12 +167,13 @@ trait HasWhere
     public function orWhereBetween($column, $lowest, $highest)
     {
         $this->getWhereBuilder()->orWhere($column, 'between', [$lowest, $highest]);
+        $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * @param string $column
+     * @param mixed $column
      * @param mixed $lowest
      * @param mixed $highest
      * @return $this
@@ -191,12 +181,13 @@ trait HasWhere
     public function whereNotBetween($column, $lowest, $highest)
     {
         $this->getWhereBuilder()->where($column, 'not between', [$lowest, $highest]);
+        $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * @param string $column
+     * @param mixed $column
      * @param mixed $lowest
      * @param mixed $highest
      * @return $this
@@ -204,102 +195,59 @@ trait HasWhere
     public function orWhereNotBetween($column, $lowest, $highest)
     {
         $this->getWhereBuilder()->orWhere($column, 'not between', [$lowest, $highest]);
+        $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * @param string $column
-     * @param BuilderInterface|array|string $values
+     * @param mixed $column
+     * @param mixed $values
      * @return $this
      */
     public function whereIn($column, $values)
     {
         $this->getWhereBuilder()->where($column, 'in', $values);
+        $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * @param string $column
-     * @param BuilderInterface|array|string $values
+     * @param mixed $column
+     * @param mixed $values
      * @return $this
      */
     public function orWhereIn($column, $values)
     {
         $this->getWhereBuilder()->orWhere($column, 'in', $values);
+        $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * @param string $column
-     * @param BuilderInterface|array|string $values
+     * @param mixed $column
+     * @param mixed $values
      * @return $this
      */
     public function whereNotIn($column, $values)
     {
         $this->getWhereBuilder()->where($column, 'not in', $values);
+        $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * @param string $column
-     * @param BuilderInterface|array|string $values
+     * @param mixed $column
+     * @param mixed $values
      * @return $this
      */
     public function orWhereNotIn($column, $values)
     {
         $this->getWhereBuilder()->orWhere($column, 'not in', $values);
-
-        return $this;
-    }
-
-    /**
-     * @param string $column
-     * @param array|string $values
-     * @return $this
-     */
-    public function whereInSet($column, $values)
-    {
-        $this->getWhereBuilder()->where($column, 'in set', $values);
-
-        return $this;
-    }
-
-    /**
-     * @param string $column
-     * @param array|string $values
-     * @return $this
-     */
-    public function orWhereInSet($column, $values)
-    {
-        $this->getWhereBuilder()->orWhere($column, 'in set', $values);
-
-        return $this;
-    }
-
-    /**
-     * @param string $column
-     * @param array|string $values
-     * @return $this
-     */
-    public function whereNotInSet($column, $values)
-    {
-        $this->getWhereBuilder()->where($column, 'not in set', $values);
-
-        return $this;
-    }
-
-    /**
-     * @param string $column
-     * @param array|string $values
-     * @return $this
-     */
-    public function orWhereNotInSet($column, $values)
-    {
-        $this->getWhereBuilder()->orWhere($column, 'not in set', $values);
+        $this->compiled = null;
 
         return $this;
     }
@@ -324,7 +272,7 @@ trait HasWhere
     protected function getWhereBuilder()
     {
         if (!$this->whereBuilder) {
-            $this->whereBuilder = $this->connection->getBuilderFactory()->create('conditionGroup');
+            $this->whereBuilder = $this->builderFactory->create('conditionGroup');
         }
 
         return $this->whereBuilder;
