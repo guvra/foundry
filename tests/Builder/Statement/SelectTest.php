@@ -7,6 +7,7 @@
  */
 namespace Tests\Builder\Statement;
 
+use Guvra\Builder\Clause\ConditionGroup;
 use Guvra\Builder\Expression;
 use Guvra\Builder\Statement\Select;
 use Tests\AbstractTestCase;
@@ -262,7 +263,7 @@ class SelectTest extends AbstractTestCase
                 ->select()
                 ->from('transactions')
                 ->where('account_id', '=', 1)
-                ->where(function ($condition) {
+                ->where(function (ConditionGroup $condition) {
                     $condition->where('amount < 0 OR amount > 100')
                         ->orWhere('amount', '=', 40);
                 });

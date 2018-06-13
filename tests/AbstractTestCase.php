@@ -8,16 +8,16 @@
 namespace Tests;
 
 use Guvra\Connection;
-use Guvra\ConnectionInterface;
 use Guvra\Builder\BuilderFactoryInterface;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Test Connection/Bag/Builder classes.
  */
-abstract class AbstractTestCase extends \PHPUnit_Framework_TestCase
+abstract class AbstractTestCase extends TestCase
 {
     /**
-     * @var ConnectionInterface
+     * @var Connection
      */
     protected $connection;
 
