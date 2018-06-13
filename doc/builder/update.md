@@ -6,7 +6,7 @@
 $query = $connection
     ->update()
     ->table('accounts')
-    ->values(['name' => 'Account 5'])
+    ->values(['name' => 'Account 3'])
     ->where('name', '=', 'Account 1');
 
 $statement = $connection->query($query);
@@ -49,7 +49,7 @@ $query = $connection
     ->values(['name' => new Parameter])
     ->where('name', '=', new Parameter);
 
-$statement = $connection->query($query, ['Account 5', 'Account 1']);
+$statement = $connection->query($query, ['Account 3', 'Account 1']);
 ```
 
 ## Named Parameters
@@ -65,5 +65,5 @@ $query = $connection
     ->values(['name' => new Parameter('new')])
     ->where('name', '=', new Parameter('old'));
 
-$statement = $connection->query($query, [':new' => 'Account 5', ':old' => 'Account 1']);
+$statement = $connection->query($query, [':new' => 'Account 3', ':old' => 'Account 1']);
 ```

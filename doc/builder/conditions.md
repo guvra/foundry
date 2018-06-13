@@ -49,7 +49,7 @@ Usage:
 $query->where('description', 'is null');
 ```
 
-To negate the condition, use `not null`.
+To negate the condition, use `is not null`.
 
 ## BETWEEN / NOT BETWEEN
 

@@ -154,6 +154,10 @@ class SelectTest extends AbstractTestCase
         $this->assertEquals('SELECT * FROM accounts CROSS JOIN transactions NATURAL JOIN categories AS c', $query);
 
         $query->reset(SELECT::PART_JOIN);
+        $query->join('transactions', 'transactions.account_id = accounts.account_id');
+        $this->assertEquals('SELECT * FROM accounts JOIN transactions ON transactions.account_id = accounts.account_id', $query);
+
+        $query->reset(SELECT::PART_JOIN);
         $this->assertEquals('SELECT * FROM accounts', $query);
     }
 

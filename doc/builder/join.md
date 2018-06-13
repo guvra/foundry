@@ -28,9 +28,9 @@ To build a complex join condition, use a callback function:
 use Guvra\Builder\Clause\ConditionGroup;
 use Guvra\Builder\Expression;
 
-$query->join('accounts', function (ConditionGroup $condition) {
-    $condition->where('accounts.account_id', '=', new Expression('transactions.account_id'));
-    $condition->where('accounts.description', 'is not null');
+$query->join('accounts', function (ConditionGroup $group) {
+    $group->where('accounts.account_id', '=', new Expression('transactions.account_id'));
+    $group->where('accounts.description', 'is not null');
 });
 ```
 
