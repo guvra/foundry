@@ -81,9 +81,10 @@ class Condition extends Builder
     }
 
     /**
-    * @param mixed $column
-    * @param string $operator
-    * @param mixed $value
+     * @param mixed $column
+     * @param string $operator
+     * @param mixed $value
+     * @return string
      */
     protected function buildCondition($column, string $operator, $value)
     {
@@ -241,7 +242,7 @@ class Condition extends Builder
     protected function buildValue($value)
     {
         if (is_callable($value)) {
-            return $this->buildCallable($value);
+            return $this->buildCallable($value, 'select');
         }
 
         if ($value instanceof BuilderInterface) {

@@ -123,9 +123,7 @@ trait HasJoin
         $operator = isset($args[1]) ? $args[1] : null;
         $value = isset($args[2]) ? new Expression($args[2]) : null;
 
-        return $this->connection
-            ->getBuilderFactory()
-            ->create('condition', $column, $operator, $value);
+        return $this->builderFactory->create('condition', $column, $operator, $value);
     }
 
     /**

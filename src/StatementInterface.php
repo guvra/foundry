@@ -84,6 +84,7 @@ interface StatementInterface
      *
      * Returns false on failure.
      *
+     * @param array $bind
      * @return bool
      */
     public function execute(array $bind = []);

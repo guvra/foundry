@@ -8,7 +8,6 @@
 namespace Guvra\Builder\Clause;
 
 use Guvra\Builder\Builder;
-use Guvra\Builder\BuilderFactory;
 use Guvra\Builder\BuilderInterface;
 use Guvra\ConnectionInterface;
 
@@ -18,7 +17,7 @@ use Guvra\ConnectionInterface;
 class JoinGroup extends Builder implements \IteratorAggregate, \Countable
 {
     /**
-     * @var array
+     * @var BuilderInterface[]
      */
     protected $joins = [];
 
@@ -76,7 +75,6 @@ class JoinGroup extends Builder implements \IteratorAggregate, \Countable
      * Add a cross join to the group.
      *
      * @param string|array $table
-     * @param Condition|null $condition
      * @return $this
      */
     public function joinCross($table)
@@ -90,7 +88,6 @@ class JoinGroup extends Builder implements \IteratorAggregate, \Countable
      * Add a natural join to the group.
      *
      * @param string|array $table
-     * @param Condition|null $condition
      * @return $this
      */
     public function joinNatural($table)
@@ -103,11 +100,10 @@ class JoinGroup extends Builder implements \IteratorAggregate, \Countable
     /**
      * Add a join to the group.
      *
-     * @param string|array $table
-     * @param Condition|null $condition
+     * @param BuilderInterface $join
      * @return $this
      */
-    public function addJoin(Join $join)
+    public function addJoin(BuilderInterface $join)
     {
         $this->joins[] = $join;
         $this->compiled = null;

@@ -35,7 +35,7 @@ class Statement implements StatementInterface
     ];
 
     /**
-     * @param \PDOStatement $statement
+     * @param \PDOStatement $pdoStatement
      */
     public function __construct(\PDOStatement $pdoStatement)
     {

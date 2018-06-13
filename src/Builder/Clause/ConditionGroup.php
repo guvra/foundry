@@ -9,7 +9,6 @@ namespace Guvra\Builder\Clause;
 
 use Guvra\Builder\Builder;
 use Guvra\Builder\BuilderInterface;
-use Guvra\ConnectionInterface;
 
 /**
  * Condition group builder.
@@ -53,10 +52,10 @@ class ConditionGroup extends Builder implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param Condition $condition
+     * @param BuilderInterface $condition
      * @return $this
      */
-    public function addCondition(Condition $condition)
+    public function addCondition(BuilderInterface $condition)
     {
         $this->conditions[] = ['AND', $condition];
         $this->compiled = null;
@@ -65,10 +64,10 @@ class ConditionGroup extends Builder implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @param Condition $condition
+     * @param BuilderInterface $condition
      * @return $this
      */
-    public function addOrCondition(Condition $condition)
+    public function addOrCondition(BuilderInterface $condition)
     {
         $this->conditions[] = ['OR', $condition];
         $this->compiled = null;

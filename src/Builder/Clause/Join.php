@@ -8,7 +8,6 @@
 namespace Guvra\Builder\Clause;
 
 use Guvra\Builder\Builder;
-use Guvra\Builder\Expression;
 use Guvra\ConnectionInterface;
 
 /**

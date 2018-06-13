@@ -20,7 +20,7 @@ class StatementFactory
     /**
      * @param string $className
      */
-    public function __construct($className = 'Guvra\Statement')
+    public function __construct(string $className = 'Guvra\Statement')
     {
         $this->className = $className;
     }
@@ -28,6 +28,7 @@ class StatementFactory
     /**
      * Create a new statement.
      *
+     * @param \PDOStatement $pdoStatement
      * @return StatementInterface
      */
      public function create(\PDOStatement $pdoStatement)

@@ -8,6 +8,7 @@
 namespace Guvra\Builder\Statement;
 
 use Guvra\Builder\Builder;
+use Guvra\Builder\BuilderInterface;
 use Guvra\Builder\Traits\HasHaving;
 use Guvra\Builder\Traits\HasJoin;
 use Guvra\Builder\Traits\HasWhere;
@@ -214,7 +215,6 @@ class Select extends Builder
     /**
      * Build the distinct clause.
      *
-     * @param bool $value
      * @return string
      */
     protected function buildDistinct()

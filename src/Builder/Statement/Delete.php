@@ -10,7 +10,6 @@ namespace Guvra\Builder\Statement;
 use Guvra\Builder\Builder;
 use Guvra\Builder\Traits\HasJoin;
 use Guvra\Builder\Traits\HasWhere;
-use Guvra\ConnectionInterface;
 
 /**
  * Delete builder.

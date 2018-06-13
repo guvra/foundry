@@ -7,7 +7,6 @@
  */
 namespace Guvra\Builder\Traits;
 
-use Guvra\Builder\BuilderInterface;
 use Guvra\Builder\Clause\ConditionGroup;
 
 /**

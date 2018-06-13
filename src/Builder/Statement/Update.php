@@ -10,7 +10,6 @@ namespace Guvra\Builder\Statement;
 use Guvra\Builder\Builder;
 use Guvra\Builder\Traits\HasJoin;
 use Guvra\Builder\Traits\HasWhere;
-use Guvra\ConnectionInterface;
 
 /**
  * Update builder.
@@ -44,7 +43,7 @@ class Update extends Builder
      * Set the table to update.
      *
      * @param string $table
-     * @param string $alais
+     * @param string $alias
      * @return $this
      */
     public function table(string $table, string $alias = '')

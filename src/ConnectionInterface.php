@@ -9,7 +9,6 @@ namespace Guvra;
 
 use Guvra\Builder\BuilderInterface;
 use Guvra\Builder\BuilderFactoryInterface;
-use Guvra\StatementInterface;
 
 /**
  * Connection interface.
