@@ -14,7 +14,7 @@ use Guvra\ConnectionInterface;
 /**
  * Join group builder
  */
-class JoinGroup extends Builder implements \IteratorAggregate, \Countable
+class JoinGroup extends Builder
 {
     /**
      * @var BuilderInterface[]
@@ -38,7 +38,7 @@ class JoinGroup extends Builder implements \IteratorAggregate, \Countable
      */
     public function join($table, Condition $condition = null)
     {
-        $join = $this->builderFactory->create('join', 'inner', $table, $condition);
+        $join = $this->builderFactory->create('join', Join::TYPE_INNER, $table, $condition);
 
         return $this->addJoin($join);
     }
@@ -52,7 +52,7 @@ class JoinGroup extends Builder implements \IteratorAggregate, \Countable
      */
     public function joinLeft($table, Condition $condition = null)
     {
-        $join = $this->builderFactory->create('join', 'left', $table, $condition);
+        $join = $this->builderFactory->create('join', Join::TYPE_LEFT, $table, $condition);
 
         return $this->addJoin($join);
     }
@@ -66,7 +66,7 @@ class JoinGroup extends Builder implements \IteratorAggregate, \Countable
      */
     public function joinRight($table, Condition $condition = null)
     {
-        $join = $this->builderFactory->create('join', 'right', $table, $condition);
+        $join = $this->builderFactory->create('join', Join::TYPE_RIGHT, $table, $condition);
 
         return $this->addJoin($join);
     }
@@ -79,7 +79,7 @@ class JoinGroup extends Builder implements \IteratorAggregate, \Countable
      */
     public function joinCross($table)
     {
-        $join = $this->builderFactory->create('join', 'cross', $table);
+        $join = $this->builderFactory->create('join', Join::TYPE_CROSS, $table);
 
         return $this->addJoin($join);
     }
@@ -92,7 +92,7 @@ class JoinGroup extends Builder implements \IteratorAggregate, \Countable
      */
     public function joinNatural($table)
     {
-        $join = $this->builderFactory->create('join', 'natural', $table);
+        $join = $this->builderFactory->create('join', Join::TYPE_NATURAL, $table);
 
         return $this->addJoin($join);
     }
@@ -121,31 +121,10 @@ class JoinGroup extends Builder implements \IteratorAggregate, \Countable
 
         foreach ($this->joins as $join) {
             $compiledJoin = $join->toString();
-
-            if ($compiledJoin === '') {
-                continue;
-            }
-
             $result .= $first ? $compiledJoin : ' ' . $compiledJoin;
             $first = false;
         }
 
         return $result;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->joins);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function count()
-    {
-        return count($this->joins);
     }
 }

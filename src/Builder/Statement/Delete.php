@@ -73,11 +73,12 @@ class Delete extends Builder
      * Build the table name.
      *
      * @return string
+     * @throws \UnexpectedValueException
      */
     protected function buildTable()
     {
-        if (empty($this->table)) {
-            return '';
+        if ($this->table === '') {
+            throw new \UnexpectedValueException('The table is required.');
         }
 
         return " FROM {$this->table}";

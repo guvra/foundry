@@ -14,52 +14,44 @@ use Tests\AbstractTestCase;
  */
 class UpdateTest extends AbstractTestCase
 {
-    /**
-     * Test the UPDATE query builder.
-     */
     public function testUpdate()
-    {
-        $this->withTestTables(function () {
-            $query = $this->connection
-                ->update()
-                ->table('accounts')
-                ->values(['name' => 'Account 5'])
-                ->where('name', '=', 'Account 1');
-
-            $statement = $this->connection->query($query);
-            $this->assertEquals(1, $statement->getRowCount());
-        });
-    }
-
-    /**
-     * Assert that an exception is thrown when updating data in a table that does not exist.
-     *
-     * @expectedException \PDOException
-     */
-    public function testExceptionOnTableNotExists()
     {
         $query = $this->connection
             ->update()
-            ->table('table_not_exists')
-            ->values(['name' => 'Account 5']);
+            ->table('accounts')
+            ->values(['name' => 'Account 5'])
+            ->where('name', '=', 'Account 1')
+            ->limit(1);
 
-        $this->connection->query($query);
+        $quoteOldValue = $this->connection->quote('Account 1');
+        $quotedNewValue = $this->connection->quote('Account 5');
+
+        $this->assertEquals("UPDATE accounts SET name = $quotedNewValue WHERE (name = $quoteOldValue) LIMIT 1", $query);
     }
 
     /**
-     * Assert that an exception is thrown when updating data in a column that does not exist.
-     *
-     * @expectedException \PDOException
+     * @expectedException \UnexpectedValueException
      */
-    public function testExceptionOnColumnNotExists()
+    public function testExceptionOnEmptyTable()
     {
-        $this->withTestTables(function () {
-            $query = $this->connection
-                ->update()
-                ->table('accounts')
-                ->values(['column_not_exists' => 'value']);
+        $query = $this->connection
+            ->update()
+            ->values(['name' => 'Account 5'])
+            ->where('name', '=', 'Account 1');
 
-            $this->connection->query($query);
-        });
+        $query->toString();
+    }
+
+    /**
+     * @expectedException \UnexpectedValueException
+     */
+    public function testExceptionOnEmptyValues()
+    {
+        $query = $this->connection
+            ->update()
+            ->table('accounts')
+            ->where('name', '=', 'Account 1');
+
+        $query->toString();
     }
 }

@@ -17,5 +17,5 @@ interface ExpressionInterface
      *
      * @return string
      */
-    public function getValue();
+    public function toString();
 }

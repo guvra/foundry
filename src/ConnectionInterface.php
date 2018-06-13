@@ -86,15 +86,6 @@ interface ConnectionInterface
     public function rollbackTransaction();
 
     /**
-     * Get the ID of the last inserted row (does not work with UPDATE),
-     * or the last value from a sequence object, depending on the underlying driver.
-     *
-     * @param string|null $name
-     * @return string
-     */
-    public function lastInsertId($name = null);
-
-    /**
      * Create a select query builder.
      *
      * @return BuilderInterface
@@ -121,6 +112,15 @@ interface ConnectionInterface
      * @return BuilderInterface
      */
     public function delete();
+
+    /**
+     * Get the ID of the last inserted row (does not work with UPDATE),
+     * or the last value from a sequence object, depending on the underlying driver.
+     *
+     * @param string|null $name
+     * @return string
+     */
+    public function getLastInsertId($name = null);
 
     /**
      * Get the numbers of rows of a specific table.

@@ -195,10 +195,6 @@ class Select extends Builder
      */
     public function compile()
     {
-        if (empty($this->columns)) {
-            $this->columns = ['*'];
-        }
-
         return 'SELECT'
             . $this->buildDistinct()
             . $this->buildColumns()
@@ -228,7 +224,7 @@ class Select extends Builder
     protected function buildColumns()
     {
         if (empty($this->columns)) {
-            return '';
+            return ' *';
         }
 
         $values = [];

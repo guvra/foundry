@@ -14,91 +14,85 @@ use Tests\AbstractTestCase;
  */
 class InsertTest extends AbstractTestCase
 {
-    /**
-     * Test the INSERT query builder.
-     */
-    public function testInsert()
+    public function testInsertSingle()
     {
-        $this->withTestTables(function () {
-            $query = $this->connection
-                ->insert()
-                ->into('accounts')
-                ->columns(['name', 'balance'])
-                ->values(['Account 4', 500]);
+        $query = $this->createInsert()
+            ->into('accounts')
+            ->columns(['name', 'balance'])
+            ->values(['Account 3', 500]);
 
-            $statement = $this->connection->query($query);
-            $this->assertEquals(1, $statement->getRowCount());
-            $this->assertEquals(3, $this->connection->getRowCount('accounts'));
-        });
+        $expectedStringValue = $this->connection->quote('Account 3');
+
+        $this->assertEquals("INSERT INTO accounts (name, balance) VALUES ($expectedStringValue,500)", $query);
     }
 
-    /**
-     * Test the INSERT query builder with multiple values.
-     */
     public function testInsertMultiple()
     {
-        $this->withTestTables(function () {
-            $query = $this->connection
-                ->insert()
-                ->into('accounts')
-                ->columns(['name', 'balance'])
-                ->values([['Account 4', 500], ['Account 5', 0], ['Account 6', -50]]);
+        $query = $this->createInsert()
+            ->into('table')
+            ->columns(['col1', 'col2'])
+            ->values([[0, 10, 20], [30, 40, 50]]);
 
-            $statement = $this->connection->query($query);
-            $this->assertEquals(3, $statement->getRowCount());
-            $this->assertEquals(5, $this->connection->getRowCount('accounts'));
-        });
+        $this->assertEquals('INSERT INTO table (col1, col2) VALUES (0,10,20),(30,40,50)', $query);
+    }
+
+    public function testInsertIgnore()
+    {
+        $query = $this->createInsert()
+            ->ignore()
+            ->into('accounts')
+            ->columns(['balance'])
+            ->values([500]);
+
+        $this->assertEquals('INSERT OR IGNORE INTO accounts (balance) VALUES (500)', $query);
     }
 
     /**
-     * Assert that an exception is thrown when inserting data into a table that does not exist.
-     *
-     * @expectedException \PDOException
+     * @expectedException \UnexpectedValueException
      */
-    public function testExceptionOnTableNotExists()
+    public function testExceptionOnEmptyTable()
     {
-        $query = $this->connection
-            ->insert()
-            ->into('table_not_exists')
-            ->columns(['name'])
-            ->values(['name1']);
+        $query = $this->createInsert()
+            ->columns(['name', 'balance'])
+            ->values(['Account 3', 500]);
 
-        $this->connection->query($query);
+        $query->toString();
     }
 
     /**
-     * Assert that an exception is thrown when inserting data into a column that does not exist.
-     *
-     * @expectedException \PDOException
+     * @expectedException \UnexpectedValueException
      */
-    public function testExceptionOnColumnNotExists()
+    public function testExceptionOnEmptyColumns()
     {
-        $this->withTestTables(function () {
-            $query = $this->connection
-                ->insert()
-                ->into('accounts')
-                ->columns(['column_not_exists'])
-                ->values(['value']);
+        $query = $this->createInsert()
+            ->into('accounts')
+            ->values(['Account 3', 500]);
 
-            $this->connection->query($query);
-        });
+        $query->toString();
     }
 
     /**
-     * Assert that an exception is thrown when inserting duplicate data.
-     *
-     * @expectedException \PDOException
+     * @expectedException \UnexpectedValueException
      */
-    public function testExceptionOnDuplicateInsert()
+    public function testExceptionOnEmptyValues()
     {
-        $this->withTestTables(function () {
-            $query = $this->connection
-                ->insert()
-                ->into('accounts')
-                ->columns(['name'])
-                ->values(['Account 1']);
+        $query = $this->createInsert()
+            ->into('accounts')
+            ->columns(['name', 'balance']);
 
-            $this->connection->query($query);
-        });
+        $query->toString();
+    }
+
+    /**
+     * @expectedException \UnexpectedValueException
+     */
+    public function testExceptionOnWrongValuesFormat()
+    {
+        $query = $this->createInsert()
+            ->into('table')
+            ->columns(['col1', 'col2'])
+            ->values([[0, 10, 20], 1]);
+
+        $query->toString();
     }
 }

@@ -13,7 +13,7 @@ use Guvra\Builder\BuilderInterface;
 /**
  * Condition group builder.
  */
-class ConditionGroup extends Builder implements \IteratorAggregate, \Countable
+class ConditionGroup extends Builder
 {
     /**
      * @var array
@@ -114,21 +114,5 @@ class ConditionGroup extends Builder implements \IteratorAggregate, \Countable
         }
 
         return $result;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getIterator()
-    {
-        return new \ArrayIterator($this->conditions);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function count()
-    {
-        return count($this->conditions);
     }
 }

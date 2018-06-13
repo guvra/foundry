@@ -98,6 +98,7 @@ class BuilderFactory implements BuilderFactoryInterface
     public function removeBuilder(string $type)
     {
         unset($this->builders[$type]);
+        unset($this->resolvedBuilders[$type]);
 
         return $this;
     }

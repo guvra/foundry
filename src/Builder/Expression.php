@@ -23,13 +23,31 @@ class Expression implements ExpressionInterface
      */
     public function __construct(string $value)
     {
+        $this->setValue($value);
+    }
+
+    /**
+     * Set the parameter value.
+     *
+     * @param string $value
+     * @return $this
+     * @throws \UnexpectedValueException
+     */
+    protected function setValue(string $value)
+    {
+        if ($value === '') {
+            throw new \UnexpectedValueException('The expression value is required.');
+        }
+
         $this->value = $value;
+
+        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getValue()
+    public function toString()
     {
         return $this->value;
     }
@@ -41,6 +59,6 @@ class Expression implements ExpressionInterface
      */
     public function __toString()
     {
-        return $this->getValue();
+        return $this->toString();
     }
 }

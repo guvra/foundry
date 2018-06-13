@@ -20,7 +20,7 @@ class StatementFactory
     /**
      * @param string $className
      */
-    public function __construct(string $className = 'Guvra\Statement')
+    public function __construct(string $className = Statement::class)
     {
         $this->className = $className;
     }

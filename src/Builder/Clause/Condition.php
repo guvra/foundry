@@ -58,23 +58,24 @@ class Condition extends Builder
         $operator = $this->operator;
         $value = $this->value;
 
-        // Hard cast the column to string if is a builder object, because __toString must not throw exceptions
-        if ($column instanceof BuilderInterface) {
-            $column = $column->toString();
+        // Don't allow empty columns
+        if ($column === '' || $column === null) {
+            throw new \UnexpectedValueException('The condition column must not be empty');
         }
 
-        if (!$operator) {
-            if (is_callable($column)) {
-                // Execute the callback with a new condition group as a parameter
-                return $this->buildCallable($column, 'conditionGroup');
-            }
+        // Hard cast the column to string if is a builder object, because __toString must not throw exceptions
+        if ($column instanceof BuilderInterface) {
+            $column = '(' . $column->toString() . ')';
+        }
 
-            return $column;
+        // Allow creating complex queries when using a callback as the column
+        if (!$operator) {
+            return is_callable($column) ? $this->buildCallable($column, 'conditionGroup') : $column;
         }
 
         // Allow building sub queries with callback functions
         if (is_callable($column)) {
-            $column = $this->buildCallable($column, 'select');
+            $column = $this->buildCallable($column, 'select', true);
         }
 
         return $this->buildCondition($column, $operator, $value);
@@ -95,9 +96,11 @@ class Condition extends Builder
             case 'not exists':
                 return $this->buildNotExists($column);
 
+            case 'null':
             case 'is null':
                 return $this->buildIsNull($column);
 
+            case 'not null':
             case 'is not null':
                 return $this->buildIsNotNull($column);
 
@@ -119,21 +122,21 @@ class Condition extends Builder
     }
 
     /**
-     * @param mixed $query
+     * @param mixed $value
      * @return string
      */
-    protected function buildExists($query)
+    protected function buildExists($value)
     {
-        return "EXISTS ($query)";
+        return "EXISTS $value";
     }
 
     /**
-     * @param mixed $query
+     * @param mixed $value
      * @return string
      */
-    protected function buildNotExists($query)
+    protected function buildNotExists($value)
     {
-        return "NOT EXISTS ($query)";
+        return "NOT EXISTS $value";
     }
 
     /**
@@ -189,9 +192,9 @@ class Condition extends Builder
      */
     protected function buildIn($column, $values)
     {
-        $value = is_array($values) ? implode(',', $this->escapeValues($values)) : $this->buildValue($values);
+        $value = is_array($values) ? '(' . implode(',', $this->escapeValues($values)) . ')' : $this->buildValue($values);
 
-        return "$column IN ($value)";
+        return "$column IN $value";
     }
 
     /**
@@ -201,22 +204,29 @@ class Condition extends Builder
      */
     protected function buildNotIn($column, $values)
     {
-        $value = is_array($values) ? implode(',', $this->escapeValues($values)) : $this->buildValue($values);
+        $value = is_array($values) ? '(' . implode(',', $this->escapeValues($values)) . ')' : $this->buildValue($values);
 
-        return "$column NOT IN ($value)";
+        return "$column NOT IN $value";
     }
 
     /**
      * @param callable $callback
      * @param string $type
+     * @param bool $enclose
      * @return string
      */
-    protected function buildCallable($callback, string $type)
+    protected function buildCallable($callback, string $type, bool $enclose = false)
     {
-        $subQuery = $this->builderFactory->create($type);
-        call_user_func($callback, $subQuery);
+        $builder = $this->builderFactory->create($type);
+        call_user_func($callback, $builder);
 
-        return $subQuery->toString();
+        $result = $builder->toString();
+
+        if ($enclose) {
+            $result = '(' . $result . ')';
+        }
+
+        return $result;
     }
 
     /**
@@ -241,12 +251,16 @@ class Condition extends Builder
      */
     protected function buildValue($value)
     {
+        if (is_null($value)) {
+            return 'null';
+        }
+
         if (is_callable($value)) {
-            return $this->buildCallable($value, 'select');
+            return $this->buildCallable($value, 'select', true);
         }
 
         if ($value instanceof BuilderInterface) {
-            return $value->toString();
+            return '(' . $value->toString() . ')';
         }
 
         return $this->escapeValue($value);

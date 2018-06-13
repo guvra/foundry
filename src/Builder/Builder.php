@@ -51,7 +51,7 @@ abstract class Builder implements BuilderInterface
     }
 
     /**
-     * Get the SQL query string.
+     * Get the compiled query
      *
      * @return string
      */

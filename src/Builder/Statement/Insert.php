@@ -125,7 +125,7 @@ class Insert extends Builder
     protected function buildTable()
     {
         if (empty($this->table)) {
-            return '';
+            throw new \UnexpectedValueException('The table is required.');
         }
 
         return " INTO {$this->table}";
@@ -135,11 +135,12 @@ class Insert extends Builder
      * Build the columns.
      *
      * @return string
+     * @throws \UnexpectedValueException
      */
     protected function buildColumns()
     {
         if (empty($this->columns)) {
-            return '';
+            throw new \UnexpectedValueException('The columns definition is required.');
         }
 
         return ' (' . implode(', ', $this->columns) . ')';
@@ -149,11 +150,12 @@ class Insert extends Builder
      * Build the values clause.
      *
      * @return string
+     * @throws \UnexpectedValueException
      */
     protected function buildValues()
     {
         if (empty($this->values)) {
-            return '';
+            throw new \UnexpectedValueException('The values definition is required.');
         }
 
         $isMultipleInsert = null;
@@ -181,12 +183,12 @@ class Insert extends Builder
      *
      * @param array $values
      * @return string
-     * @throws \LogicException
+     * @throws \UnexpectedValueException
      */
     protected function prepareValues($values)
     {
         if (!is_array($values)) {
-            throw new \LogicException('In multiple insertion mode, all values must be arrays.');
+            throw new \UnexpectedValueException('In multiple insertion mode, all values must be arrays.');
         }
 
         foreach ($values as $key => $value) {

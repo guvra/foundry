@@ -100,11 +100,12 @@ class Update extends Builder
      * Build the table name.
      *
      * @return string
+     * @throws \UnexpectedValueException
      */
     protected function buildTable()
     {
         if (!$this->table) {
-            return '';
+            throw new \UnexpectedValueException('The table is required.');
         }
 
         return $this->alias ? " {$this->table} AS {$this->alias}" : " {$this->table}";
@@ -114,11 +115,12 @@ class Update extends Builder
      * Build the values.
      *
      * @return string
+     * @throws \UnexpectedValueException
      */
     protected function buildValues()
     {
         if (empty($this->values)) {
-            return '';
+            throw new \UnexpectedValueException('The values definition is required.');
         }
 
         $values = [];

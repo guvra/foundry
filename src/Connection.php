@@ -126,7 +126,7 @@ class Connection implements ConnectionInterface
     {
         if (is_object($value) && ($value instanceof ExpressionInterface || $value instanceof ParameterInterface)) {
             // Never quote expressions or parameters
-            return $value;
+            return $value->toString();
         }
 
         return $this->pdo->quote($value);
@@ -154,14 +154,6 @@ class Connection implements ConnectionInterface
     public function rollbackTransaction()
     {
         return $this->pdo->rollback();
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function lastInsertId($name = null)
-    {
-        return $this->pdo->lastInsertId($name);
     }
 
     /**
@@ -202,6 +194,14 @@ class Connection implements ConnectionInterface
     public function delete()
     {
         return $this->builderFactory->create('delete');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getLastInsertId($name = null)
+    {
+        return $this->pdo->lastInsertId($name);
     }
 
     /**

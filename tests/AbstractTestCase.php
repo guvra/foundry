@@ -7,6 +7,13 @@
  */
 namespace Tests;
 
+use Guvra\Builder\Clause\Condition;
+use Guvra\Builder\Clause\ConditionGroup;
+use Guvra\Builder\Clause\Join;
+use Guvra\Builder\Clause\JoinGroup;
+use Guvra\Builder\Statement\Delete;
+use Guvra\Builder\Statement\Insert;
+use Guvra\Builder\Statement\Select;
 use Guvra\Connection;
 use Guvra\Builder\BuilderFactoryInterface;
 use PHPUnit\Framework\TestCase;
@@ -37,66 +44,28 @@ abstract class AbstractTestCase extends TestCase
     protected function withTestTables($callback)
     {
         // Make sure the table do not already exist
-        $this->connection->query('DROP TABLE IF EXISTS accounts');
-        $this->connection->query('DROP TABLE IF EXISTS transactions');
+        $this->connection->query('DROP TABLE IF EXISTS `accounts`');
 
         // Create the "accounts" table
-        $query = 'CREATE TABLE accounts(
-                      account_id integer primary key not null,
-                      name text,
-                      balance real not null,
-                      constraint name_unique unique(name)
-                  )';
-        $this->connection->query($query);
-
-        // Create the "transactions" table
-        $query = 'CREATE TABLE transactions(
-                      transaction_id integer primary key not null,
-                      date datetime not null,
-                      description text,
-                      amount real not null,
-                      account_id integer not null,
-                      foreign key (account_id) references accounts(id)
+        $query = 'CREATE TABLE `accounts`(
+                      `account_id` integer primary key not null,
+                      `name` text,
+                      `balance` real not null,
+                      constraint name_unique unique(`name`)
                   )';
         $this->connection->query($query);
 
         // Insert test data into the tables
-        $query = 'INSERT INTO accounts(account_id, name, balance) VALUES
+        $query = 'INSERT INTO `accounts`(`account_id`, `name`, `balance`) VALUES
                   (1, "Account 1", "0"),
                   (2, "Account 2", "100")';
-        $this->connection->query($query);
-
-        $query = 'INSERT INTO transactions(transaction_id, date, description, amount, account_id) VALUES
-                  (1, "2017-01-01", "Transaction 1", "-10", 1),
-                  (2, "2017-01-01", "Transaction 2", "50", 2),
-                  (3, "2017-01-01", "Transaction 3", "-30", 2),
-                  (4, "2017-01-02", "Transaction 4", "50", 1),
-                  (5, "2017-01-02", "Transaction 5", "-40", 1),
-                  (6, "2017-01-02", "Transaction 6", "60", 2),
-                  (7, "2017-01-02", "Transaction 7", "-100", 1),
-                  (8, "2017-01-02", "Transaction 8", "-40", 2),
-                  (9, "2017-01-02", "Transaction 9", "20", 2),
-                  (10, "2017-01-02", "Transaction 10", "40", 1),
-                  (11, "2017-01-02", "Transaction 11", "40", 2),
-                  (12, "2017-01-02", "Transaction 12", "60", 1)';
         $this->connection->query($query);
 
         // Execute the callback
         call_user_func($callback, $this->connection);
 
         // Drop the tables
-        $this->connection->query('DROP TABLE accounts');
-        $this->connection->query('DROP TABLE transactions');
-    }
-
-    /**
-     * Get the builder factory.
-     *
-     * @return BuilderFactoryInterface
-     */
-    public function getBuilderFactory()
-    {
-        return $this->connection->getBuilderFactory();
+        $this->connection->query('DROP TABLE `accounts`');
     }
 
     /**
@@ -105,5 +74,67 @@ abstract class AbstractTestCase extends TestCase
     public function tearDown()
     {
         $this->connection = null;
+    }
+
+    /**
+     * @return Select
+     */
+    protected function createSelect()
+    {
+        return $this->connection
+            ->select()
+            ->from('accounts');
+    }
+
+    /**
+     * @return Insert
+     */
+    protected function createInsert()
+    {
+        return $this->connection->insert();
+    }
+
+    /**
+     * @return Delete
+     */
+    protected function createDelete()
+    {
+        return $this->connection->delete();
+    }
+
+    /**
+     * @param mixed ...$args
+     * @return Condition
+     */
+    protected function createCondition(...$args)
+    {
+        return $this->connection->getBuilderFactory()->create('condition', ...$args);
+    }
+
+    /**
+     * @return ConditionGroup
+     */
+    protected function createConditionGroup()
+    {
+        return $this->connection->getBuilderFactory()->create('conditionGroup');
+    }
+
+    /**
+     * @param string $type
+     * @param string|array $table
+     * @param Condition $condition
+     * @return Join
+     */
+    protected function createJoin(string $type, $table, Condition $condition = null)
+    {
+        return $this->connection->getBuilderFactory()->create('join', $type, $table, $condition);
+    }
+
+    /**
+     * @return JoinGroup
+     */
+    protected function createJoinGroup()
+    {
+        return $this->connection->getBuilderFactory()->create('joinGroup');
     }
 }

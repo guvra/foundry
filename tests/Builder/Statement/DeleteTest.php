@@ -7,7 +7,6 @@
  */
 namespace Tests\Builder\Statement;
 
-use Guvra\Builder\Parameter;
 use Tests\AbstractTestCase;
 
 /**
@@ -15,52 +14,23 @@ use Tests\AbstractTestCase;
  */
 class DeleteTest extends AbstractTestCase
 {
-    /**
-     * Test the DELETE query builder.
-     */
     public function testDelete()
     {
-        $this->withTestTables(function () {
-            $query = $this->connection
-                ->delete()
-                ->from('accounts')
-                ->where('name', '=', new Parameter('name'));
+        $query = $this->createDelete()
+            ->from('accounts')
+            ->where('name', '=', 'Account 1')
+            ->limit(1);
 
-            $statement = $this->connection->prepare($query);
-            $statement->execute([':name' => 'Account 1']);
-            $this->assertEquals(1, $statement->getRowCount());
-            $this->assertEquals(1, $this->connection->getRowCount('accounts'));
-        });
+        $quotedValue = $this->connection->quote('Account 1');
+
+        $this->assertEquals("DELETE FROM accounts WHERE (name = $quotedValue) LIMIT 1", $query);
     }
 
     /**
-     * Assert that an exception is thrown when deleting data from a table that does not exist.
-     *
-     * @expectedException \PDOException
+     * @expectedException \UnexpectedValueException
      */
-    public function testExceptionOnTableNotExists()
+    public function testEmptyDelete()
     {
-        $query = $this->connection
-            ->delete()
-            ->from('table_not_exists');
-
-        $this->connection->query($query);
-    }
-
-    /**
-     * Assert that an exception is thrown when deleting data from a column that does not exist.
-     *
-     * @expectedException \PDOException
-     */
-    public function testExceptionOnColumnNotExists()
-    {
-        $this->withTestTables(function () {
-            $query = $this->connection
-                ->delete()
-                ->from('accounts')
-                ->where('column_not_exists', '=', 'value');
-
-            $this->connection->query($query);
-        });
+        $this->createDelete()->toString();
     }
 }

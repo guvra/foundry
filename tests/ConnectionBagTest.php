@@ -8,6 +8,7 @@
 namespace Tests;
 
 use Guvra\ConnectionBag;
+use Guvra\ConnectionInterface;
 
 /**
  * Test the connection bag.
@@ -20,7 +21,20 @@ class ConnectionBagTest extends AbstractTestCase
     public function testBag()
     {
         $bag = new ConnectionBag;
-        $bag->addConnection($this->connection, 'Guvra');
-        $this->assertInstanceOf('Guvra\ConnectionInterface', $bag->getConnection('Guvra'));
+        $bag->addConnection($this->connection, 'test');
+        $this->assertTrue($bag->hasConnection('test'));
+        $this->assertInstanceOf(ConnectionInterface::class, $bag->getConnection('test'));
+
+        $bag->removeConnection('test');
+        $this->assertFalse($bag->hasConnection('test'));
+    }
+
+    /**
+     * @expectedException \UnexpectedValueException
+     */
+    public function testExceptionOnUnknownBag()
+    {
+        $bag = new ConnectionBag;
+        $bag->getConnection('notexists');
     }
 }

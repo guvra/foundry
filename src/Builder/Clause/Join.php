@@ -15,6 +15,12 @@ use Guvra\ConnectionInterface;
  */
 class Join extends Builder
 {
+    const TYPE_INNER = 'inner';
+    const TYPE_LEFT = 'left';
+    const TYPE_RIGHT = 'right';
+    const TYPE_CROSS = 'cross';
+    const TYPE_NATURAL = 'natural';
+
     /**
      * @var string
      */
@@ -96,16 +102,16 @@ class Join extends Builder
     protected function getClauseName($type)
     {
         switch ($type) {
-            case 'left':
+            case self::TYPE_LEFT:
                 return 'LEFT JOIN';
 
-            case 'right':
+            case self::TYPE_RIGHT:
                 return 'RIGHT JOIN';
 
-            case 'cross':
+            case self::TYPE_CROSS:
                 return 'CROSS JOIN';
 
-            case 'natural':
+            case self::TYPE_NATURAL:
                 return 'NATURAL JOIN';
 
             default:

@@ -25,7 +25,7 @@ class ConnectionBag implements ConnectionBagInterface
     public function getConnection(string $name = 'default')
     {
         if (!$this->hasConnection($name)) {
-            throw new \UnexpectedValueException(sprintf('The connection "%s" is not defined.'));
+            throw new \UnexpectedValueException(sprintf('The connection "%s" is not defined.', $name));
         }
 
         return $this->connections[$name];

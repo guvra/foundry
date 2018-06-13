@@ -16,35 +16,55 @@ class Parameter implements ParameterInterface
     /**
      * @var string|null
      */
-    protected $name = null;
+    protected $value = null;
 
     /**
-     * @param string $name
+     * @param string $value
      */
-    public function __construct(string $name = '?')
+    public function __construct(string $value = '?')
     {
-        if (strpos($name, ':') !== 0) {
-            $name = ':' . $name;
+        $this->setValue($value);
+    }
+
+    /**
+     * Set the parameter value.
+     *
+     * @param string $value
+     * @return $this
+     * @throws \UnexpectedValueException
+     */
+    protected function setValue(string $value)
+    {
+        if ($value === '') {
+            throw new \UnexpectedValueException('The parameter value is required.');
         }
 
-        $this->name = $name;
+        if ($value !== '?' && strpos($value, ':') !== 0) {
+            $value = ':' . $value;
+        }
+
+        $this->value = $value;
+
+        return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * Get the parameter value.
+     *
+     * @return string
      */
-    public function getName()
+    public function toString()
     {
-        return $this->name;
+        return $this->value;
     }
 
     /**
-     * Get the parameter name.
+     * Get the parameter value.
      *
      * @return string
      */
     public function __toString()
     {
-        return $this->getName();
+        return $this->toString();
     }
 }

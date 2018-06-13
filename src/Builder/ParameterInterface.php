@@ -13,9 +13,9 @@ namespace Guvra\Builder;
 interface ParameterInterface
 {
     /**
-     * Get the name of the parameter.
+     * Get the parameter value.
      *
      * @return string
      */
-    public function getName();
+    public function toString();
 }

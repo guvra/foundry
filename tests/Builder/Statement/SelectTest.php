@@ -7,8 +7,6 @@
  */
 namespace Tests\Builder\Statement;
 
-use Guvra\Builder\Clause\ConditionGroup;
-use Guvra\Builder\Expression;
 use Guvra\Builder\Statement\Select;
 use Tests\AbstractTestCase;
 
@@ -17,9 +15,23 @@ use Tests\AbstractTestCase;
  */
 class SelectTest extends AbstractTestCase
 {
+    public function testDistinct()
+    {
+        $query = $this->createSelect()->distinct(false);
+        $this->assertEquals('SELECT * FROM accounts', $query);
+
+        $query->reset(Select::PART_DISTINCT);
+        $query->distinct();
+        $this->assertEquals('SELECT DISTINCT * FROM accounts', $query);
+
+        $query->reset(Select::PART_DISTINCT);
+        $query->distinct(true);
+        $this->assertEquals('SELECT DISTINCT * FROM accounts', $query);
+    }
+
     public function testFrom()
     {
-        $query = $this->select()->from('accounts');
+        $query = $this->createSelect()->from('accounts');
         $this->assertEquals('SELECT * FROM accounts', $query);
 
         $query->from(['a' => 'accounts']);
@@ -30,125 +42,131 @@ class SelectTest extends AbstractTestCase
 
         $query->from(['a' => 'accounts', 't' => 'transactions']);
         $this->assertEquals('SELECT * FROM accounts AS a, transactions AS t', $query);
-
-        $query->reset(SELECT::PART_FROM);
-        $this->assertEquals('SELECT *', $query);
     }
 
     public function testColumns()
     {
-        $query = $this->select();
-        $this->assertEquals('SELECT *', $query);
+        $query = $this->createSelect();
+        $this->assertEquals('SELECT * FROM accounts', $query);
 
         $query->columns('name');
-        $this->assertEquals('SELECT name', $query);
+        $this->assertEquals('SELECT name FROM accounts', $query);
 
         $query->columns('accounts.name');
-        $this->assertEquals('SELECT accounts.name', $query);
+        $this->assertEquals('SELECT accounts.name FROM accounts', $query);
 
-        $query->columns(['accounts.name', 'transactions.amount']);
-        $this->assertEquals('SELECT accounts.name, transactions.amount', $query);
+        $query->columns(['accounts.name', 'accounts.balance']);
+        $this->assertEquals('SELECT accounts.name, accounts.balance FROM accounts', $query);
 
-        $query->columns(['name' => 'accounts.name', 'amount' => 'transactions.amount']);
-        $this->assertEquals('SELECT accounts.name AS name, transactions.amount AS amount', $query);
+        $query->columns(['n' => 'accounts.name', 'b' => 'accounts.balance']);
+        $this->assertEquals('SELECT accounts.name AS n, accounts.balance AS b FROM accounts', $query);
 
-        $query->columns(['min' => 'MIN(amount)']);
-        $this->assertEquals('SELECT MIN(amount) AS min', $query);
+        $query->columns(['min' => 'MIN(balance)']);
+        $this->assertEquals('SELECT MIN(balance) AS min FROM accounts', $query);
 
         $query->reset(SELECT::PART_COLUMNS);
-        $this->assertEquals('SELECT *', $query);
+        $this->assertEquals('SELECT * FROM accounts', $query);
+
+        $query->reset(Select::PART_FROM);
+        $query->columns(1);
+        $this->assertEquals('SELECT 1', $query);
+    }
+
+    public function testSubQueryColumn()
+    {
+        $query = $this->createSelect();
+        $query->columns(['max' => $this->createSelect()->from('accounts')->columns('MAX(balance)')]);
+        $this->assertEquals('SELECT (SELECT MAX(balance) FROM accounts) AS max FROM accounts', $query);
     }
 
     public function testGroupBy()
     {
-        $query = $this->select()->group('account_id');
-        $this->assertEquals('SELECT * GROUP BY account_id', $query);
+        $query = $this->createSelect()->from('transactions')->group('account_id');
+        $this->assertEquals('SELECT * FROM transactions GROUP BY account_id', $query);
 
         $query->group('category_id');
-        $this->assertEquals('SELECT * GROUP BY account_id, category_id', $query);
+        $this->assertEquals('SELECT * FROM transactions GROUP BY account_id, category_id', $query);
 
-        $query->group(['transaction_id', 'user_id']);
-        $this->assertEquals('SELECT * GROUP BY account_id, category_id, transaction_id, user_id', $query);
+        $query->reset(Select::PART_GROUP);
+        $query->group(['category_id', 'account_id']);
+        $this->assertEquals('SELECT * FROM transactions GROUP BY category_id, account_id', $query);
 
-        $query->reset(SELECT::PART_GROUP);
-        $query->group(['account_id', 'category_id']);
-        $this->assertEquals('SELECT * GROUP BY account_id, category_id', $query);
-
-        $query->reset(SELECT::PART_GROUP);
-        $this->assertEquals('SELECT *', $query);
+        $query->reset(Select::PART_GROUP);
+        $this->assertEquals('SELECT * FROM transactions', $query);
     }
 
     public function testOrderBy()
     {
-        $query = $this->select()->order('amount', 'desc');
-        $this->assertEquals('SELECT * ORDER BY amount DESC', $query);
+        $query = $this->createSelect()->order('balance', 'desc');
+        $this->assertEquals('SELECT * FROM accounts ORDER BY balance DESC', $query);
 
         $query->order('name', 'asc');
-        $this->assertEquals('SELECT * ORDER BY amount DESC, name ASC', $query);
+        $this->assertEquals('SELECT * FROM accounts ORDER BY balance DESC, name ASC', $query);
 
         $query->reset(SELECT::PART_ORDER);
-        $this->assertEquals('SELECT *', $query);
+        $this->assertEquals('SELECT * FROM accounts', $query);
     }
 
     public function testLimit()
     {
-        $query = $this->select()->limit(0, 0);
-        $this->assertEquals('SELECT *', $query);
+        $query = $this->createSelect()->limit(0, 0);
+        $this->assertEquals('SELECT * FROM accounts', $query);
 
         $query->limit(10);
-        $this->assertEquals('SELECT * LIMIT 10', $query);
+        $this->assertEquals('SELECT * FROM accounts LIMIT 10', $query);
 
         $query->limit(10, 0);
-        $this->assertEquals('SELECT * LIMIT 10', $query);
+        $this->assertEquals('SELECT * FROM accounts LIMIT 10', $query);
 
         $query->limit(0, 100);
-        $this->assertEquals('SELECT * OFFSET 100', $query);
+        $this->assertEquals('SELECT * FROM accounts OFFSET 100', $query);
 
         $query->limit(10, 100);
-        $this->assertEquals('SELECT * LIMIT 10 OFFSET 100', $query);
+        $this->assertEquals('SELECT * FROM accounts LIMIT 10 OFFSET 100', $query);
 
         $query->reset(SELECT::PART_LIMIT);
-        $this->assertEquals('SELECT *', $query);
+        $this->assertEquals('SELECT * FROM accounts', $query);
     }
 
     public function testJoin()
     {
         // Tests only the HasJoin trait, Join/JoinGroup builders are tested in a separate file
-        $query = $this->select()->join('accounts');
-        $this->assertEquals('SELECT * JOIN accounts', $query);
+        $query = $this->createSelect()->join('transactions');
+        $this->assertEquals('SELECT * FROM accounts JOIN transactions', $query);
         $query->join(['c' => 'categories'], 'c.category_id', '=', 't.category_id');
-        $this->assertEquals('SELECT * JOIN accounts JOIN categories AS c ON c.category_id = t.category_id', $query);
+        $this->assertEquals('SELECT * FROM accounts JOIN transactions JOIN categories AS c ON c.category_id = t.category_id', $query);
 
-        $query = $this->select()->joinLeft('accounts');
-        $this->assertEquals('SELECT * LEFT JOIN accounts', $query);
+        $query->reset(SELECT::PART_JOIN);
+        $query->joinLeft('transactions');
+        $this->assertEquals('SELECT * FROM accounts LEFT JOIN transactions', $query);
         $query->joinLeft(['c' => 'categories'], 'c.category_id', '=', 't.category_id');
-        $this->assertEquals('SELECT * LEFT JOIN accounts LEFT JOIN categories AS c ON c.category_id = t.category_id', $query);
+        $this->assertEquals('SELECT * FROM accounts LEFT JOIN transactions LEFT JOIN categories AS c ON c.category_id = t.category_id', $query);
 
         $query->reset(SELECT::PART_JOIN);
-        $query = $this->select()->joinRight('accounts');
-        $this->assertEquals('SELECT * RIGHT JOIN accounts', $query);
+        $query->joinRight('transactions');
+        $this->assertEquals('SELECT * FROM accounts RIGHT JOIN transactions', $query);
         $query->joinRight(['c' => 'categories'], 'c.category_id', '=', 't.category_id');
-        $this->assertEquals('SELECT * RIGHT JOIN accounts RIGHT JOIN categories AS c ON c.category_id = t.category_id', $query);
+        $this->assertEquals('SELECT * FROM accounts RIGHT JOIN transactions RIGHT JOIN categories AS c ON c.category_id = t.category_id', $query);
 
         $query->reset(SELECT::PART_JOIN);
-        $query->joinCross('accounts');
+        $query->joinCross('transactions');
         $query->joinNatural(['c' => 'categories']);
-        $this->assertEquals('SELECT * CROSS JOIN accounts NATURAL JOIN categories AS c', $query);
+        $this->assertEquals('SELECT * FROM accounts CROSS JOIN transactions NATURAL JOIN categories AS c', $query);
 
         $query->reset(SELECT::PART_JOIN);
-        $this->assertEquals('SELECT *', $query);
+        $this->assertEquals('SELECT * FROM accounts', $query);
     }
 
     public function testWhere()
     {
         // Tests only the HasWhere trait, Condition/ConditionGroup builders are tested in a separate file
-        $query = $this->select()->where('amount', '>', 1000);
-        $this->assertEquals('SELECT * WHERE (amount > 1000)', $query);
-        $query->orWhere('amount', '<', 1000);
-        $this->assertEquals('SELECT * WHERE (amount > 1000) OR (amount < 1000)', $query);
+        $query = $this->createSelect()->where('balance', '>', 1000);
+        $this->assertEquals('SELECT * FROM accounts WHERE (balance > 1000)', $query);
+        $query->orWhere('balance', '<', 1000);
+        $this->assertEquals('SELECT * FROM accounts WHERE (balance > 1000) OR (balance < 1000)', $query);
 
         $query->reset(SELECT::PART_WHERE);
-        $subQuery = $this->select()->from('accounts')->columns('account_id');
+        $subQuery = $this->createSelect()->columns('account_id');
         $query->whereExists($subQuery)->orWhereExists($subQuery)
             ->whereNotExists($subQuery)->orWhereNotExists($subQuery);
         $this->assertWhereEquals("{operator} ($subQuery)", $query, 'EXISTS', 'NOT EXISTS');
@@ -167,18 +185,21 @@ class SelectTest extends AbstractTestCase
         $query->whereIn('amount', [1, 2, 3])->orWhereIn('amount', [1, 2, 3])
             ->whereNotIn('amount', [1, 2, 3])->orWhereNotIn('amount', [1, 2, 3]);
         $this->assertWhereEquals('amount {operator} (1,2,3)', $query, 'IN', 'NOT IN');
+
+        $query->reset(SELECT::PART_WHERE);
+        $this->assertEquals('SELECT * FROM accounts', $query);
     }
 
     public function testHaving()
     {
         // Tests only the HasHaving trait, Condition/ConditionGroup builders are tested in a separate file
-        $query = $this->select()->having('amount', '>', 1000);
-        $this->assertEquals('SELECT * HAVING (amount > 1000)', $query);
-        $query->orHaving('amount', '<', 1000);
-        $this->assertEquals('SELECT * HAVING (amount > 1000) OR (amount < 1000)', $query);
+        $query = $this->createSelect()->having('balance', '>', 1000);
+        $this->assertEquals('SELECT * FROM accounts HAVING (balance > 1000)', $query);
+        $query->orHaving('balance', '<', 1000);
+        $this->assertEquals('SELECT * FROM accounts HAVING (balance > 1000) OR (balance < 1000)', $query);
 
         $query->reset(SELECT::PART_HAVING);
-        $subQuery = $this->select()->from('accounts')->columns('account_id');
+        $subQuery = $this->createSelect()->columns('account_id');
         $query->havingExists($subQuery)->orHavingExists($subQuery)
             ->havingNotExists($subQuery)->orHavingNotExists($subQuery);
         $this->assertWhereEquals("{operator} ($subQuery)", $query, 'EXISTS', 'NOT EXISTS', 'HAVING');
@@ -197,113 +218,23 @@ class SelectTest extends AbstractTestCase
         $query->havingIn('amount', [1, 2, 3])->orHavingIn('amount', [1, 2, 3])
             ->havingNotIn('amount', [1, 2, 3])->orHavingNotIn('amount', [1, 2, 3]);
         $this->assertWhereEquals('amount {operator} (1,2,3)', $query, 'IN', 'NOT IN', 'HAVING');
+
+        $query->reset(SELECT::PART_HAVING);
+        $this->assertEquals('SELECT * FROM accounts', $query);
     }
 
-    /**
-     * Test the SELECT query builder.
-     */
-    public function testSelect()
+    public function testUnion()
     {
-        $this->withTestTables(function () {
-            // Basic select
-            $query = $this->connection
-                ->select()
-                ->from('accounts')
-                ->where('name', '=', 'Account 1')
-                ->group('account_id')
-                ->order('name', 'asc')
-                ->limit(10);
+        $query = $this->createSelect();
 
-            $statement = $this->connection->query($query);
-            $rows = $statement->fetchAll();
-            $this->assertEquals(1, count($rows));
-            $this->assertEquals('Account 1', $rows[0]['name']);
-        });
-    }
+        $query->union($this->createSelect()->from('accs'));
+        $this->assertEquals('SELECT * FROM accounts UNION SELECT * FROM accs', $query);
 
-    /**
-     * Test the SELECT query builder.
-     */
-    public function testJoinSelect()
-    {
-        $this->withTestTables(function () {
-            // Basic join
-            $query = $this->connection
-                ->select()
-                ->from('transactions')
-                ->join('accounts', 'accounts.account_id', '=', 'transactions.account_id')
-                ->where('name', '=', 'Account 1');
+        $query->union($this->createSelect()->from('a'), true);
+        $this->assertEquals('SELECT * FROM accounts UNION SELECT * FROM accs UNION ALL SELECT * FROM a', $query);
 
-            $statement = $this->connection->query($query);
-            $rows = $statement->fetchAll();
-            $this->assertEquals(6, count($rows));
-            $this->assertEquals('Transaction 1', $rows[0]['description']);
-
-            // Join with callback
-            $query
-                ->reset(Select::PART_JOIN)
-                ->join('accounts', function ($condition) {
-                    $condition->where('accounts.account_id', '=', new Expression('transactions.account_id'));
-                });
-
-            $statement = $this->connection->query($query);
-            $rows = $statement->fetchAll();
-            $this->assertEquals(6, count($rows));
-            $this->assertEquals('Transaction 1', $rows[0]['description']);
-        });
-    }
-
-    /**
-     * Test the condition builder.
-     */
-    public function testConditionGroup()
-    {
-        $this->withTestTables(function () {
-            $query = $this->connection
-                ->select()
-                ->from('transactions')
-                ->where('account_id', '=', 1)
-                ->where(function (ConditionGroup $condition) {
-                    $condition->where('amount < 0 OR amount > 100')
-                        ->orWhere('amount', '=', 40);
-                });
-
-            $statement = $this->connection->query($query);
-            $rows = $statement->fetchAll();
-            $this->assertEquals(4, count($rows));
-        });
-    }
-
-    /**
-     * Assert that an exception is thrown when updating data in a table that does not exist.
-     *
-     * @expectedException \PDOException
-     */
-    public function testExceptionOnTableNotExists()
-    {
-        $query = $this->connection
-            ->select()
-            ->from('table_not_exists')
-            ->where('name', '=', 'Account 1');
-
-        $this->connection->query($query);
-    }
-
-    /**
-     * Assert that an exception is thrown when updating data in a column that does not exist.
-     *
-     * @expectedException \PDOException
-     */
-    public function testExceptionOnColumnNotExists()
-    {
-        $this->withTestTables(function () {
-            $query = $this->connection
-                ->select()
-                ->from('accounts')
-                ->where('column_not_exists', '=', 'value');
-
-            $this->connection->query($query);
-        });
+        $query->reset(SELECT::PART_UNION);
+        $this->assertEquals('SELECT * FROM accounts', $query);
     }
 
     /**
@@ -330,16 +261,8 @@ class SelectTest extends AbstractTestCase
         $expectedQuery .= ' AND (' . $queryPartWithNotOperator . ')';
         $expectedQuery .= ' OR (' . $queryPartWithNotOperator . ')';
         $expectedQuery = str_replace(['{operator}', '{notOperator}'], [$operator, $notOperator], $expectedQuery);
-        $expectedQuery = "SELECT * $clause " . $expectedQuery;
+        $expectedQuery = "SELECT * FROM accounts $clause " . $expectedQuery;
 
         $this->assertEquals($expectedQuery, $actualQuery);
-    }
-
-    /**
-     * @return Select
-     */
-    private function select()
-    {
-        return $this->connection->select();
     }
 }
