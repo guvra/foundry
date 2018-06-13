@@ -16,7 +16,7 @@ interface BuilderFactoryInterface
      * Create a new query builder.
      *
      * @param string $type
-     * @param array $args
+     * @param mixed ...$args
      * @return BuilderInterface
      * @throws \UnexpectedValueException
      */

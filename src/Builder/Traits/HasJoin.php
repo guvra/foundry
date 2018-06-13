@@ -25,7 +25,7 @@ trait HasJoin
      * Add an inner join clause to the query.
      *
      * @param string|array $table
-     * @param array $args
+     * @param mixed ...$args
      * @return $this
      */
     public function join($table, ...$args)
@@ -41,7 +41,7 @@ trait HasJoin
      * Add a left join clause to the query.
      *
      * @param string|array $table
-     * @param array $args
+     * @param mixed ...$args
      * @return $this
      */
     public function joinLeft($table, ...$args)
@@ -57,7 +57,7 @@ trait HasJoin
      * Add a right join clause to the query.
      *
      * @param string|array $table
-     * @param array $args
+     * @param mixed ...$args
      * @return $this
      */
     public function joinRight($table, ...$args)
