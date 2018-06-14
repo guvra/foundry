@@ -18,7 +18,7 @@ class ExpressionTest extends AbstractTestCase
     public function testExpressionWithValue()
     {
         $expression = new Expression('MAX(amount)');
-        $this->assertEquals('MAX(amount)', $expression);
+        $this->assertEquals('MAX(amount)', $expression->toString());
     }
 
     /**

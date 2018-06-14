@@ -23,7 +23,7 @@ class InsertTest extends AbstractTestCase
 
         $expectedStringValue = $this->connection->quote('Account 3');
 
-        $this->assertEquals("INSERT INTO accounts (name, balance) VALUES ($expectedStringValue,500)", $query);
+        $this->assertEquals("INSERT INTO accounts (name, balance) VALUES ($expectedStringValue,500)", $query->toString());
     }
 
     public function testInsertMultiple()
@@ -33,7 +33,7 @@ class InsertTest extends AbstractTestCase
             ->columns(['col1', 'col2'])
             ->values([[0, 10, 20], [30, 40, 50]]);
 
-        $this->assertEquals('INSERT INTO table (col1, col2) VALUES (0,10,20),(30,40,50)', $query);
+        $this->assertEquals('INSERT INTO table (col1, col2) VALUES (0,10,20),(30,40,50)', $query->toString());
     }
 
     public function testInsertIgnore()
@@ -44,7 +44,7 @@ class InsertTest extends AbstractTestCase
             ->columns(['balance'])
             ->values([500]);
 
-        $this->assertEquals('INSERT OR IGNORE INTO accounts (balance) VALUES (500)', $query);
+        $this->assertEquals('INSERT OR IGNORE INTO accounts (balance) VALUES (500)', $query->toString());
     }
 
     /**

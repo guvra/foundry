@@ -21,7 +21,7 @@ class ConditionGroupTest extends AbstractTestCase
         $conditionGroup->where('amount', '<', 0)
             ->orWhere('amount', '>', 1000);
 
-        $this->assertEquals('(amount < 0) OR (amount > 1000)', $conditionGroup);
+        $this->assertEquals('(amount < 0) OR (amount > 1000)', $conditionGroup->toString());
     }
 
     public function testAddCondition()
@@ -30,7 +30,7 @@ class ConditionGroupTest extends AbstractTestCase
         $conditionGroup->addCondition($this->createCondition('amount', '<', 0));
         $conditionGroup->addOrCondition($this->createCondition('amount', '>', 1000));
 
-        $this->assertEquals('(amount < 0) OR (amount > 1000)', $conditionGroup);
+        $this->assertEquals('(amount < 0) OR (amount > 1000)', $conditionGroup->toString());
     }
 
     public function testWithEncloseDisabled()
@@ -40,19 +40,19 @@ class ConditionGroupTest extends AbstractTestCase
         $conditionGroup->where('amount', '<', 0)
             ->orWhere('amount', '>', 1000);
 
-        $this->assertEquals('amount < 0 OR amount > 1000', $conditionGroup);
+        $this->assertEquals('amount < 0 OR amount > 1000', $conditionGroup->toString());
     }
 
     public function testEmptyConditionGroup()
     {
         $conditionGroup = $this->createConditionGroup();
-        $this->assertEquals('', $conditionGroup);
+        $this->assertEquals('', $conditionGroup->toString());
     }
 
     public function testWithEmptyCondition()
     {
         $conditionGroup = $this->createConditionGroup();
         $conditionGroup->where(function (ConditionGroup $conditionGroup) {});
-        $this->assertEquals('', $conditionGroup);
+        $this->assertEquals('', $conditionGroup->toString());
     }
 }

@@ -26,7 +26,7 @@ class UpdateTest extends AbstractTestCase
         $quoteOldValue = $this->connection->quote('Account 1');
         $quotedNewValue = $this->connection->quote('Account 5');
 
-        $this->assertEquals("UPDATE accounts SET name = $quotedNewValue WHERE (name = $quoteOldValue) LIMIT 1", $query);
+        $this->assertEquals("UPDATE accounts SET name = $quotedNewValue WHERE (name = $quoteOldValue) LIMIT 1", $query->toString());
     }
 
     /**

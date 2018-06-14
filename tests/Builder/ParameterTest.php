@@ -18,16 +18,16 @@ class ParameterTest extends AbstractTestCase
     public function testParameterWithValue()
     {
         $parameter = new Parameter('name');
-        $this->assertEquals(':name', $parameter);
+        $this->assertEquals(':name', $parameter->toString());
 
         $parameter = new Parameter(':name');
-        $this->assertEquals(':name', $parameter);
+        $this->assertEquals(':name', $parameter->toString());
     }
 
     public function testParameterWithNoValue()
     {
         $parameter = new Parameter;
-        $this->assertEquals('?', $parameter);
+        $this->assertEquals('?', $parameter->toString());
     }
 
     /**

@@ -20,10 +20,10 @@ class JoinGroupTest extends AbstractTestCase
         $joinGroup = $this->createJoinGroup();
         $condition = $this->createCondition('transactions.account_id', '=', new Expression('accounts.account_id'));
         $joinGroup->join('accounts', $condition);
-        $this->assertEquals('JOIN accounts ON transactions.account_id = accounts.account_id', $joinGroup);
+        $this->assertEquals('JOIN accounts ON transactions.account_id = accounts.account_id', $joinGroup->toString());
 
         $joinGroup->join(['c' => 'categories']);
-        $this->assertEquals('JOIN accounts ON transactions.account_id = accounts.account_id JOIN categories AS c', $joinGroup);
+        $this->assertEquals('JOIN accounts ON transactions.account_id = accounts.account_id JOIN categories AS c', $joinGroup->toString());
     }
 
     public function testLeftJoin()
@@ -31,10 +31,10 @@ class JoinGroupTest extends AbstractTestCase
         $joinGroup = $this->createJoinGroup();
         $condition = $this->createCondition('transactions.account_id', '=', new Expression('accounts.account_id'));
         $joinGroup->joinLeft('accounts', $condition);
-        $this->assertEquals('LEFT JOIN accounts ON transactions.account_id = accounts.account_id', $joinGroup);
+        $this->assertEquals('LEFT JOIN accounts ON transactions.account_id = accounts.account_id', $joinGroup->toString());
 
         $joinGroup->joinLeft(['c' => 'categories']);
-        $this->assertEquals('LEFT JOIN accounts ON transactions.account_id = accounts.account_id LEFT JOIN categories AS c', $joinGroup);
+        $this->assertEquals('LEFT JOIN accounts ON transactions.account_id = accounts.account_id LEFT JOIN categories AS c', $joinGroup->toString());
     }
 
     public function testRightJoin()
@@ -42,30 +42,30 @@ class JoinGroupTest extends AbstractTestCase
         $joinGroup = $this->createJoinGroup();
         $condition = $this->createCondition('transactions.account_id', '=', new Expression('accounts.account_id'));
         $joinGroup->joinRight('accounts', $condition);
-        $this->assertEquals('RIGHT JOIN accounts ON transactions.account_id = accounts.account_id', $joinGroup);
+        $this->assertEquals('RIGHT JOIN accounts ON transactions.account_id = accounts.account_id', $joinGroup->toString());
 
         $joinGroup->joinRight(['c' => 'categories']);
-        $this->assertEquals('RIGHT JOIN accounts ON transactions.account_id = accounts.account_id RIGHT JOIN categories AS c', $joinGroup);
+        $this->assertEquals('RIGHT JOIN accounts ON transactions.account_id = accounts.account_id RIGHT JOIN categories AS c', $joinGroup->toString());
     }
 
     public function testCrossJoin()
     {
         $joinGroup = $this->createJoinGroup();
         $joinGroup->joinCross('accounts');
-        $this->assertEquals('CROSS JOIN accounts', $joinGroup);
+        $this->assertEquals('CROSS JOIN accounts', $joinGroup->toString());
 
         $joinGroup->joinCross(['c' => 'categories']);
-        $this->assertEquals('CROSS JOIN accounts CROSS JOIN categories AS c', $joinGroup);
+        $this->assertEquals('CROSS JOIN accounts CROSS JOIN categories AS c', $joinGroup->toString());
     }
 
     public function testNaturalJoin()
     {
         $joinGroup = $this->createJoinGroup();
         $joinGroup->joinNatural('accounts');
-        $this->assertEquals('NATURAL JOIN accounts', $joinGroup);
+        $this->assertEquals('NATURAL JOIN accounts', $joinGroup->toString());
 
         $joinGroup->joinNatural(['c' => 'categories']);
-        $this->assertEquals('NATURAL JOIN accounts NATURAL JOIN categories AS c', $joinGroup);
+        $this->assertEquals('NATURAL JOIN accounts NATURAL JOIN categories AS c', $joinGroup->toString());
     }
 
     public function testJoin()
@@ -73,6 +73,6 @@ class JoinGroupTest extends AbstractTestCase
         $joinGroup = $this->createJoinGroup();
         $joinGroup->addJoin($this->createJoin('inner', 'accounts'));
         $joinGroup->addJoin($this->createJoin('inner', 'categories'));
-        $this->assertEquals('JOIN accounts JOIN categories', $joinGroup);
+        $this->assertEquals('JOIN accounts JOIN categories', $joinGroup->toString());
     }
 }

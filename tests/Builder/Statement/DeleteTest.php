@@ -23,7 +23,7 @@ class DeleteTest extends AbstractTestCase
 
         $quotedValue = $this->connection->quote('Account 1');
 
-        $this->assertEquals("DELETE FROM accounts WHERE (name = $quotedValue) LIMIT 1", $query);
+        $this->assertEquals("DELETE FROM accounts WHERE (name = $quotedValue) LIMIT 1", $query->toString());
     }
 
     /**
