@@ -5,9 +5,9 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests\Builder\Clause;
+namespace Tests\Builder;
 
-use Guvra\Builder\Clause\ConditionGroup;
+use Guvra\Builder\ConditionGroup;
 use Tests\AbstractTestCase;
 
 /**
@@ -20,15 +20,6 @@ class ConditionGroupTest extends AbstractTestCase
         $conditionGroup = $this->createConditionGroup();
         $conditionGroup->where('amount', '<', 0)
             ->orWhere('amount', '>', 1000);
-
-        $this->assertEquals('(amount < 0) OR (amount > 1000)', $conditionGroup->toString());
-    }
-
-    public function testAddCondition()
-    {
-        $conditionGroup = $this->createConditionGroup();
-        $conditionGroup->addCondition($this->createCondition('amount', '<', 0));
-        $conditionGroup->addOrCondition($this->createCondition('amount', '>', 1000));
 
         $this->assertEquals('(amount < 0) OR (amount > 1000)', $conditionGroup->toString());
     }
@@ -46,13 +37,23 @@ class ConditionGroupTest extends AbstractTestCase
     public function testEmptyConditionGroup()
     {
         $conditionGroup = $this->createConditionGroup();
-        $this->assertEquals('', $conditionGroup->toString());
+        $this->assertEmpty($conditionGroup->toString());
     }
 
     public function testWithEmptyCondition()
     {
         $conditionGroup = $this->createConditionGroup();
         $conditionGroup->where(function (ConditionGroup $conditionGroup) {});
-        $this->assertEquals('', $conditionGroup->toString());
+        $this->assertEmpty($conditionGroup->toString());
+    }
+
+    public function testReset()
+    {
+        $conditionGroup = $this->createConditionGroup();
+        $conditionGroup->where('amount', '=', 50);
+        $this->assertNotEmpty($conditionGroup->toString());
+
+        $conditionGroup->reset();
+        $this->assertEmpty($conditionGroup->toString());
     }
 }

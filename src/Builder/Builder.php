@@ -10,7 +10,7 @@ namespace Guvra\Builder;
 use Guvra\ConnectionInterface;
 
 /**
- * Query builder.
+ * Abstract builder.
  */
 abstract class Builder implements BuilderInterface
 {
@@ -39,6 +39,20 @@ abstract class Builder implements BuilderInterface
     }
 
     /**
+     * Compiles the query.
+     *
+     * @return string
+     */
+    abstract protected function compile();
+
+    /**
+     * Decompiles the query.
+     *
+     * @return string
+     */
+    abstract protected function decompile();
+
+    /**
      * {@inheritdoc}
      */
     public function toString()
@@ -51,8 +65,39 @@ abstract class Builder implements BuilderInterface
     }
 
     /**
-     * Get the compiled query
+     * {@inheritdoc}
+     */
+    public function reset()
+    {
+        $this->decompile();
+        $this->compiled = null;
+
+        return $this;
+    }
+
+    /**
+     * Parse a value that can be either a string, a BuilderInterface implementation, or a callable.
      *
+     * @param mixed $value
+     * @param bool $enclose
+     * @return mixed
+     */
+    protected function parseSubQuery($value, bool $enclose = true)
+    {
+        if (is_callable($value)) {
+            $subQuery = $this->builderFactory->create('select');
+            call_user_func($value, $subQuery);
+            $value = $subQuery->toString();
+            if ($enclose) $value = '(' . $value . ')';
+        } elseif (is_object($value) && $value instanceof BuilderInterface) {
+            $value = $value->toString();
+            if ($enclose) $value = '(' . $value . ')';
+        }
+
+        return $value;
+    }
+
+    /**
      * @return string
      */
     public function __toString()

@@ -7,37 +7,26 @@
  */
 namespace Guvra\Builder\Statement;
 
-use Guvra\Builder\Builder;
+use Guvra\Builder\Clause\Update\Limit;
+use Guvra\Builder\Clause\Update\Table;
+use Guvra\Builder\Clause\Update\Values;
+use Guvra\Builder\StatementBuilder;
 use Guvra\Builder\Traits\HasJoin;
 use Guvra\Builder\Traits\HasWhere;
 
 /**
- * Update builder.
+ * UPDATE builder.
  */
-class Update extends Builder
+class Update extends StatementBuilder
 {
+    const PART_TABLE = 'table';
+    const PART_JOIN = 'join';
+    const PART_VALUES = 'values';
+    const PART_WHERE = 'where';
+    const PART_LIMIT = 'limit';
+
     use HasJoin;
     use HasWhere;
-
-    /**
-     * @var string
-     */
-    protected $table = '';
-
-    /**
-     * @var string
-     */
-    protected $alias = '';
-
-    /**
-     * @var array
-     */
-    protected $values = [];
-
-    /**
-     * @var int
-     */
-    protected $limit = 0;
 
     /**
      * Set the table to update.
@@ -48,8 +37,9 @@ class Update extends Builder
      */
     public function table(string $table, string $alias = '')
     {
-        $this->table = $table;
-        $this->alias = $alias;
+        /** @var Table $part */
+        $part = $this->getPart('table');
+        $part->setTable($table, $alias);
         $this->compiled = null;
 
         return $this;
@@ -63,7 +53,9 @@ class Update extends Builder
      */
     public function values(array $values)
     {
-        $this->values = $values;
+        /** @var Values $part */
+        $part = $this->getPart('values');
+        $part->setValues($values);
         $this->compiled = null;
 
         return $this;
@@ -77,7 +69,9 @@ class Update extends Builder
      */
     public function limit(int $max)
     {
-        $this->limit = $max;
+        /** @var Limit $part */
+        $part = $this->getPart('limit');
+        $part->setLimit($max);
         $this->compiled = null;
 
         return $this;
@@ -86,62 +80,16 @@ class Update extends Builder
     /**
      * {@inheritdoc}
      */
-    public function compile()
+    protected function initialize()
     {
-        return 'UPDATE'
-            . $this->buildTable()
-            . $this->buildValues()
-            . $this->buildJoins()
-            . $this->buildWhere()
-            . $this->buildLimit();
-    }
+        $this->statementName = 'UPDATE';
 
-    /**
-     * Build the table name.
-     *
-     * @return string
-     * @throws \UnexpectedValueException
-     */
-    protected function buildTable()
-    {
-        if (!$this->table) {
-            throw new \UnexpectedValueException('The table is required.');
-        }
-
-        return $this->alias ? " {$this->table} AS {$this->alias}" : " {$this->table}";
-    }
-
-    /**
-     * Build the values.
-     *
-     * @return string
-     * @throws \UnexpectedValueException
-     */
-    protected function buildValues()
-    {
-        if (empty($this->values)) {
-            throw new \UnexpectedValueException('The values definition is required.');
-        }
-
-        $values = [];
-
-        foreach ($this->values as $column => $value) {
-            if (is_string($value)) {
-                $value = $this->connection->quote($value);
-            }
-            $values[$column] = "$column = $value";
-        }
-
-        return ' SET ' . implode(', ', $values);
-    }
-
-    /**
-     * Build the limit clause.
-     *
-     * @return string
-     */
-    protected function buildLimit()
-    {
-        return $this->limit > 0 ? " LIMIT {$this->limit}" : '';
+        $this->parts = [
+            self::PART_TABLE => 'update/table',
+            self::PART_JOIN => 'update/join',
+            self::PART_VALUES => 'update/values',
+            self::PART_WHERE => 'update/where',
+            self::PART_LIMIT => 'update/limit',
+        ];
     }
 }

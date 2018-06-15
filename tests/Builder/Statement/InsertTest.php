@@ -7,6 +7,10 @@
  */
 namespace Tests\Builder\Statement;
 
+use Guvra\Builder\Clause\Insert\Columns;
+use Guvra\Builder\Clause\Insert\Ignore;
+use Guvra\Builder\Clause\Insert\Table;
+use Guvra\Builder\Clause\Insert\Values;
 use Tests\AbstractTestCase;
 
 /**
@@ -36,6 +40,14 @@ class InsertTest extends AbstractTestCase
         $this->assertEquals('INSERT INTO table (col1, col2) VALUES (0,10,20),(30,40,50)', $query->toString());
     }
 
+    public function testEmptyValues()
+    {
+        $query = $this->createInsert()
+            ->values([]);
+
+        $this->assertEmpty($query->toString());
+    }
+
     public function testInsertIgnore()
     {
         $query = $this->createInsert()
@@ -47,52 +59,21 @@ class InsertTest extends AbstractTestCase
         $this->assertEquals('INSERT OR IGNORE INTO accounts (balance) VALUES (500)', $query->toString());
     }
 
-    /**
-     * @expectedException \UnexpectedValueException
-     */
-    public function testExceptionOnEmptyTable()
+    public function testReset()
     {
-        $query = $this->createInsert()
-            ->columns(['name', 'balance'])
-            ->values(['Account 3', 500]);
+        $query = $this->createInsert()->into('accounts')->columns(['balance'])->values([500]);
+        $this->assertNotEmpty($query->toString());
 
-        $query->toString();
+        $query->reset();
+        $this->assertEmpty($query->toString());
     }
 
-    /**
-     * @expectedException \UnexpectedValueException
-     */
-    public function testExceptionOnEmptyColumns()
+    public function testGetPart()
     {
-        $query = $this->createInsert()
-            ->into('accounts')
-            ->values(['Account 3', 500]);
-
-        $query->toString();
-    }
-
-    /**
-     * @expectedException \UnexpectedValueException
-     */
-    public function testExceptionOnEmptyValues()
-    {
-        $query = $this->createInsert()
-            ->into('accounts')
-            ->columns(['name', 'balance']);
-
-        $query->toString();
-    }
-
-    /**
-     * @expectedException \UnexpectedValueException
-     */
-    public function testExceptionOnWrongValuesFormat()
-    {
-        $query = $this->createInsert()
-            ->into('table')
-            ->columns(['col1', 'col2'])
-            ->values([[0, 10, 20], 1]);
-
-        $query->toString();
+        $query = $this->createInsert();
+        $this->assertInstanceOf(Ignore::class, $query->getPart('ignore'));
+        $this->assertInstanceOf(Table::class, $query->getPart('table'));
+        $this->assertInstanceOf(Columns::class, $query->getPart('columns'));
+        $this->assertInstanceOf(Values::class, $query->getPart('values'));
     }
 }

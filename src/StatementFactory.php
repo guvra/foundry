@@ -31,7 +31,7 @@ class StatementFactory
      * @param \PDOStatement $pdoStatement
      * @return StatementInterface
      */
-     public function create(\PDOStatement $pdoStatement)
+    public function create(\PDOStatement $pdoStatement)
     {
         return new $this->className($pdoStatement);
     }

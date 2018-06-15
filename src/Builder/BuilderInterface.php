@@ -8,7 +8,7 @@
 namespace Guvra\Builder;
 
 /**
- * Query builder interface.
+ * Builder interface.
  */
 interface BuilderInterface
 {
@@ -20,9 +20,9 @@ interface BuilderInterface
     public function toString();
 
     /**
-     * Forces a recompilation of the SQL query.
+     * Reset the query.
      *
      * @return $this
      */
-    public function compile();
+    public function reset();
 }

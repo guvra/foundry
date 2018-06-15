@@ -7,47 +7,33 @@
  */
 namespace Guvra\Builder\Statement;
 
-use Guvra\Builder\Builder;
+use Guvra\Builder\Clause\Insert\Columns;
+use Guvra\Builder\Clause\Insert\Ignore;
+use Guvra\Builder\Clause\Insert\Table;
+use Guvra\Builder\Clause\Insert\Values;
+use Guvra\Builder\StatementBuilder;
 
 /**
- * Insert builder.
+ * INSERT builder.
  */
-class Insert extends Builder
+class Insert extends StatementBuilder
 {
-    /**
-     * @var bool
-     */
-    protected $ignore = false;
+    const PART_IGNORE = 'ignore';
+    const PART_TABLE = 'table';
+    const PART_COLUMNS = 'columns';
+    const PART_VALUES = 'values';
 
     /**
-     * @var string
-     */
-    protected $table = '';
-
-    /**
-     * @var array
-     */
-    protected $columns = [];
-
-    /**
-     * @var array
-     */
-    protected $values = [];
-
-    /**
-     * @var string|null
-     */
-    protected $insertMode;
-
-    /**
-     * Build the ignore clause.
+     * Set the IGNORE clause.
      *
      * @param bool $value
      * @return $this
      */
     public function ignore(bool $value = true)
     {
-        $this->ignore = $value;
+        /** @var Ignore $part */
+        $part = $this->getPart('ignore');
+        $part->setValue($value);
         $this->compiled = null;
 
         return $this;
@@ -61,7 +47,9 @@ class Insert extends Builder
      */
     public function into(string $table)
     {
-        $this->table = $table;
+        /** @var Table $part */
+        $part = $this->getPart('table');
+        $part->setTable($table);
         $this->compiled = null;
 
         return $this;
@@ -75,7 +63,9 @@ class Insert extends Builder
      */
     public function columns(array $columns)
     {
-        $this->columns = $columns;
+        /** @var Columns $part */
+        $part = $this->getPart('columns');
+        $part->setColumns($columns);
         $this->compiled = null;
 
         return $this;
@@ -89,7 +79,9 @@ class Insert extends Builder
      */
     public function values(array $values)
     {
-        $this->values = $values;
+        /** @var Values $part */
+        $part = $this->getPart('values');
+        $part->setValues($values);
         $this->compiled = null;
 
         return $this;
@@ -98,118 +90,15 @@ class Insert extends Builder
     /**
      * {@inheritdoc}
      */
-    public function compile()
+    protected function initialize()
     {
-        return 'INSERT'
-            . $this->buildIgnore()
-            . $this->buildTable()
-            . $this->buildColumns()
-            . $this->buildValues();
-    }
+        $this->statementName = 'INSERT';
 
-    /**
-     * Build the ignore clause.
-     *
-     * @return string
-     */
-    protected function buildIgnore()
-    {
-        return $this->ignore ? ' IGNORE' : '';
-    }
-
-    /**
-     * Build the table name.
-     *
-     * @return string
-     */
-    protected function buildTable()
-    {
-        if (empty($this->table)) {
-            throw new \UnexpectedValueException('The table is required.');
-        }
-
-        return " INTO {$this->table}";
-    }
-
-    /**
-     * Build the columns.
-     *
-     * @return string
-     * @throws \UnexpectedValueException
-     */
-    protected function buildColumns()
-    {
-        if (empty($this->columns)) {
-            throw new \UnexpectedValueException('The columns definition is required.');
-        }
-
-        return ' (' . implode(', ', $this->columns) . ')';
-    }
-
-    /**
-     * Build the values clause.
-     *
-     * @return string
-     * @throws \UnexpectedValueException
-     */
-    protected function buildValues()
-    {
-        if (empty($this->values)) {
-            throw new \UnexpectedValueException('The values definition is required.');
-        }
-
-        $isMultipleInsert = null;
-        $parts = [];
-
-        foreach ($this->values as $value) {
-            $isArray = is_array($value);
-
-            // Check if we need to insert a single set of values, or multiple sets of values
-            if ($isMultipleInsert === null) {
-                $isMultipleInsert = $isArray;
-            }
-
-            // Escape values and prepare them for inclusion in a string value
-            $parts[] = $isMultipleInsert ? $this->prepareValues($value) : $this->escapeValue($value);
-        }
-
-        return $isMultipleInsert
-            ? ' VALUES ' . implode(',', $parts)
-            : ' VALUES (' . implode(',', $parts) . ')';
-    }
-
-    /**
-     * Convert the values to an inline string.
-     *
-     * @param array $values
-     * @return string
-     * @throws \UnexpectedValueException
-     */
-    protected function prepareValues($values)
-    {
-        if (!is_array($values)) {
-            throw new \UnexpectedValueException('In multiple insertion mode, all values must be arrays.');
-        }
-
-        foreach ($values as $key => $value) {
-            $values[$key] = $this->escapeValue($value);
-        }
-
-        return '(' . implode(',', $values) . ')';
-    }
-
-    /**
-     * Escape the value.
-     *
-     * @param mixed $value
-     * @return string
-     */
-    protected function escapeValue($value)
-    {
-        if (is_string($value)) {
-            $value = $this->connection->quote($value);
-        }
-
-        return $value;
+        $this->parts = [
+            self::PART_IGNORE => 'insert/ignore',
+            self::PART_TABLE => 'insert/table',
+            self::PART_COLUMNS => 'insert/columns',
+            self::PART_VALUES => 'insert/values',
+        ];
     }
 }

@@ -24,7 +24,7 @@ class Statement implements StatementInterface
     protected $pdoStatement;
 
     /**
-     * @var array
+     * @var int[]
      */
     protected $fetchModes = [
         self::FETCH_ASSOC,
@@ -54,7 +54,7 @@ class Statement implements StatementInterface
     /**
      * {@inheritdoc}
      */
-    public function fetchColumn($columnIndex = 0)
+    public function fetchColumn(int $columnIndex = 0)
     {
         return $this->pdoStatement->fetchAll(\PDO::FETCH_COLUMN, $columnIndex);
     }
@@ -70,7 +70,7 @@ class Statement implements StatementInterface
     /**
      * {@inheritdoc}
      */
-    public function fetchOne($columnIndex = 0)
+    public function fetchOne(int $columnIndex = 0)
     {
         return $this->pdoStatement->fetchColumn($columnIndex);
     }
@@ -131,7 +131,7 @@ class Statement implements StatementInterface
      * @param int $fetchMode
      * @throws \PDOException
      */
-    protected function validateFetchMode($fetchMode)
+    protected function validateFetchMode(int $fetchMode)
     {
         if ($fetchMode && !in_array($fetchMode, $this->fetchModes)) {
             throw new \PDOException(sprintf('The fetch mode "%s" is not valid.', $fetchMode));

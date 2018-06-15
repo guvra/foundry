@@ -5,10 +5,8 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder\Clause;
+namespace Guvra\Builder;
 
-use Guvra\Builder\Builder;
-use Guvra\Builder\BuilderInterface;
 use Guvra\ConnectionInterface;
 
 /**
@@ -52,7 +50,7 @@ class Condition extends Builder
     /**
      * {@inheritdoc}
      */
-    public function compile()
+    protected function compile()
     {
         $column = $this->column;
         $operator = $this->operator;
@@ -60,7 +58,7 @@ class Condition extends Builder
 
         // Don't allow empty columns
         if ($column === '' || $column === null) {
-            throw new \UnexpectedValueException('The condition column must not be empty');
+            return '';
         }
 
         // Hard cast the column to string if is a builder object, because __toString must not throw exceptions
@@ -79,6 +77,16 @@ class Condition extends Builder
         }
 
         return $this->buildCondition($column, $operator, $value);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function decompile()
+    {
+        $this->column = null;
+        $this->operator = null;
+        $this->value = null;
     }
 
     /**

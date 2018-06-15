@@ -38,4 +38,12 @@ interface BuilderFactoryInterface
      * @return $this
      */
     public function removeBuilder(string $type);
+
+    /**
+     * Check whether a query builder with this type is defined.
+     *
+     * @param string $type
+     * @return bool
+     */
+    public function hasBuilder(string $type);
 }

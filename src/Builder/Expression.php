@@ -53,8 +53,6 @@ class Expression implements ExpressionInterface
     }
 
     /**
-     * Get the expression value.
-     *
      * @return string
      */
     public function __toString()

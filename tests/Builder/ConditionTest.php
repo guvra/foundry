@@ -5,9 +5,9 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests\Builder\Clause;
+namespace Tests\Builder;
 
-use Guvra\Builder\Clause\ConditionGroup;
+use Guvra\Builder\ConditionGroup;
 use Guvra\Builder\Expression;
 use Guvra\Builder\Parameter;
 use Guvra\Builder\Statement\Select;
@@ -186,13 +186,13 @@ class ConditionTest extends AbstractTestCase
         $this->assertEquals('name = :name', $condition->toString());
     }
 
-    /**
-     * @expectedException \UnexpectedValueException
-     */
-    public function testExceptionWhenColumnIsNull()
+    public function testReset()
     {
-        $condition = $this->createCondition(null);
-        $condition->toString();
+        $condition = $this->createCondition('amount', '=', 50);
+        $this->assertNotEmpty($condition->toString());
+
+        $condition->reset();
+        $this->assertEmpty($condition->toString());
     }
 
     /**

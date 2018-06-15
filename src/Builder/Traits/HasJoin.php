@@ -7,20 +7,13 @@
  */
 namespace Guvra\Builder\Traits;
 
-use Guvra\Builder\Clause\Condition;
-use Guvra\Builder\Clause\JoinGroup;
-use Guvra\Builder\Expression;
+use Guvra\Builder\Clause\Join;
 
 /**
  * Join trait.
  */
 trait HasJoin
 {
-    /**
-     * @var JoinGroup
-     */
-    protected $joinGroupBuilder;
-
     /**
      * Add an inner join clause to the query.
      *
@@ -30,8 +23,7 @@ trait HasJoin
      */
     public function join($table, ...$args)
     {
-        $condition = $this->prepareJoinCondition($args);
-        $this->getJoinGroupBuilder()->join($table, $condition);
+        $this->getPart('join')->addJoin(Join::TYPE_INNER, $table, ...$args);
         $this->compiled = null;
 
         return $this;
@@ -46,8 +38,7 @@ trait HasJoin
      */
     public function joinLeft($table, ...$args)
     {
-        $condition = $this->prepareJoinCondition($args);
-        $this->getJoinGroupBuilder()->joinLeft($table, $condition);
+        $this->getPart('join')->addJoin(Join::TYPE_LEFT, $table, ...$args);
         $this->compiled = null;
 
         return $this;
@@ -62,8 +53,7 @@ trait HasJoin
      */
     public function joinRight($table, ...$args)
     {
-        $condition = $this->prepareJoinCondition($args);
-        $this->getJoinGroupBuilder()->joinRight($table, $condition);
+        $this->getPart('join')->addJoin(Join::TYPE_RIGHT, $table, ...$args);
         $this->compiled = null;
 
         return $this;
@@ -77,7 +67,7 @@ trait HasJoin
      */
     public function joinCross($table)
     {
-        $this->getJoinGroupBuilder()->joinCross($table);
+        $this->getPart('join')->addJoin(Join::TYPE_CROSS, $table);
         $this->compiled = null;
 
         return $this;
@@ -91,50 +81,9 @@ trait HasJoin
      */
     public function joinNatural($table)
     {
-        $this->getJoinGroupBuilder()->joinNatural($table);
+        $this->getPart('join')->addJoin(Join::TYPE_NATURAL, $table);
         $this->compiled = null;
 
         return $this;
-    }
-
-    /**
-     * Build join clauses.
-     *
-     * @return string
-     */
-    protected function buildJoins()
-    {
-        $result = $this->getJoinGroupBuilder()->toString();
-
-        return $result !== '' ? ' ' . $result : '';
-    }
-
-    /**
-     * @param array $args
-     * @return Condition|null
-     */
-    protected function prepareJoinCondition(array $args)
-    {
-        if (empty($args)) {
-            return null;
-        }
-
-        $column = $args[0];
-        $operator = isset($args[1]) ? $args[1] : null;
-        $value = isset($args[2]) ? new Expression($args[2]) : null;
-
-        return $this->builderFactory->create('condition', $column, $operator, $value);
-    }
-
-    /**
-     * @return JoinGroup
-     */
-    protected function getJoinGroupBuilder()
-    {
-        if (!$this->joinGroupBuilder) {
-            $this->joinGroupBuilder = $this->builderFactory->create('joinGroup');
-        }
-
-        return $this->joinGroupBuilder;
     }
 }

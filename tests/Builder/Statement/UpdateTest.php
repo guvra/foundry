@@ -7,6 +7,11 @@
  */
 namespace Tests\Builder\Statement;
 
+use Guvra\Builder\Clause\Join;
+use Guvra\Builder\Clause\Update\Limit;
+use Guvra\Builder\Clause\Update\Table;
+use Guvra\Builder\Clause\Update\Values;
+use Guvra\Builder\Clause\Where;
 use Tests\AbstractTestCase;
 
 /**
@@ -16,8 +21,7 @@ class UpdateTest extends AbstractTestCase
 {
     public function testUpdate()
     {
-        $query = $this->connection
-            ->update()
+        $query = $this->createUpdate()
             ->table('accounts')
             ->values(['name' => 'Account 5'])
             ->where('name', '=', 'Account 1')
@@ -29,29 +33,22 @@ class UpdateTest extends AbstractTestCase
         $this->assertEquals("UPDATE accounts SET name = $quotedNewValue WHERE (name = $quoteOldValue) LIMIT 1", $query->toString());
     }
 
-    /**
-     * @expectedException \UnexpectedValueException
-     */
-    public function testExceptionOnEmptyTable()
+    public function testReset()
     {
-        $query = $this->connection
-            ->update()
-            ->values(['name' => 'Account 5'])
-            ->where('name', '=', 'Account 1');
+        $query = $this->createUpdate()->table('accounts')->values(['balance' => 0]);
+        $this->assertNotEmpty($query->toString());
 
-        $query->toString();
+        $query->reset();
+        $this->assertEmpty($query->toString());
     }
 
-    /**
-     * @expectedException \UnexpectedValueException
-     */
-    public function testExceptionOnEmptyValues()
+    public function testGetPart()
     {
-        $query = $this->connection
-            ->update()
-            ->table('accounts')
-            ->where('name', '=', 'Account 1');
-
-        $query->toString();
+        $query = $this->createUpdate();
+        $this->assertInstanceOf(Table::class, $query->getPart('table'));
+        $this->assertInstanceOf(Join::class, $query->getPart('join'));
+        $this->assertInstanceOf(Where::class, $query->getPart('where'));
+        $this->assertInstanceOf(Values::class, $query->getPart('values'));
+        $this->assertInstanceOf(Limit::class, $query->getPart('limit'));
     }
 }

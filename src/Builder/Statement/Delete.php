@@ -7,51 +7,53 @@
  */
 namespace Guvra\Builder\Statement;
 
-use Guvra\Builder\Builder;
+use Guvra\Builder\Clause\Delete\Limit;
+use Guvra\Builder\Clause\Delete\Table;
+use Guvra\Builder\StatementBuilder;
 use Guvra\Builder\Traits\HasJoin;
 use Guvra\Builder\Traits\HasWhere;
 
 /**
- * Delete builder.
+ * DELETE builder.
  */
-class Delete extends Builder
+class Delete extends StatementBuilder
 {
+    const PART_TABLE = 'table';
+    const PART_JOIN = 'join';
+    const PART_WHERE = 'where';
+    const PART_LIMIT = 'limit';
+
     use HasJoin;
     use HasWhere;
-
-    /**
-     * @var string
-     */
-    protected $table = '';
-
-    /**
-     * @var int
-     */
-    protected $limit = 0;
 
     /**
      * Set the FROM clause.
      *
      * @param string $table
+     * @param string $alias
      * @return $this
      */
-    public function from(string $table)
+    public function from(string $table, string $alias = '')
     {
-        $this->table = $table;
+        /** @var Table $part */
+        $part = $this->getPart('table');
+        $part->setTable($table, $alias);
         $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * Add a limit clause to the query.
+     * SET the LIMIT clause.
      *
      * @param int $max
      * @return $this
      */
     public function limit(int $max)
     {
-        $this->limit = $max;
+        /** @var Limit $part */
+        $part = $this->getPart('limit');
+        $part->setLimit($max);
         $this->compiled = null;
 
         return $this;
@@ -60,37 +62,15 @@ class Delete extends Builder
     /**
      * {@inheritdoc}
      */
-    public function compile()
+    protected function initialize()
     {
-        return 'DELETE'
-            . $this->buildTable()
-            . $this->buildJoins()
-            . $this->buildWhere()
-            . $this->buildLimit();
-    }
+        $this->statementName = 'DELETE';
 
-    /**
-     * Build the table name.
-     *
-     * @return string
-     * @throws \UnexpectedValueException
-     */
-    protected function buildTable()
-    {
-        if ($this->table === '') {
-            throw new \UnexpectedValueException('The table is required.');
-        }
-
-        return " FROM {$this->table}";
-    }
-
-    /**
-     * Build the limit clause.
-     *
-     * @return string
-     */
-    protected function buildLimit()
-    {
-        return $this->limit > 0 ? " LIMIT {$this->limit}" : '';
+        $this->parts = [
+            self::PART_TABLE => 'delete/table',
+            self::PART_JOIN => 'delete/join',
+            self::PART_WHERE => 'delete/where',
+            self::PART_LIMIT => 'delete/limit',
+        ];
     }
 }

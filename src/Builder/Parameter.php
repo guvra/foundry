@@ -59,8 +59,6 @@ class Parameter implements ParameterInterface
     }
 
     /**
-     * Get the parameter value.
-     *
      * @return string
      */
     public function __toString()

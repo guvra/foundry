@@ -50,10 +50,35 @@ class BuilderFactory implements BuilderFactoryInterface
             'delete' => 'Guvra\Builder\{driver\}Statement\Delete',
 
             // Clause builders
-            'join' => 'Guvra\Builder\{driver\}Clause\Join',
-            'joinGroup' => 'Guvra\Builder\{driver\}Clause\JoinGroup',
-            'condition' => 'Guvra\Builder\{driver\}Clause\Condition',
-            'conditionGroup' => 'Guvra\Builder\{driver\}Clause\ConditionGroup',
+            'condition' => 'Guvra\Builder\{driver\}Condition',
+            'conditionGroup' => 'Guvra\Builder\{driver\}ConditionGroup',
+
+            'select/columns' => 'Guvra\Builder\{driver\}Clause\Select\Columns',
+            'select/distinct' => 'Guvra\Builder\{driver\}Clause\Select\Distinct',
+            'select/from' => 'Guvra\Builder\{driver\}Clause\Select\From',
+            'select/join' => 'Guvra\Builder\{driver\}Clause\Join',
+            'select/where' => 'Guvra\Builder\{driver\}Clause\Where',
+            'select/group' => 'Guvra\Builder\{driver\}Clause\Select\Group',
+            'select/having' => 'Guvra\Builder\{driver\}Clause\Having',
+            'select/limit' => 'Guvra\Builder\{driver\}Clause\Select\Limit',
+            'select/order' => 'Guvra\Builder\{driver\}Clause\Select\Order',
+            'select/union' => 'Guvra\Builder\{driver\}Clause\Select\Union',
+
+            'insert/ignore' => 'Guvra\Builder\{driver\}Clause\Insert\Ignore',
+            'insert/table' => 'Guvra\Builder\{driver\}Clause\Insert\Table',
+            'insert/columns' => 'Guvra\Builder\{driver\}Clause\Insert\Columns',
+            'insert/values' => 'Guvra\Builder\{driver\}Clause\Insert\Values',
+
+            'update/table' => 'Guvra\Builder\{driver\}Clause\Update\Table',
+            'update/join' => 'Guvra\Builder\{driver\}Clause\Join',
+            'update/values' => 'Guvra\Builder\{driver\}Clause\Update\Values',
+            'update/where' => 'Guvra\Builder\{driver\}Clause\Where',
+            'update/limit' => 'Guvra\Builder\{driver\}Clause\Update\Limit',
+
+            'delete/table' => 'Guvra\Builder\{driver\}Clause\Delete\Table',
+            'delete/join' => 'Guvra\Builder\{driver\}Clause\Join',
+            'delete/where' => 'Guvra\Builder\{driver\}Clause\Where',
+            'delete/limit' => 'Guvra\Builder\{driver\}Clause\Delete\Limit',
         ];
     }
 
@@ -62,8 +87,8 @@ class BuilderFactory implements BuilderFactoryInterface
      */
     public function create(string $type, ...$args)
     {
-        if (!array_key_exists($type, $this->resolvedBuilders)) {
-            if (!array_key_exists($type, $this->builders)) {
+        if (!$this->isResolved($type)) {
+            if (!$this->hasBuilder($type)) {
                 throw new \UnexpectedValueException(
                     sprintf('The query builder type "%s" does not exist.', $type)
                 );
@@ -88,6 +113,7 @@ class BuilderFactory implements BuilderFactoryInterface
     public function addBuilder(string $type, string $className)
     {
         $this->builders[$type] = $className;
+        unset($this->resolvedBuilders[$type]);
 
         return $this;
     }
@@ -101,5 +127,24 @@ class BuilderFactory implements BuilderFactoryInterface
         unset($this->resolvedBuilders[$type]);
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function hasBuilder(string $type)
+    {
+        return array_key_exists($type, $this->builders);
+    }
+
+    /**
+     * Check whether the builder of the specified type was resolved.
+     *
+     * @param string $type
+     * @return bool
+     */
+    protected function isResolved(string $type)
+    {
+        return array_key_exists($type, $this->resolvedBuilders);
     }
 }

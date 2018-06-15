@@ -17,10 +17,26 @@ public function joinNatural($table);
 Usage:
 
 ```php
-$query->join('accounts', 'accounts.account_id', '=', 'transactions.account_id');
+$query->join('accounts', 'accounts.account_id = transactions.account_id');
 ```
 
-## Complex Conditions
+An alias can be defined by using an array:
+
+```php
+$query->join(['a' => 'accounts', 'a.account_id = t.account_id');
+```
+
+## Advanced Conditions
+
+The 2nd, 3rd et 4th parameters can be used to build a condition, with the same rules as the WHERE clause:
+
+```php
+use Guvra\Builder\Parameter;
+
+$query->join(['a' => 'accounts', 'a.account_id', '=', new Parameter);
+```
+
+## Multiple Conditions
 
 To build a complex join condition, use a callback function:
 
@@ -29,18 +45,7 @@ use Guvra\Builder\Clause\ConditionGroup;
 use Guvra\Builder\Expression;
 
 $query->join('accounts', function (ConditionGroup $group) {
-    $group->where('accounts.account_id', '=', new Expression('transactions.account_id'));
-    $group->where('accounts.description', 'is not null');
+    $group->where('accounts.account_id = transactions.account_id');
+    $group->where('accounts.description', 'not null');
 });
-```
-
-The expression object prevents the value from being escaped by the query builder.
-Otherwise, the value would have been compiled into  `"transactions.account_id"`.
-
-## Plain Condition
-
-Plain strings also work:
-
-```php
-$query->joinLeft('accounts', 'accounts.account_id = transactions.account_id');
 ```

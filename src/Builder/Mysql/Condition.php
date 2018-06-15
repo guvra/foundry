@@ -7,7 +7,7 @@
  */
 namespace Guvra\Builder\Mysql\Clause;
 
-use Guvra\Builder\Clause\Condition as BaseCondition;
+use Guvra\Builder\Condition as BaseCondition;
 
 /**
  * Condition builder for MySQL.

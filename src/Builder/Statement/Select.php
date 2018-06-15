@@ -7,75 +7,37 @@
  */
 namespace Guvra\Builder\Statement;
 
-use Guvra\Builder\Builder;
-use Guvra\Builder\BuilderInterface;
+use Guvra\Builder\Clause\Select\Columns;
+use Guvra\Builder\Clause\Select\Distinct;
+use Guvra\Builder\Clause\Select\From;
+use Guvra\Builder\Clause\Select\Group;
+use Guvra\Builder\Clause\Select\Limit;
+use Guvra\Builder\Clause\Select\Order;
+use Guvra\Builder\Clause\Select\Union;
+use Guvra\Builder\StatementBuilder;
 use Guvra\Builder\Traits\HasHaving;
 use Guvra\Builder\Traits\HasJoin;
 use Guvra\Builder\Traits\HasWhere;
-use Guvra\ConnectionInterface;
 
 /**
- * Select builder.
+ * SELECT builder.
  */
-class Select extends Builder
+class Select extends StatementBuilder
 {
-    const PART_COLUMNS = 1;
-    const PART_DISTINCT = 2;
-    const PART_FROM = 4;
-    const PART_JOIN = 8;
-    const PART_WHERE = 16;
-    const PART_GROUP = 32;
-    const PART_HAVING = 64;
-    const PART_ORDER = 128;
-    const PART_LIMIT = 256;
-    const PART_UNION = 512;
+    const PART_COLUMNS = 'columns';
+    const PART_DISTINCT = 'distinct';
+    const PART_FROM = 'from';
+    const PART_JOIN = 'join';
+    const PART_WHERE = 'where';
+    const PART_GROUP = 'group';
+    const PART_HAVING = 'having';
+    const PART_ORDER = 'order';
+    const PART_LIMIT = 'limit';
+    const PART_UNION = 'union';
 
     use HasJoin;
     use HasWhere;
     use HasHaving;
-
-    /**
-     * @var array
-     */
-    protected $columns = [];
-
-    /**
-     * @var bool
-     */
-    protected $distinct = false;
-
-    /**
-     * @var array
-     */
-    protected $tables = [];
-
-    /**
-     * @var array
-     */
-    protected $groups = [];
-
-    /**
-     * @var array
-     */
-    protected $orders = [];
-
-    /**
-     * @var array
-     */
-    protected $limit = ['start' => 0, 'max' => 0];
-
-    /**
-     * @var array
-     */
-    protected $unions = [];
-
-    /**
-     * @param ConnectionInterface $connection
-     */
-    public function __construct(ConnectionInterface $connection)
-    {
-        parent::__construct($connection);
-    }
 
     /**
      * Set the columns to select.
@@ -89,7 +51,9 @@ class Select extends Builder
             $columns = [$columns];
         }
 
-        $this->columns = $columns;
+        /** @var Columns $part */
+        $part = $this->getPart('columns');
+        $part->setColumns($columns);
         $this->compiled = null;
 
         return $this;
@@ -103,7 +67,9 @@ class Select extends Builder
      */
     public function distinct(bool $value = true)
     {
-        $this->distinct = $value;
+        /** @var Distinct $part */
+        $part = $this->getPart('distinct');
+        $part->setValue($value);
         $this->compiled = null;
 
         return $this;
@@ -121,7 +87,9 @@ class Select extends Builder
             $tables = [$tables];
         }
 
-        $this->tables = $tables;
+        /** @var From $part */
+        $part = $this->getPart('from');
+        $part->setTables($tables);
         $this->compiled = null;
 
         return $this;
@@ -139,7 +107,9 @@ class Select extends Builder
             $columns = [$columns];
         }
 
-        $this->groups = array_unique(array_merge($this->groups, $columns));
+        /** @var Group $part */
+        $part = $this->getPart('group');
+        $part->setColumns($columns);
         $this->compiled = null;
 
         return $this;
@@ -148,13 +118,18 @@ class Select extends Builder
     /**
      * Add an order by clause to the query.
      *
-     * @param string $column
-     * @param string $direction
+     * @param string|array $orders
      * @return $this
      */
-    public function order(string $column, string $direction = 'ASC')
+    public function order($orders)
     {
-        $this->orders[] = compact('column', 'direction');
+        if (!is_array($orders)) {
+            $orders = [$orders];
+        }
+
+        /** @var Order $part */
+        $part = $this->getPart('order');
+        $part->setOrders($orders);
         $this->compiled = null;
 
         return $this;
@@ -169,7 +144,10 @@ class Select extends Builder
      */
     public function limit(int $max, int $start = 0)
     {
-        $this->limit = compact('max', 'start');
+        /** @var Limit $part */
+        $part = $this->getPart('limit');
+        $part->setLimit($max);
+        $part->setOffset($start);
         $this->compiled = null;
 
         return $this;
@@ -178,13 +156,15 @@ class Select extends Builder
     /**
      * Add a union clause to the query.
      *
-     * @param BuilderInterface|string $query
+     * @param mixed $query
      * @param bool $all
      * @return $this
      */
     public function union($query, $all = false)
     {
-        $this->unions[] = compact('query', 'all');
+        /** @var Union $part */
+        $part = $this->getPart('union');
+        $part->addUnion($query, $all);
         $this->compiled = null;
 
         return $this;
@@ -193,195 +173,21 @@ class Select extends Builder
     /**
      * {@inheritdoc}
      */
-    public function compile()
+    protected function initialize()
     {
-        return 'SELECT'
-            . $this->buildDistinct()
-            . $this->buildColumns()
-            . $this->buildFroms()
-            . $this->buildJoins()
-            . $this->buildWhere()
-            . $this->buildGroupBy()
-            . $this->buildHaving()
-            . $this->buildOrder()
-            . $this->buildLimit()
-            . $this->buildUnions();
-    }
+        $this->statementName = 'SELECT';
 
-    /**
-     * Build the distinct clause.
-     *
-     * @return string
-     */
-    protected function buildDistinct()
-    {
-        return $this->distinct ? ' DISTINCT' : '';
-    }
-
-    /**
-     * @return string
-     */
-    protected function buildColumns()
-    {
-        if (empty($this->columns)) {
-            return ' *';
-        }
-
-        $values = [];
-
-        foreach ($this->columns as $alias => $column) {
-            if (is_object($column) && $column instanceof Builder) {
-                $column = "({$column->toString()})";
-            }
-
-            $values[] = is_string($alias) && $alias !== '' ? "$column AS $alias" : "$column";
-        }
-
-        return ' ' . implode(', ', $values);
-    }
-
-    /**
-     * @return string
-     */
-    protected function buildFroms()
-    {
-        if (empty($this->tables)) {
-            return '';
-        }
-
-        $values = [];
-        foreach ($this->tables as $alias => $table) {
-            $values[] = is_string($alias) && $alias !== '' ? "$table AS $alias" : "$table";
-        }
-
-        return ' FROM ' . implode(', ', $values);
-    }
-
-    /**
-     * Build a group by clause.
-     *
-     * @return string
-     */
-    protected function buildGroupBy()
-    {
-        if (empty($this->groups)) {
-            return '';
-        }
-
-        return ' GROUP BY ' . implode(', ', $this->groups);
-    }
-
-    /**
-     * Build the order clause.
-     *
-     * @return string
-     */
-    protected function buildOrder()
-    {
-        if (empty($this->orders)) {
-            return '';
-        }
-
-        $parts = [];
-
-        foreach ($this->orders as $order) {
-            $column = $order['column'];
-            $direction = strtoupper($order['direction']);
-            $parts[] = "$column $direction";
-        }
-
-        return ' ORDER BY ' . implode(', ', $parts);
-    }
-
-    /**
-     * Build the limit clause.
-     *
-     * @return string
-     */
-    protected function buildLimit()
-    {
-        if ($this->limit['max'] === 0 && $this->limit['start'] === 0) {
-            return '';
-        }
-
-        $parts = [];
-
-        if ($this->limit['max'] > 0) {
-            $parts[] = 'LIMIT ' . $this->limit['max'];
-        }
-
-        if ($this->limit['start'] > 0) {
-            $parts[] = 'OFFSET ' . $this->limit['start'];
-        }
-
-        return ' ' . implode(' ', $parts);
-    }
-
-    /**
-     * Build union clauses.
-     *
-     * @return string
-     */
-    protected function buildUnions()
-    {
-        $value = '';
-        foreach ($this->unions as $union) {
-            $value .= $union['all'] ? " UNION ALL {$union['query']}" : " UNION {$union['query']}";
-        }
-
-        return $value;
-    }
-
-    /**
-     * Reset a part of the query (or the whole query).
-     *
-     * @param int|null $part
-     * @return $this
-     */
-    public function reset($part = null)
-    {
-        $this->compiled = null;
-
-        if (!$part || $part & self::PART_COLUMNS) {
-            $this->columns = [];
-        }
-
-        if (!$part || $part & self::PART_DISTINCT) {
-            $this->distinct = false;
-        }
-
-        if (!$part || $part & self::PART_FROM) {
-            $this->tables = [];
-        }
-
-        if (!$part || $part & self::PART_JOIN) {
-            $this->joinGroupBuilder = null;
-        }
-
-        if (!$part || $part & self::PART_WHERE) {
-            $this->whereBuilder = null;
-        }
-
-        if (!$part || $part & self::PART_GROUP) {
-            $this->groups = [];
-        }
-
-        if (!$part || $part & self::PART_HAVING) {
-            $this->havingBuilder = null;
-        }
-
-        if (!$part || $part & self::PART_ORDER) {
-            $this->orders = [];
-        }
-
-        if (!$part || $part & self::PART_LIMIT) {
-            $this->limit = ['start' => 0, 'max' => 0];
-        }
-
-        if (!$part || $part & self::PART_UNION) {
-            $this->unions = [];
-        }
-
-        return $this;
+        $this->parts = [
+            self::PART_DISTINCT => 'select/distinct',
+            self::PART_COLUMNS => 'select/columns',
+            self::PART_FROM => 'select/from',
+            self::PART_JOIN => 'select/join',
+            self::PART_WHERE => 'select/where',
+            self::PART_GROUP => 'select/group',
+            self::PART_HAVING => 'select/having',
+            self::PART_ORDER => 'select/order',
+            self::PART_LIMIT => 'select/limit',
+            self::PART_UNION => 'select/union',
+        ];
     }
 }

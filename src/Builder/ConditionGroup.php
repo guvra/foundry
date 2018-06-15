@@ -5,10 +5,7 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder\Clause;
-
-use Guvra\Builder\Builder;
-use Guvra\Builder\BuilderInterface;
+namespace Guvra\Builder;
 
 /**
  * Condition group builder.
@@ -26,56 +23,52 @@ class ConditionGroup extends Builder
     protected $enclose = true;
 
     /**
+     * Add a "AND" condition.
      * @param mixed $column
-     * @param mixed|null $operator
+     * @param string|null $operator
      * @param mixed|null $value
      * @return $this
      */
-    public function where($column, $operator = null, $value = null)
+    public function where($column, string $operator = null, $value = null)
     {
         $condition = $this->builderFactory->create('condition', $column, $operator, $value);
 
-        return $this->addCondition($condition);
+        return $this->addCondition('AND', $condition);
     }
 
     /**
+     * Add a "OR" condition.
+     *
      * @param mixed $column
-     * @param mixed|null $operator
+     * @param string|null $operator
      * @param mixed|null $value
      * @return $this
      */
-    public function orWhere($column, $operator = null, $value = null)
+    public function orWhere($column, string $operator = null, $value = null)
     {
         $condition = $this->builderFactory->create('condition', $column, $operator, $value);
 
-        return $this->addOrCondition($condition);
+        return $this->addCondition('OR', $condition);
     }
 
     /**
+     * Add a condition.
+     *
+     * @param string $type
      * @param BuilderInterface $condition
      * @return $this
      */
-    public function addCondition(BuilderInterface $condition)
+    protected function addCondition(string $type, BuilderInterface $condition)
     {
-        $this->conditions[] = ['AND', $condition];
+        $this->conditions[] = [$type, $condition];
         $this->compiled = null;
 
         return $this;
     }
 
     /**
-     * @param BuilderInterface $condition
-     * @return $this
-     */
-    public function addOrCondition(BuilderInterface $condition)
-    {
-        $this->conditions[] = ['OR', $condition];
-        $this->compiled = null;
-
-        return $this;
-    }
-
-    /**
+     * Set whether to enclose the query.
+     *
      * @param bool $value
      * @return $this
      */
@@ -89,7 +82,7 @@ class ConditionGroup extends Builder
     /**
      * {@inheritdoc}
      */
-    public function compile()
+    protected function compile()
     {
         $first = true;
         $result = '';
@@ -114,5 +107,14 @@ class ConditionGroup extends Builder
         }
 
         return $result;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function decompile()
+    {
+        unset($this->conditions);
+        $this->conditions = [];
     }
 }

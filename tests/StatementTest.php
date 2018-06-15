@@ -7,8 +7,6 @@
  */
 namespace Tests;
 
-use Guvra\Builder\Statement\Select;
-
 /**
  * Test the statements.
  */

@@ -30,7 +30,7 @@ interface StatementInterface
      * @param int $columnIndex
      * @return array|false
      */
-    public function fetchColumn($columnIndex = 0);
+    public function fetchColumn(int $columnIndex = 0);
 
     /**
      * Fetch the next row.
@@ -50,7 +50,7 @@ interface StatementInterface
      * @param int $columnIndex
      * @return mixed|false
      */
-    public function fetchOne($columnIndex = 0);
+    public function fetchOne(int $columnIndex = 0);
 
     /**
      * Advance to the next row.

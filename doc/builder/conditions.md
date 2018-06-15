@@ -46,10 +46,10 @@ WHERE (name = nickname)
 Usage:
 
 ```php
-$query->where('description', 'is null');
+$query->where('description', 'null');
 ```
 
-To negate the condition, use `is not null`.
+To negate the condition, use `not null`.
 
 ## BETWEEN / NOT BETWEEN
 

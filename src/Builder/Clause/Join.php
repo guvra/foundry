@@ -8,10 +8,10 @@
 namespace Guvra\Builder\Clause;
 
 use Guvra\Builder\Builder;
-use Guvra\ConnectionInterface;
+use Guvra\Builder\Condition;
 
 /**
- * Join builder.
+ * JOIN builder.
  */
 class Join extends Builder
 {
@@ -22,84 +22,71 @@ class Join extends Builder
     const TYPE_NATURAL = 'natural';
 
     /**
-     * @var string
+     * @var array
      */
-    protected $type = '';
+    protected $joins = [];
 
     /**
-     * @var string
-     */
-    protected $table = '';
-
-    /**
-     * @var string
-     */
-    protected $alias = '';
-
-    /**
-     * @var Condition|null
-     */
-    protected $condition;
-
-    /**
-     * @param ConnectionInterface $connection
+     * Add a join to the group.
+     *
      * @param string $type
      * @param string|array $table
-     * @param Condition|null $condition
+     * @param mixed ...$args
+     * @return $this
      */
-    public function __construct(ConnectionInterface $connection, string $type, $table, Condition $condition = null)
+    public function addJoin(string $type, $table, ...$args)
     {
-        parent::__construct($connection);
-        $this->type = $type;
-        $this->condition = $condition;
-        $this->setTable($table);
+        $condition = null;
+
+        if (!empty($args)) {
+            $column = $args[0];
+            $operator = isset($args[1]) ? $args[1] : null;
+            $value = isset($args[2]) ? $args[2] : null;
+            $condition = $this->builderFactory->create('condition', $column, $operator, $value);
+        }
+
+        $this->joins[] = ['type' => $type, 'table' => $table, 'condition' => $condition];
+        $this->compiled = null;
+
+        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function compile()
+    protected function compile()
     {
-        $clause = $this->getClauseName($this->type);
-        $result = "$clause $this->table";
+        $result = '';
+        $first = true;
 
-        if ($this->alias) {
-            $result .= " AS $this->alias";
-        }
+        foreach ($this->joins as $join) {
+            $joinResult = $this->buildClause($join['type']);
+            $joinResult .= $this->buildTable($join['table']);
+            $joinResult .= $this->buildCondition($join['condition']);
 
-        if ($this->condition) {
-            $conditionResult = $this->condition->toString();
-            if ($conditionResult !== '') {
-                $result .= ' ON ' . $conditionResult;
-            }
+            $result .= $first ? $joinResult : ' ' . $joinResult;
+            $first = false;
         }
 
         return $result;
     }
 
     /**
-     * @param string|array $table
+     * {@inheritdoc}
      */
-    protected function setTable($table)
+    protected function decompile()
     {
-        if (is_array($table)) {
-            $alias = key($table);
-            if (is_string($alias) && $alias !== '') {
-                $this->alias = $alias;
-            }
-            $this->table = $table[$alias];
-        } else {
-            $this->table = $table;
-        }
+        unset($this->joins);
+        $this->joins = [];
     }
 
     /**
-     * Get the clause name by type.
+     * Build the clause name.
      *
      * @param string $type
      * @return string
      */
-    protected function getClauseName($type)
+    protected function buildClause(string $type)
     {
         switch ($type) {
             case self::TYPE_LEFT:
@@ -117,5 +104,52 @@ class Join extends Builder
             default:
                 return 'JOIN';
         }
+    }
+
+    /**
+     * Build the table declaration.
+     *
+     * @param string|array $table
+     * @return string
+     */
+    protected function buildTable($table)
+    {
+        $result = '';
+        $alias = '';
+
+        // Build the table
+        if (is_array($table)) {
+            $aliasCandidate = key($table);
+            if (is_string($aliasCandidate) && $aliasCandidate !== '') {
+                $alias = $aliasCandidate;
+            }
+            $table = $table[$alias];
+        }
+
+        if ((string) $table !== '') {
+            $result = $alias !== '' ? ' ' . $table . ' AS ' . $alias : ' ' . $table;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Build the condition.
+     *
+     * @param Condition|null $condition
+     * @return string
+     */
+    protected function buildCondition(?Condition $condition)
+    {
+        $result = '';
+
+        if ($condition) {
+            $result = $condition->toString();
+            if ($result !== '') {
+                $result = ' ON ' . $result;
+            }
+        }
+
+        return $result;
     }
 }

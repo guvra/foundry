@@ -8,10 +8,10 @@ use Guvra\Builder\Parameter;
 $select = $connection
     ->select()
     ->from('transactions')
-    ->join('accounts', 'accounts.account_id',  '=', 'transactions.account_id')
+    ->join('accounts', 'accounts.account_id transactions.account_id')
     ->where('accounts.name', 'like', new Parameter('name'))
     ->orWhere('accounts.balance', 'between', [0, 1000])
-    ->order('transactions.date', 'desc');
+    ->order('transactions.date desc');
 
 $statement = $connection->query($select, [':name' => '%stock%']);
 $rows = $statement->fetchAll();
@@ -37,9 +37,9 @@ You can revert it:
 $query->distinct(false);
 ```
 
-## Expressions
+## Fields
 
-The select expressions can be defined with the `columns` method.
+The select fields can be defined with the `columns` method.
 
 ```php
 public function columns(array $columns);
@@ -51,6 +51,20 @@ Usage:
 
 ```php
 $query->columns(['name', 'min_amount' => 'min(amount)']);
+```
+
+You can use a sub query:
+
+```php
+$query->columns(['count' => $subQuery]); // $subQuery is a select object
+```
+
+You can also build the sub query with a callback:
+
+```php
+$query->columns(['count' => function (Select $subQuery) {
+    // Build the sub query here
+}]);
 ```
 
 ## FROM
@@ -117,22 +131,19 @@ The methods are named after the same logic (e.g. `havingIn` instead of `whereIn`
 The ORDER BY clause can be defined with the `order` method.
 
 ```php
-public function order(string $column, string $direction = 'ASC');
+public function order($orders);
 ```
 
 Usage:
 
 ```php
-$query->order('position', 'desc');
+$query->order('position desc');
 ```
 
-Calling the method multiple times will not remove the previously declared order(s).
-To do so, you can reset the query part:
+To set multiple orders:
 
 ```php
-use Guvra\Builder\Statement\Select;
-
-$query->reset(Select::PART_ORDER);
+$query->order(['position desc', 'id desc']);
 ```
 
 ## LIMIT
@@ -166,18 +177,9 @@ $query->union($subQuery1);
 $query->union($subQuery2, true);
 ```
 
-Calling the method multiple times will not remove the previously declared union(s).
-To do so, you can reset the query part:
-
-```php
-use Guvra\Builder\Statement\Select;
-
-$query->reset(Select::PART_UNION);
-```
-
 ## Reset
 
-Conditions, joins, orders and unions are additive.
+Conditions, joins and unions are additive.
 For example, adding a join to the query will not remove previously declared joins.
 
 To reset a part of the query, you can use the `reset` method:
@@ -199,3 +201,5 @@ To completely reset the query:
 ```php
 $query->reset();
 ```
+
+The `reset` method is also available for other statement (insert, update, delete).

@@ -7,15 +7,16 @@
  */
 namespace Tests;
 
-use Guvra\Builder\Clause\Condition;
-use Guvra\Builder\Clause\ConditionGroup;
+use Guvra\Builder\Clause\Having;
+use Guvra\Builder\Clause\Where;
+use Guvra\Builder\Condition;
+use Guvra\Builder\ConditionGroup;
 use Guvra\Builder\Clause\Join;
-use Guvra\Builder\Clause\JoinGroup;
 use Guvra\Builder\Statement\Delete;
 use Guvra\Builder\Statement\Insert;
 use Guvra\Builder\Statement\Select;
+use Guvra\Builder\Statement\Update;
 use Guvra\Connection;
-use Guvra\Builder\BuilderFactoryInterface;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -95,6 +96,14 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
+     * @return Update
+     */
+    protected function createUpdate()
+    {
+        return $this->connection->update();
+    }
+
+    /**
      * @return Delete
      */
     protected function createDelete()
@@ -120,21 +129,26 @@ abstract class AbstractTestCase extends TestCase
     }
 
     /**
-     * @param string $type
-     * @param string|array $table
-     * @param Condition $condition
      * @return Join
      */
-    protected function createJoin(string $type, $table, Condition $condition = null)
+    protected function createJoin()
     {
-        return $this->connection->getBuilderFactory()->create('join', $type, $table, $condition);
+        return $this->connection->getBuilderFactory()->create('select/join');
     }
 
     /**
-     * @return JoinGroup
+     * @return Where
      */
-    protected function createJoinGroup()
+    protected function createWhere()
     {
-        return $this->connection->getBuilderFactory()->create('joinGroup');
+        return $this->connection->getBuilderFactory()->create('select/where');
+    }
+
+    /**
+     * @return Having
+     */
+    protected function createHaving()
+    {
+        return $this->connection->getBuilderFactory()->create('select/having');
     }
 }
