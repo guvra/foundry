@@ -1,18 +1,18 @@
 <?php
 /**
- * PHP Query Builder.
+ * Foundry Query Builder.
  *
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder\Statement;
+namespace Foundry\Builder\Statement;
 
-use Guvra\Builder\Clause\Update\Limit;
-use Guvra\Builder\Clause\Update\Table;
-use Guvra\Builder\Clause\Update\Values;
-use Guvra\Builder\StatementBuilder;
-use Guvra\Builder\Traits\HasJoin;
-use Guvra\Builder\Traits\HasWhere;
+use Foundry\Builder\Clause\Update\Limit;
+use Foundry\Builder\Clause\Update\Table;
+use Foundry\Builder\Clause\Update\Values;
+use Foundry\Builder\StatementBuilder;
+use Foundry\Builder\Traits\HasJoin;
+use Foundry\Builder\Traits\HasWhere;
 
 /**
  * UPDATE builder.

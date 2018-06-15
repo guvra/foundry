@@ -31,7 +31,7 @@ $query->join(['a' => 'accounts', 'a.account_id = t.account_id');
 The 2nd, 3rd et 4th parameters can be used to build a condition, with the same rules as the WHERE clause:
 
 ```php
-use Guvra\Parameter;
+use Foundry\Parameter;
 
 $query->join(['a' => 'accounts', 'a.account_id', '=', new Parameter);
 ```
@@ -41,7 +41,7 @@ $query->join(['a' => 'accounts', 'a.account_id', '=', new Parameter);
 To build a complex join condition, use a callback function:
 
 ```php
-use Guvra\Builder\Clause\ConditionGroup;
+use Foundry\Builder\Clause\ConditionGroup;
 
 $query->join('accounts', function (ConditionGroup $group) {
     $group->where('accounts.account_id = transactions.account_id');

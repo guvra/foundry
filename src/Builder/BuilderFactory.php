@@ -1,13 +1,13 @@
 <?php
 /**
- * PHP Query Builder.
+ * Foundry Query Builder.
  *
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder;
+namespace Foundry\Builder;
 
-use Guvra\ConnectionInterface;
+use Foundry\ConnectionInterface;
 
 /**
  * Query builder factory.
@@ -44,41 +44,41 @@ class BuilderFactory implements BuilderFactoryInterface
         $this->driverNamespace = ucfirst($connection->getDriver());
         $this->builders = $builders + [
             // Query builders
-            'select' => 'Guvra\Builder\{driver\}Statement\Select',
-            'insert' => 'Guvra\Builder\{driver\}Statement\Insert',
-            'update' => 'Guvra\Builder\{driver\}Statement\Update',
-            'delete' => 'Guvra\Builder\{driver\}Statement\Delete',
+            'select' => 'Foundry\Builder\{driver\}Statement\Select',
+            'insert' => 'Foundry\Builder\{driver\}Statement\Insert',
+            'update' => 'Foundry\Builder\{driver\}Statement\Update',
+            'delete' => 'Foundry\Builder\{driver\}Statement\Delete',
 
             // Clause builders
-            'condition' => 'Guvra\Builder\{driver\}Condition',
-            'conditionGroup' => 'Guvra\Builder\{driver\}ConditionGroup',
+            'condition' => 'Foundry\Builder\{driver\}Condition',
+            'conditionGroup' => 'Foundry\Builder\{driver\}ConditionGroup',
 
-            'select/columns' => 'Guvra\Builder\{driver\}Clause\Select\Columns',
-            'select/distinct' => 'Guvra\Builder\{driver\}Clause\Select\Distinct',
-            'select/from' => 'Guvra\Builder\{driver\}Clause\Select\From',
-            'select/join' => 'Guvra\Builder\{driver\}Clause\Join',
-            'select/where' => 'Guvra\Builder\{driver\}Clause\Where',
-            'select/group' => 'Guvra\Builder\{driver\}Clause\Select\Group',
-            'select/having' => 'Guvra\Builder\{driver\}Clause\Having',
-            'select/limit' => 'Guvra\Builder\{driver\}Clause\Select\Limit',
-            'select/order' => 'Guvra\Builder\{driver\}Clause\Select\Order',
-            'select/union' => 'Guvra\Builder\{driver\}Clause\Select\Union',
+            'select/columns' => 'Foundry\Builder\{driver\}Clause\Select\Columns',
+            'select/distinct' => 'Foundry\Builder\{driver\}Clause\Select\Distinct',
+            'select/from' => 'Foundry\Builder\{driver\}Clause\Select\From',
+            'select/join' => 'Foundry\Builder\{driver\}Clause\Join',
+            'select/where' => 'Foundry\Builder\{driver\}Clause\Where',
+            'select/group' => 'Foundry\Builder\{driver\}Clause\Select\Group',
+            'select/having' => 'Foundry\Builder\{driver\}Clause\Having',
+            'select/limit' => 'Foundry\Builder\{driver\}Clause\Select\Limit',
+            'select/order' => 'Foundry\Builder\{driver\}Clause\Select\Order',
+            'select/union' => 'Foundry\Builder\{driver\}Clause\Select\Union',
 
-            'insert/ignore' => 'Guvra\Builder\{driver\}Clause\Insert\Ignore',
-            'insert/table' => 'Guvra\Builder\{driver\}Clause\Insert\Table',
-            'insert/columns' => 'Guvra\Builder\{driver\}Clause\Insert\Columns',
-            'insert/values' => 'Guvra\Builder\{driver\}Clause\Insert\Values',
+            'insert/ignore' => 'Foundry\Builder\{driver\}Clause\Insert\Ignore',
+            'insert/table' => 'Foundry\Builder\{driver\}Clause\Insert\Table',
+            'insert/columns' => 'Foundry\Builder\{driver\}Clause\Insert\Columns',
+            'insert/values' => 'Foundry\Builder\{driver\}Clause\Insert\Values',
 
-            'update/table' => 'Guvra\Builder\{driver\}Clause\Update\Table',
-            'update/join' => 'Guvra\Builder\{driver\}Clause\Join',
-            'update/values' => 'Guvra\Builder\{driver\}Clause\Update\Values',
-            'update/where' => 'Guvra\Builder\{driver\}Clause\Where',
-            'update/limit' => 'Guvra\Builder\{driver\}Clause\Update\Limit',
+            'update/table' => 'Foundry\Builder\{driver\}Clause\Update\Table',
+            'update/join' => 'Foundry\Builder\{driver\}Clause\Join',
+            'update/values' => 'Foundry\Builder\{driver\}Clause\Update\Values',
+            'update/where' => 'Foundry\Builder\{driver\}Clause\Where',
+            'update/limit' => 'Foundry\Builder\{driver\}Clause\Update\Limit',
 
-            'delete/table' => 'Guvra\Builder\{driver\}Clause\Delete\Table',
-            'delete/join' => 'Guvra\Builder\{driver\}Clause\Join',
-            'delete/where' => 'Guvra\Builder\{driver\}Clause\Where',
-            'delete/limit' => 'Guvra\Builder\{driver\}Clause\Delete\Limit',
+            'delete/table' => 'Foundry\Builder\{driver\}Clause\Delete\Table',
+            'delete/join' => 'Foundry\Builder\{driver\}Clause\Join',
+            'delete/where' => 'Foundry\Builder\{driver\}Clause\Where',
+            'delete/limit' => 'Foundry\Builder\{driver\}Clause\Delete\Limit',
         ];
     }
 

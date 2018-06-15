@@ -5,12 +5,12 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests;
+namespace Foundry\Tests;
 
 /**
  * Test the statements.
  */
-class StatementTest extends AbstractTestCase
+class StatementTest extends TestCase
 {
     public function testFetchAll()
     {

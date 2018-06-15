@@ -5,21 +5,21 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests;
+namespace Foundry\Tests;
 
-use Guvra\Builder\BuilderFactory;
-use Guvra\Builder\Statement\Delete;
-use Guvra\Builder\Statement\Insert;
-use Guvra\Builder\Statement\Select;
-use Guvra\Builder\Statement\Update;
-use Guvra\Connection;
-use Guvra\Expression;
-use Guvra\Parameter;
+use Foundry\Builder\BuilderFactory;
+use Foundry\Builder\Statement\Delete;
+use Foundry\Builder\Statement\Insert;
+use Foundry\Builder\Statement\Select;
+use Foundry\Builder\Statement\Update;
+use Foundry\Connection;
+use Foundry\Expression;
+use Foundry\Parameter;
 
 /**
  * Test the connection bag.
  */
-class ConnectionTest extends AbstractTestCase
+class ConnectionTest extends TestCase
 {
     public function testDriver()
     {

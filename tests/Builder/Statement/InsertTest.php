@@ -5,18 +5,18 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests\Builder\Statement;
+namespace Foundry\Tests\Builder\Statement;
 
-use Guvra\Builder\Clause\Insert\Columns;
-use Guvra\Builder\Clause\Insert\Ignore;
-use Guvra\Builder\Clause\Insert\Table;
-use Guvra\Builder\Clause\Insert\Values;
-use Tests\AbstractTestCase;
+use Foundry\Builder\Clause\Insert\Columns;
+use Foundry\Builder\Clause\Insert\Ignore;
+use Foundry\Builder\Clause\Insert\Table;
+use Foundry\Builder\Clause\Insert\Values;
+use Foundry\Tests\TestCase;
 
 /**
  * Test the INSERT query builder.
  */
-class InsertTest extends AbstractTestCase
+class InsertTest extends TestCase
 {
     public function testInsertSingle()
     {

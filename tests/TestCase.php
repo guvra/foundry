@@ -5,24 +5,24 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests;
+namespace Foundry\Tests;
 
-use Guvra\Builder\Clause\Having;
-use Guvra\Builder\Clause\Where;
-use Guvra\Builder\Condition;
-use Guvra\Builder\ConditionGroup;
-use Guvra\Builder\Clause\Join;
-use Guvra\Builder\Statement\Delete;
-use Guvra\Builder\Statement\Insert;
-use Guvra\Builder\Statement\Select;
-use Guvra\Builder\Statement\Update;
-use Guvra\Connection;
-use PHPUnit\Framework\TestCase;
+use Foundry\Builder\Clause\Having;
+use Foundry\Builder\Clause\Where;
+use Foundry\Builder\Condition;
+use Foundry\Builder\ConditionGroup;
+use Foundry\Builder\Clause\Join;
+use Foundry\Builder\Statement\Delete;
+use Foundry\Builder\Statement\Insert;
+use Foundry\Builder\Statement\Select;
+use Foundry\Builder\Statement\Update;
+use Foundry\Connection;
+use PHPUnit\Framework\TestCase as BaseTestCase;
 
 /**
  * Test Connection/Bag/Builder classes.
  */
-abstract class AbstractTestCase extends TestCase
+abstract class TestCase extends BaseTestCase
 {
     /**
      * @var Connection

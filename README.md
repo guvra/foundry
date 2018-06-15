@@ -2,7 +2,7 @@
 
 ## Description
 
-A simple yet powerful SQL query builder written in PHP.
+Foundry is a simple yet powerful SQL query builder written in PHP.
 
 ## Documentation
 
@@ -18,7 +18,7 @@ A simple yet powerful SQL query builder written in PHP.
 Initialization:
 
 ```php
-use Guvra\Connection;
+use Foundry\Connection;
 
 $connection = new Connection(['dsn' => 'sqlite:db.sqlite']);
 ```
@@ -26,7 +26,7 @@ $connection = new Connection(['dsn' => 'sqlite:db.sqlite']);
 Select:
 
 ```php
-use Guvra\Builder\Parameter;
+use Foundry\Builder\Parameter;
 
 $select = $connection
     ->select()

@@ -30,7 +30,7 @@ String values are always escaped.
 To prevent a value from being escaped, you can use an Expression object:
 
 ```php
-use Guvra\Expression;
+use Foundry\Expression;
 
 $query->where('name', '=', new Expression('nickname'));
 ```
@@ -124,7 +124,7 @@ $query->where('amount = 1000');
 Usage:
 
 ```php
-use Guvra\Parameter;
+use Foundry\Parameter;
 
 $query = $connection
     ->select()
@@ -149,7 +149,7 @@ It is not recommended though, the purpose of expressions is to disable string es
 Usage:
 
 ```php
-use Guvra\Builder\Parameter;
+use Foundry\Builder\Parameter;
 
 $query = $connection
     ->select()
@@ -174,7 +174,7 @@ It is not recommended though, the purpose of expressions is to disable string es
 To build complex combinations of AND/OR conditions, you can use condition groups.
 
 ```php
-use Guvra\Builder\Clause\ConditionGroup;
+use Foundry\Builder\Clause\ConditionGroup;
 
 $query->where('description', 'like', '%computer%');
 $query->where(function (ConditionGroup $condition) {
@@ -208,7 +208,7 @@ This may not always yield the same results, since the third parameter is escaped
 It also works with callbacks:
 
 ```php
-use Guvra\Builder\Statement\Select;
+use Foundry\Builder\Statement\Select;
 
 $query->where('id', '=', function (Select $subQuery) {
     $subQuery->from('user')->columns('user_id')->where('username', '=', 'admin');

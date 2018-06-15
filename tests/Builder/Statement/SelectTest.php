@@ -5,25 +5,25 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests\Builder\Statement;
+namespace Foundry\Tests\Builder\Statement;
 
-use Guvra\Builder\Clause\Having;
-use Guvra\Builder\Clause\Join;
-use Guvra\Builder\Clause\Select\Columns;
-use Guvra\Builder\Clause\Select\Distinct;
-use Guvra\Builder\Clause\Select\From;
-use Guvra\Builder\Clause\Select\Group;
-use Guvra\Builder\Clause\Select\Limit;
-use Guvra\Builder\Clause\Select\Order;
-use Guvra\Builder\Clause\Select\Union;
-use Guvra\Builder\Clause\Where;
-use Guvra\Builder\Statement\Select;
-use Tests\AbstractTestCase;
+use Foundry\Builder\Clause\Having;
+use Foundry\Builder\Clause\Join;
+use Foundry\Builder\Clause\Select\Columns;
+use Foundry\Builder\Clause\Select\Distinct;
+use Foundry\Builder\Clause\Select\From;
+use Foundry\Builder\Clause\Select\Group;
+use Foundry\Builder\Clause\Select\Limit;
+use Foundry\Builder\Clause\Select\Order;
+use Foundry\Builder\Clause\Select\Union;
+use Foundry\Builder\Clause\Where;
+use Foundry\Builder\Statement\Select;
+use Foundry\Tests\TestCase;
 
 /**
  * Test the SELECT query builder.
  */
-class SelectTest extends AbstractTestCase
+class SelectTest extends TestCase
 {
     public function testDistinct()
     {

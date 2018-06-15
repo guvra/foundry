@@ -1,14 +1,14 @@
 <?php
 /**
- * PHP Query Builder.
+ * Foundry Query Builder.
  *
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra;
+namespace Foundry;
 
-use Guvra\Builder\BuilderInterface;
-use Guvra\Builder\BuilderFactoryInterface;
+use Foundry\Builder\BuilderInterface;
+use Foundry\Builder\BuilderFactoryInterface;
 
 /**
  * Connection interface.

@@ -1,13 +1,13 @@
 <?php
 /**
- * PHP Query Builder.
+ * Foundry Query Builder.
  *
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder\Clause\Update;
+namespace Foundry\Builder\Clause\Update;
 
-use Guvra\Builder\Builder;
+use Foundry\Builder\Builder;
 
 /**
  * Values builder.

@@ -5,19 +5,19 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests\Builder\Statement;
+namespace Foundry\Tests\Builder\Statement;
 
-use Guvra\Builder\Clause\Join;
-use Guvra\Builder\Clause\Update\Limit;
-use Guvra\Builder\Clause\Update\Table;
-use Guvra\Builder\Clause\Update\Values;
-use Guvra\Builder\Clause\Where;
-use Tests\AbstractTestCase;
+use Foundry\Builder\Clause\Join;
+use Foundry\Builder\Clause\Update\Limit;
+use Foundry\Builder\Clause\Update\Table;
+use Foundry\Builder\Clause\Update\Values;
+use Foundry\Builder\Clause\Where;
+use Foundry\Tests\TestCase;
 
 /**
  * Test the UPDATE query builder.
  */
-class UpdateTest extends AbstractTestCase
+class UpdateTest extends TestCase
 {
     public function testUpdate()
     {

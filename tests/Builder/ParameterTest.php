@@ -5,15 +5,15 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests\Builder;
+namespace Foundry\Tests\Builder;
 
-use Guvra\Parameter;
-use Tests\AbstractTestCase;
+use Foundry\Parameter;
+use Foundry\Tests\TestCase;
 
 /**
  * Test the parameter object.
  */
-class ParameterTest extends AbstractTestCase
+class ParameterTest extends TestCase
 {
     public function testParameterWithValue()
     {

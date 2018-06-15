@@ -1,11 +1,11 @@
 <?php
 /**
- * PHP Query Builder.
+ * Foundry Query Builder.
  *
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra;
+namespace Foundry;
 
 /**
  * Expression interface.

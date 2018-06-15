@@ -5,18 +5,18 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests\Builder\Statement;
+namespace Foundry\Tests\Builder\Statement;
 
-use Guvra\Builder\Clause\Delete\Limit;
-use Guvra\Builder\Clause\Delete\Table;
-use Guvra\Builder\Clause\Join;
-use Guvra\Builder\Clause\Where;
-use Tests\AbstractTestCase;
+use Foundry\Builder\Clause\Delete\Limit;
+use Foundry\Builder\Clause\Delete\Table;
+use Foundry\Builder\Clause\Join;
+use Foundry\Builder\Clause\Where;
+use Foundry\Tests\TestCase;
 
 /**
  * Test the DELETE query builder.
  */
-class DeleteTest extends AbstractTestCase
+class DeleteTest extends TestCase
 {
     public function testDelete()
     {

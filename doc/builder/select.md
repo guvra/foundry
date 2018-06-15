@@ -3,7 +3,7 @@
 ## Example
 
 ```php
-use Guvra\Parameter;
+use Foundry\Parameter;
 
 $select = $connection
     ->select()
@@ -191,7 +191,7 @@ public function reset($part = null);
 Usage:
 
 ```php
-use Guvra\Builder\Statement\Select;
+use Foundry\Builder\Statement\Select;
 
 $query->reset(Select::PART_JOIN);
 ```

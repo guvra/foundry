@@ -1,13 +1,13 @@
 <?php
 /**
- * PHP Query Builder.
+ * Foundry Query Builder.
  *
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder;
+namespace Foundry\Builder;
 
-use Guvra\ConnectionInterface;
+use Foundry\ConnectionInterface;
 
 /**
  * Condition builder.
@@ -200,7 +200,9 @@ class Condition extends Builder
      */
     protected function buildIn($column, $values)
     {
-        $value = is_array($values) ? '(' . implode(',', $this->escapeValues($values)) . ')' : $this->buildValue($values);
+        $value = is_array($values)
+            ? '(' . implode(',', $this->escapeValues($values)) . ')'
+            : $this->buildValue($values);
 
         return "$column IN $value";
     }
@@ -212,7 +214,9 @@ class Condition extends Builder
      */
     protected function buildNotIn($column, $values)
     {
-        $value = is_array($values) ? '(' . implode(',', $this->escapeValues($values)) . ')' : $this->buildValue($values);
+        $value = is_array($values)
+            ? '(' . implode(',', $this->escapeValues($values)) . ')'
+            : $this->buildValue($values);
 
         return "$column NOT IN $value";
     }
@@ -263,15 +267,9 @@ class Condition extends Builder
             return 'null';
         }
 
-        if (is_callable($value)) {
-            return $this->buildCallable($value, 'select', true);
-        }
+        $value = $this->escapeValue($value);
 
-        if ($value instanceof BuilderInterface) {
-            return '(' . $value->toString() . ')';
-        }
-
-        return $this->escapeValue($value);
+        return $this->parseSubQuery($value, true);
     }
 
     /**

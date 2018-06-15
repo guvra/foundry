@@ -5,14 +5,14 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests\Builder\Clause;
+namespace Foundry\Tests\Builder\Clause;
 
-use Tests\AbstractTestCase;
+use Foundry\Tests\TestCase;
 
 /**
  * Test the WHERE builder.
  */
-class WhereTest extends AbstractTestCase
+class WhereTest extends TestCase
 {
     public function testWhere()
     {

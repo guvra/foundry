@@ -1,13 +1,13 @@
 <?php
 /**
- * PHP Query Builder.
+ * Foundry Query Builder.
  *
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder\Sqlite\Clause\Insert;
+namespace Foundry\Builder\Sqlite\Clause\Insert;
 
-use Guvra\Builder\Clause\Insert\Ignore as BaseIgnore;
+use Foundry\Builder\Clause\Insert\Ignore as BaseIgnore;
 
 /**
  * IGNORE builder for SQLite.

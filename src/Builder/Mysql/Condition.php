@@ -1,13 +1,13 @@
 <?php
 /**
- * PHP Query Builder.
+ * Foundry Query Builder.
  *
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder\Mysql\Clause;
+namespace Foundry\Builder\Mysql\Clause;
 
-use Guvra\Builder\Condition as BaseCondition;
+use Foundry\Builder\Condition as BaseCondition;
 
 /**
  * Condition builder for MySQL.

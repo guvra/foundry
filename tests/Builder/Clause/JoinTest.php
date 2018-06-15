@@ -5,17 +5,17 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests\Builder\Clause;
+namespace Foundry\Tests\Builder\Clause;
 
-use Guvra\Builder\Clause\Join;
-use Guvra\Builder\ConditionGroup;
-use Guvra\Expression;
-use Tests\AbstractTestCase;
+use Foundry\Builder\Clause\Join;
+use Foundry\Builder\ConditionGroup;
+use Foundry\Expression;
+use Foundry\Tests\TestCase;
 
 /**
  * Test the JOIN builder.
  */
-class JoinTest extends AbstractTestCase
+class JoinTest extends TestCase
 {
     public function testInnerJoin()
     {

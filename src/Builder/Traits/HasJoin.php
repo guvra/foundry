@@ -1,13 +1,13 @@
 <?php
 /**
- * PHP Query Builder.
+ * Foundry Query Builder.
  *
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder\Traits;
+namespace Foundry\Builder\Traits;
 
-use Guvra\Builder\Clause\Join;
+use Foundry\Builder\Clause\Join;
 
 /**
  * Join trait.

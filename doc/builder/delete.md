@@ -34,7 +34,7 @@ The following [section of the documentation](conditions.md) explains how to use 
 Usage:
 
 ```php
-use Guvra\Parameter;
+use Foundry\Parameter;
 
 $query = $connection
     ->delete()
@@ -49,7 +49,7 @@ $statement = $connection->query($query, ['Account 1']);
 Usage:
 
 ```php
-use Guvra\Parameter;
+use Foundry\Parameter;
 
 $query = $connection
     ->delete()

@@ -1,14 +1,14 @@
 <?php
 /**
- * PHP Query Builder.
+ * Foundry Query Builder.
  *
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder\Clause;
+namespace Foundry\Builder\Clause;
 
-use Guvra\Builder\Builder;
-use Guvra\Builder\Condition;
+use Foundry\Builder\Builder;
+use Foundry\Builder\Condition;
 
 /**
  * JOIN builder.

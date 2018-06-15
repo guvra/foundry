@@ -5,15 +5,15 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests;
+namespace Foundry\Tests;
 
-use Guvra\ConnectionBag;
-use Guvra\ConnectionInterface;
+use Foundry\ConnectionBag;
+use Foundry\ConnectionInterface;
 
 /**
  * Test the connection bag.
  */
-class ConnectionBagTest extends AbstractTestCase
+class ConnectionBagTest extends TestCase
 {
     /**
      * Test the connection bag.

@@ -5,15 +5,15 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests\Builder;
+namespace Foundry\Tests\Builder;
 
-use Guvra\Builder\ConditionGroup;
-use Tests\AbstractTestCase;
+use Foundry\Builder\ConditionGroup;
+use Foundry\Tests\TestCase;
 
 /**
  * Test the condition group builder.
  */
-class ConditionGroupTest extends AbstractTestCase
+class ConditionGroupTest extends TestCase
 {
     public function testBasicUsage()
     {

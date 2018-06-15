@@ -5,14 +5,14 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests\Builder\Clause;
+namespace Foundry\Tests\Builder\Clause;
 
-use Tests\AbstractTestCase;
+use Foundry\Tests\TestCase;
 
 /**
  * Test the HAVING builder.
  */
-class HavingTest extends AbstractTestCase
+class HavingTest extends TestCase
 {
     public function testWhere()
     {

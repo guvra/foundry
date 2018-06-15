@@ -5,18 +5,18 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests\Builder;
+namespace Foundry\Tests\Builder;
 
-use Guvra\Builder\ConditionGroup;
-use Guvra\Builder\Statement\Select;
-use Guvra\Expression;
-use Guvra\Parameter;
-use Tests\AbstractTestCase;
+use Foundry\Builder\ConditionGroup;
+use Foundry\Builder\Statement\Select;
+use Foundry\Expression;
+use Foundry\Parameter;
+use Foundry\Tests\TestCase;
 
 /**
  * Test the condition builder.
  */
-class ConditionTest extends AbstractTestCase
+class ConditionTest extends TestCase
 {
     public function testBasicOperator()
     {

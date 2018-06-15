@@ -5,7 +5,7 @@
 Create a new connection:
 
 ```php
-use Guvra\Builder\Connection;
+use Foundry\Builder\Connection;
 
 $connection = new Connection(['dsn' => 'sqlite::memory:']);
 ```
@@ -30,7 +30,7 @@ DSN to use:
 The `ConnectionBag` class allows to name and store multiples connections.
 
 ```php
-use Guvra\Builder\ConnectionBag;
+use Foundry\Builder\ConnectionBag;
 
 $connectionBag = new ConnectionBag;
 

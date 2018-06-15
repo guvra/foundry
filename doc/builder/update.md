@@ -43,7 +43,7 @@ The following [section of the documentation](conditions.md) explains how to use 
 Usage:
 
 ```php
-use Guvra\Parameter;
+use Foundry\Parameter;
 
 $query = $connection
     ->update()
@@ -59,7 +59,7 @@ $statement = $connection->query($query, ['Account 3', 'Account 1']);
 Usage:
 
 ```php
-use Guvra\Parameter;
+use Foundry\Parameter;
 
 $query = $connection
     ->update()

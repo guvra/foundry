@@ -1,19 +1,19 @@
 <?php
 /**
- * PHP Query Builder.
+ * Foundry Query Builder.
  *
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra;
+namespace Foundry;
 
-use Guvra\Builder\BuilderFactory;
-use Guvra\Builder\BuilderFactoryInterface;
-use Guvra\Builder\BuilderInterface;
-use Guvra\Builder\Statement\Delete;
-use Guvra\Builder\Statement\Insert;
-use Guvra\Builder\Statement\Select;
-use Guvra\Builder\Statement\Update;
+use Foundry\Builder\BuilderFactory;
+use Foundry\Builder\BuilderFactoryInterface;
+use Foundry\Builder\BuilderInterface;
+use Foundry\Builder\Statement\Delete;
+use Foundry\Builder\Statement\Insert;
+use Foundry\Builder\Statement\Select;
+use Foundry\Builder\Statement\Update;
 
 /**
  * Connection class.

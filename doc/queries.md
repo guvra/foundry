@@ -41,7 +41,7 @@ $statement->execute($bind);
 Example:
 
 ```php
-use Guvra\Parameter;
+use Foundry\Parameter;
 
 $query = $connection
     ->select()

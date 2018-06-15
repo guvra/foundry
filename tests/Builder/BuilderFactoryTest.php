@@ -5,16 +5,16 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests\Builder;
+namespace Foundry\Tests\Builder;
 
-use Guvra\Builder\BuilderFactory;
-use Guvra\Builder\Statement\Select;
-use Tests\AbstractTestCase;
+use Foundry\Builder\BuilderFactory;
+use Foundry\Builder\Statement\Select;
+use Foundry\Tests\TestCase;
 
 /**
  * Test the builder factory.
  */
-class BuilderFactoryTest extends AbstractTestCase
+class BuilderFactoryTest extends TestCase
 {
     public function testBuilderCreation()
     {

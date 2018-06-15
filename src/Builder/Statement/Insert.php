@@ -1,17 +1,17 @@
 <?php
 /**
- * PHP Query Builder.
+ * Foundry Query Builder.
  *
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder\Statement;
+namespace Foundry\Builder\Statement;
 
-use Guvra\Builder\Clause\Insert\Columns;
-use Guvra\Builder\Clause\Insert\Ignore;
-use Guvra\Builder\Clause\Insert\Table;
-use Guvra\Builder\Clause\Insert\Values;
-use Guvra\Builder\StatementBuilder;
+use Foundry\Builder\Clause\Insert\Columns;
+use Foundry\Builder\Clause\Insert\Ignore;
+use Foundry\Builder\Clause\Insert\Table;
+use Foundry\Builder\Clause\Insert\Values;
+use Foundry\Builder\StatementBuilder;
 
 /**
  * INSERT builder.

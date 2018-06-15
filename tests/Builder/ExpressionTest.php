@@ -5,15 +5,15 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Tests\Builder;
+namespace Foundry\Tests\Builder;
 
-use Guvra\Expression;
-use Tests\AbstractTestCase;
+use Foundry\Expression;
+use Foundry\Tests\TestCase;
 
 /**
  * Test the expression object.
  */
-class ExpressionTest extends AbstractTestCase
+class ExpressionTest extends TestCase
 {
     public function testExpressionWithValue()
     {
