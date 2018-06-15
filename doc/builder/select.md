@@ -3,7 +3,7 @@
 ## Example
 
 ```php
-use Guvra\Builder\Parameter;
+use Guvra\Parameter;
 
 $select = $connection
     ->select()

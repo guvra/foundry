@@ -14,8 +14,6 @@ use Guvra\Builder\Statement\Delete;
 use Guvra\Builder\Statement\Insert;
 use Guvra\Builder\Statement\Select;
 use Guvra\Builder\Statement\Update;
-use Guvra\Builder\ExpressionInterface;
-use Guvra\Builder\ParameterInterface;
 
 /**
  * Connection class.

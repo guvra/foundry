@@ -5,15 +5,15 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder;
+namespace Guvra;
 
 /**
- * Parameter interface.
+ * Expression interface.
  */
-interface ParameterInterface
+interface ExpressionInterface
 {
     /**
-     * Get the parameter value.
+     * Get the value of the expression.
      *
      * @return string
      */

@@ -7,7 +7,7 @@
  */
 namespace Tests\Builder;
 
-use Guvra\Builder\Expression;
+use Guvra\Expression;
 use Tests\AbstractTestCase;
 
 /**

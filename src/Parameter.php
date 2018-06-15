@@ -5,23 +5,23 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Guvra\Builder;
+namespace Guvra;
 
 /**
- * Expression class.
+ * Parameter class.
  * Its value will never be quoted by the query builders.
  */
-class Expression implements ExpressionInterface
+class Parameter implements ParameterInterface
 {
     /**
-     * @var string
+     * @var string|null
      */
-    protected $value;
+    protected $value = null;
 
     /**
      * @param string $value
      */
-    public function __construct(string $value)
+    public function __construct(string $value = '?')
     {
         $this->setValue($value);
     }
@@ -36,7 +36,11 @@ class Expression implements ExpressionInterface
     protected function setValue(string $value)
     {
         if ($value === '') {
-            throw new \UnexpectedValueException('The expression value is required.');
+            throw new \UnexpectedValueException('The parameter value is required.');
+        }
+
+        if ($value !== '?' && strpos($value, ':') !== 0) {
+            $value = ':' . $value;
         }
 
         $this->value = $value;
@@ -45,7 +49,9 @@ class Expression implements ExpressionInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Get the parameter value.
+     *
+     * @return string
      */
     public function toString()
     {

@@ -8,9 +8,9 @@
 namespace Tests\Builder;
 
 use Guvra\Builder\ConditionGroup;
-use Guvra\Builder\Expression;
-use Guvra\Builder\Parameter;
 use Guvra\Builder\Statement\Select;
+use Guvra\Expression;
+use Guvra\Parameter;
 use Tests\AbstractTestCase;
 
 /**

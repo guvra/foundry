@@ -30,7 +30,7 @@ String values are always escaped.
 To prevent a value from being escaped, you can use an Expression object:
 
 ```php
-use Guvra\Builder\Expression;
+use Guvra\Expression;
 
 $query->where('name', '=', new Expression('nickname'));
 ```
@@ -124,7 +124,7 @@ $query->where('amount = 1000');
 Usage:
 
 ```php
-use Guvra\Builder\Parameter;
+use Guvra\Parameter;
 
 $query = $connection
     ->select()

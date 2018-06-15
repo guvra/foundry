@@ -9,7 +9,7 @@ namespace Tests\Builder\Clause;
 
 use Guvra\Builder\Clause\Join;
 use Guvra\Builder\ConditionGroup;
-use Guvra\Builder\Expression;
+use Guvra\Expression;
 use Tests\AbstractTestCase;
 
 /**

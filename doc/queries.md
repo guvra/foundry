@@ -41,7 +41,7 @@ $statement->execute($bind);
 Example:
 
 ```php
-use Guvra\Builder\Parameter;
+use Guvra\Parameter;
 
 $query = $connection
     ->select()

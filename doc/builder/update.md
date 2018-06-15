@@ -43,6 +43,8 @@ The following [section of the documentation](conditions.md) explains how to use 
 Usage:
 
 ```php
+use Guvra\Parameter;
+
 $query = $connection
     ->update()
     ->table('accounts')
@@ -57,7 +59,7 @@ $statement = $connection->query($query, ['Account 3', 'Account 1']);
 Usage:
 
 ```php
-use Guvra\Builder\Parameter;
+use Guvra\Parameter;
 
 $query = $connection
     ->update()

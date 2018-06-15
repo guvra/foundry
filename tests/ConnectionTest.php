@@ -8,13 +8,13 @@
 namespace Tests;
 
 use Guvra\Builder\BuilderFactory;
-use Guvra\Builder\Expression;
-use Guvra\Builder\Parameter;
 use Guvra\Builder\Statement\Delete;
 use Guvra\Builder\Statement\Insert;
 use Guvra\Builder\Statement\Select;
 use Guvra\Builder\Statement\Update;
 use Guvra\Connection;
+use Guvra\Expression;
+use Guvra\Parameter;
 
 /**
  * Test the connection bag.
