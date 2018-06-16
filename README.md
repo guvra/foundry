@@ -1,4 +1,4 @@
-# PHP Query Builder
+# Foundry Query Builder
 
 ## Description
 

@@ -22,6 +22,6 @@ class WhereTest extends TestCase
             ->orWhere('amount', '<', 1000)
             ->where('description', 'is null');
 
-        $this->assertEquals('WHERE (amount > 1000) OR (amount < 1000) AND (description IS NULL)', $where->toString());
+        $this->assertCompiles('WHERE (amount > 1000) OR (amount < 1000) AND (description IS NULL)', $where);
     }
 }

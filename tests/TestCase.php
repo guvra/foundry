@@ -7,6 +7,7 @@
  */
 namespace Foundry\Tests;
 
+use Foundry\Builder\BuilderInterface;
 use Foundry\Builder\Clause\Having;
 use Foundry\Builder\Clause\Where;
 use Foundry\Builder\Condition;
@@ -17,6 +18,7 @@ use Foundry\Builder\Statement\Insert;
 use Foundry\Builder\Statement\Select;
 use Foundry\Builder\Statement\Update;
 use Foundry\Connection;
+use PHPUnit\Framework\ExpectationFailedException;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
 /**
@@ -38,11 +40,31 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function tearDown()
+    {
+        $this->connection = null;
+    }
+
+    /**
+     * Assert that a builder compiles into the specified SQL output.
+     *
+     * @param string $sql
+     * @param BuilderInterface $builder
+     * @throws ExpectationFailedException
+     */
+    protected function assertCompiles(string $sql, BuilderInterface $builder)
+    {
+        $this->assertEquals($sql, $builder->toString());
+    }
+
+    /**
      * Execute the specified callback after generation of test tables.
      *
      * @param callable $callback
      */
-    protected function withTestTables($callback)
+    protected function withTestTables(callable $callback)
     {
         // Make sure the table do not already exist
         $this->connection->query('DROP TABLE IF EXISTS `accounts`');
@@ -67,14 +89,6 @@ abstract class TestCase extends BaseTestCase
 
         // Drop the tables
         $this->connection->query('DROP TABLE `accounts`');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function tearDown()
-    {
-        $this->connection = null;
     }
 
     /**

@@ -88,10 +88,14 @@ abstract class Builder implements BuilderInterface
             $subQuery = $this->builderFactory->create('select');
             call_user_func($value, $subQuery);
             $value = $subQuery->toString();
-            if ($enclose) $value = '(' . $value . ')';
+            if ($enclose) {
+                $value = '(' . $value . ')';
+            }
         } elseif (is_object($value) && $value instanceof BuilderInterface) {
             $value = $value->toString();
-            if ($enclose) $value = '(' . $value . ')';
+            if ($enclose) {
+                $value = '(' . $value . ')';
+            }
         }
 
         return $value;

@@ -27,7 +27,7 @@ class DeleteTest extends TestCase
 
         $quotedValue = $this->connection->quote('Account 1');
 
-        $this->assertEquals("DELETE FROM accounts WHERE (name = $quotedValue) LIMIT 1", $query->toString());
+        $this->assertCompiles("DELETE FROM accounts WHERE (name = $quotedValue) LIMIT 1", $query);
     }
 
     public function testReset()
@@ -46,5 +46,13 @@ class DeleteTest extends TestCase
         $this->assertInstanceOf(Join::class, $query->getPart('join'));
         $this->assertInstanceOf(Where::class, $query->getPart('where'));
         $this->assertInstanceOf(Limit::class, $query->getPart('limit'));
+    }
+
+    /**
+     * @expectedException  \UnexpectedValueException
+     */
+    public function testExceptionOnUndefinedPart()
+    {
+        $this->createSelect()->getPart('notexists');
     }
 }

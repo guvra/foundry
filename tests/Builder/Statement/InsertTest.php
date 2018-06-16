@@ -27,7 +27,7 @@ class InsertTest extends TestCase
 
         $expectedStringValue = $this->connection->quote('Account 3');
 
-        $this->assertEquals("INSERT INTO accounts (name, balance) VALUES ($expectedStringValue,500)", $query->toString());
+        $this->assertCompiles("INSERT INTO accounts (name, balance) VALUES ($expectedStringValue,500)", $query);
     }
 
     public function testInsertMultiple()
@@ -37,7 +37,7 @@ class InsertTest extends TestCase
             ->columns(['col1', 'col2'])
             ->values([[0, 10, 20], [30, 40, 50]]);
 
-        $this->assertEquals('INSERT INTO table (col1, col2) VALUES (0,10,20),(30,40,50)', $query->toString());
+        $this->assertCompiles('INSERT INTO table (col1, col2) VALUES (0,10,20),(30,40,50)', $query);
     }
 
     public function testEmptyValues()
@@ -56,7 +56,7 @@ class InsertTest extends TestCase
             ->columns(['balance'])
             ->values([500]);
 
-        $this->assertEquals('INSERT OR IGNORE INTO accounts (balance) VALUES (500)', $query->toString());
+        $this->assertCompiles('INSERT OR IGNORE INTO accounts (balance) VALUES (500)', $query);
     }
 
     public function testReset()
@@ -75,5 +75,13 @@ class InsertTest extends TestCase
         $this->assertInstanceOf(Table::class, $query->getPart('table'));
         $this->assertInstanceOf(Columns::class, $query->getPart('columns'));
         $this->assertInstanceOf(Values::class, $query->getPart('values'));
+    }
+
+    /**
+     * @expectedException  \UnexpectedValueException
+     */
+    public function testExceptionOnUndefinedPart()
+    {
+        $this->createSelect()->getPart('notexists');
     }
 }

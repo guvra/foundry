@@ -22,6 +22,6 @@ class HavingTest extends TestCase
             ->orWhere('amount', '<', 1000)
             ->where('description', 'is null');
 
-        $this->assertEquals('HAVING (amount > 1000) OR (amount < 1000) AND (description IS NULL)', $having->toString());
+        $this->assertCompiles('HAVING (amount > 1000) OR (amount < 1000) AND (description IS NULL)', $having);
     }
 }

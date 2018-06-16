@@ -27,10 +27,10 @@ class UpdateTest extends TestCase
             ->where('name', '=', 'Account 1')
             ->limit(1);
 
-        $quoteOldValue = $this->connection->quote('Account 1');
-        $quotedNewValue = $this->connection->quote('Account 5');
+        $oldValue = $this->connection->quote('Account 1');
+        $newValue = $this->connection->quote('Account 5');
 
-        $this->assertEquals("UPDATE accounts SET name = $quotedNewValue WHERE (name = $quoteOldValue) LIMIT 1", $query->toString());
+        $this->assertCompiles("UPDATE accounts SET name = $newValue WHERE (name = $oldValue) LIMIT 1", $query);
     }
 
     public function testReset()
@@ -50,5 +50,13 @@ class UpdateTest extends TestCase
         $this->assertInstanceOf(Where::class, $query->getPart('where'));
         $this->assertInstanceOf(Values::class, $query->getPart('values'));
         $this->assertInstanceOf(Limit::class, $query->getPart('limit'));
+    }
+
+    /**
+     * @expectedException \UnexpectedValueException
+     */
+    public function testExceptionOnUndefinedPart()
+    {
+        $this->createSelect()->getPart('notexists');
     }
 }

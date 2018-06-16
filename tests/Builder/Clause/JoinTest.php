@@ -21,57 +21,67 @@ class JoinTest extends TestCase
     {
         $joinGroup = $this->createJoin();
         $joinGroup->addJoin(Join::TYPE_INNER, 'accounts', 'accounts.account_id = transactions.account_id');
-        $this->assertEquals('JOIN accounts ON accounts.account_id = transactions.account_id', $joinGroup->toString());
+        $this->assertCompiles('JOIN accounts ON accounts.account_id = transactions.account_id', $joinGroup);
 
         $joinGroup->addJoin(Join::TYPE_INNER, ['c' => 'categories']);
-        $this->assertEquals('JOIN accounts ON accounts.account_id = transactions.account_id JOIN categories AS c', $joinGroup->toString());
+        $this->assertCompiles(
+            'JOIN accounts ON accounts.account_id = transactions.account_id JOIN categories AS c',
+            $joinGroup
+        );
     }
 
     public function testLeftJoin()
     {
         $joinGroup = $this->createJoin();
         $joinGroup->addJoin(Join::TYPE_LEFT, 'accounts', 'accounts.account_id = transactions.account_id');
-        $this->assertEquals('LEFT JOIN accounts ON accounts.account_id = transactions.account_id', $joinGroup->toString());
+        $this->assertCompiles('LEFT JOIN accounts ON accounts.account_id = transactions.account_id', $joinGroup);
 
         $joinGroup->addJoin(Join::TYPE_LEFT, ['c' => 'categories']);
-        $this->assertEquals('LEFT JOIN accounts ON accounts.account_id = transactions.account_id LEFT JOIN categories AS c', $joinGroup->toString());
+        $this->assertCompiles(
+            'LEFT JOIN accounts ON accounts.account_id = transactions.account_id LEFT JOIN categories AS c',
+            $joinGroup
+        );
     }
 
     public function testRightJoin()
     {
         $joinGroup = $this->createJoin();
         $joinGroup->addJoin(Join::TYPE_RIGHT, 'accounts', 'accounts.account_id = transactions.account_id');
-        $this->assertEquals('RIGHT JOIN accounts ON accounts.account_id = transactions.account_id', $joinGroup->toString());
+        $this->assertCompiles('RIGHT JOIN accounts ON accounts.account_id = transactions.account_id', $joinGroup);
 
         $joinGroup->addJoin(Join::TYPE_RIGHT, ['c' => 'categories']);
-        $this->assertEquals('RIGHT JOIN accounts ON accounts.account_id = transactions.account_id RIGHT JOIN categories AS c', $joinGroup->toString());
+        $this->assertCompiles(
+            'RIGHT JOIN accounts ON accounts.account_id = transactions.account_id RIGHT JOIN categories AS c',
+            $joinGroup
+        );
     }
 
     public function testCrossJoin()
     {
         $joinGroup = $this->createJoin();
         $joinGroup->addJoin(Join::TYPE_CROSS, 'accounts');
-        $this->assertEquals('CROSS JOIN accounts', $joinGroup->toString());
+        $this->assertCompiles('CROSS JOIN accounts', $joinGroup);
 
         $joinGroup->addJoin(Join::TYPE_CROSS, ['c' => 'categories']);
-        $this->assertEquals('CROSS JOIN accounts CROSS JOIN categories AS c', $joinGroup->toString());
+        $this->assertCompiles('CROSS JOIN accounts CROSS JOIN categories AS c', $joinGroup);
     }
 
     public function testNaturalJoin()
     {
         $joinGroup = $this->createJoin();
         $joinGroup->addJoin(Join::TYPE_NATURAL, 'accounts');
-        $this->assertEquals('NATURAL JOIN accounts', $joinGroup->toString());
+        $this->assertCompiles('NATURAL JOIN accounts', $joinGroup);
 
         $joinGroup->addJoin(Join::TYPE_NATURAL, ['c' => 'categories']);
-        $this->assertEquals('NATURAL JOIN accounts NATURAL JOIN categories AS c', $joinGroup->toString());
+        $this->assertCompiles('NATURAL JOIN accounts NATURAL JOIN categories AS c', $joinGroup);
     }
 
     public function testJoinWithCondition()
     {
         $joinGroup = $this->createJoin();
-        $joinGroup->addJoin(Join::TYPE_INNER, 'accounts', 'accounts.account_id', '=', new Expression('transactions.account_id'));
-        $this->assertEquals('JOIN accounts ON accounts.account_id = transactions.account_id', $joinGroup->toString());
+        $expression = new Expression('transactions.account_id');
+        $joinGroup->addJoin(Join::TYPE_INNER, 'accounts', 'accounts.account_id', '=', $expression);
+        $this->assertCompiles('JOIN accounts ON accounts.account_id = transactions.account_id', $joinGroup);
     }
 
     public function testJoinWithConditionGroup()
@@ -82,7 +92,10 @@ class JoinTest extends TestCase
                 ->where('accounts.balance > 0');
         });
 
-        $this->assertEquals('JOIN accounts ON (accounts.transaction_id = transactions.transaction_id) AND (accounts.balance > 0)', $joinGroup->toString());
+        $this->assertCompiles(
+            'JOIN accounts ON (accounts.transaction_id = transactions.transaction_id) AND (accounts.balance > 0)',
+            $joinGroup
+        );
     }
 
     public function testReset()
