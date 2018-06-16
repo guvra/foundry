@@ -149,7 +149,7 @@ It is not recommended though, the purpose of expressions is to disable string es
 Usage:
 
 ```php
-use Foundry\Builder\Parameter;
+use Foundry\Parameter;
 
 $query = $connection
     ->select()

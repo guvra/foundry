@@ -26,7 +26,7 @@ $connection = new Connection(['dsn' => 'sqlite:db.sqlite']);
 Select:
 
 ```php
-use Foundry\Builder\Parameter;
+use Foundry\Parameter;
 
 $select = $connection
     ->select()
