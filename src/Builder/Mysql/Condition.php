@@ -5,7 +5,7 @@
  * @copyright 2018 guvra
  * @license   MIT Licence
  */
-namespace Foundry\Builder\Mysql\Clause;
+namespace Foundry\Builder\Mysql;
 
 use Foundry\Builder\Condition as BaseCondition;
 
@@ -32,8 +32,8 @@ class Condition extends BaseCondition
     }
 
     /**
-     * @param string $column
-     * @param array|string|null $values
+     * @param mixed $column
+     * @param mixed $values
      * @return string
      */
     protected function buildInSet($column, $values)
@@ -49,7 +49,7 @@ class Condition extends BaseCondition
 
     /**
      * @param string $column
-     * @param array|string|null $values
+     * @param mixed $values
      * @return string
      */
     protected function buildNotInSet($column, $values)
