@@ -57,6 +57,6 @@ class UpdateTest extends TestCase
      */
     public function testExceptionOnUndefinedPart()
     {
-        $this->createSelect()->getPart('notexists');
+        $this->createUpdate()->getPart('notexists');
     }
 }

@@ -49,10 +49,10 @@ class DeleteTest extends TestCase
     }
 
     /**
-     * @expectedException  \UnexpectedValueException
+     * @expectedException \UnexpectedValueException
      */
     public function testExceptionOnUndefinedPart()
     {
-        $this->createSelect()->getPart('notexists');
+        $this->createDelete()->getPart('notexists');
     }
 }

@@ -78,10 +78,10 @@ class InsertTest extends TestCase
     }
 
     /**
-     * @expectedException  \UnexpectedValueException
+     * @expectedException \UnexpectedValueException
      */
     public function testExceptionOnUndefinedPart()
     {
-        $this->createSelect()->getPart('notexists');
+        $this->createInsert()->getPart('notexists');
     }
 }
