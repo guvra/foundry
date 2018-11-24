@@ -179,7 +179,7 @@ $query->union($subQuery2, true);
 
 ## Reset
 
-Conditions, joins and unions are additive.
+All clauses are additive.
 For example, adding a join to the query will not remove previously declared joins.
 
 To reset a part of the query, you can use the `reset` method:
@@ -202,4 +202,4 @@ To completely reset the query:
 $query->reset();
 ```
 
-The `reset` method is also available for other statement (insert, update, delete).
+The `reset` method is also provided by the other statements (insert, update, delete).

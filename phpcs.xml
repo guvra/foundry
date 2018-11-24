@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="Slim coding standard">
+<ruleset name="Foundry Coding Standard">
     <description>Foundry Coding Standard</description>
 
     <!-- Colors -->

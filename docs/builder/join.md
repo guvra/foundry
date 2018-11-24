@@ -23,7 +23,19 @@ $query->join('accounts', 'accounts.account_id = transactions.account_id');
 An alias can be defined by using an array:
 
 ```php
-$query->join(['a' => 'accounts', 'a.account_id = t.account_id');
+$query->join(['a' => 'accounts'], 'a.account_id = t.account_id');
+```
+
+## Filter the columns to join
+
+By default, the select includes all columns from all tables.
+
+To filter columns, you need to use the `columns` the method:
+
+```php
+$query->from(['t' => 'transactions'])
+    ->columns(['t.*', 'a.name'])
+    ->join(['a' => 'accounts'], 'a.account_id = t.account_id');
 ```
 
 ## Advanced Conditions
@@ -33,7 +45,7 @@ The 2nd, 3rd et 4th parameters can be used to build a condition, with the same r
 ```php
 use Foundry\Parameter;
 
-$query->join(['a' => 'accounts', 'a.account_id', '=', new Parameter);
+$query->join(['a' => 'accounts'], 'a.account_id', '=', new Parameter);
 ```
 
 ## Multiple Conditions

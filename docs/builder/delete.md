@@ -58,3 +58,30 @@ $query = $connection
 
 $statement = $connection->query($query, [':name' => 'Account 1']);
 ```
+
+## Reset
+
+All clauses are additive.
+For example, adding a join to the query will not remove previously declared joins.
+
+To reset a part of the query, you can use the `reset` method:
+
+```php
+public function reset($part = null);
+```
+
+Usage:
+
+```php
+use Foundry\Builder\Statement\Delete;
+
+$query->reset(Delete::PART_JOIN);
+```
+
+To completely reset the query:
+
+```php
+$query->reset();
+```
+
+The `reset` method is also provided by the other statements (select, insert, update).

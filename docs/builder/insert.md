@@ -32,3 +32,29 @@ $query = $connection
 
 $statement = $connection->query($query);
 ```
+
+## Reset
+
+Adding values to the query will not remove previously declared values.
+
+To reset a part of the query, you can use the `reset` method:
+
+```php
+public function reset($part = null);
+```
+
+Usage:
+
+```php
+use Foundry\Builder\Statement\Insert;
+
+$query->reset(Insert::PART_VALUES);
+```
+
+To completely reset the query:
+
+```php
+$query->reset();
+```
+
+The `reset` method is also provided by the other statements (select, update, delete).
