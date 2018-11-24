@@ -20,20 +20,6 @@ class From extends Builder
     protected $tables = [];
 
     /**
-     * Set the tables.
-     *
-     * @param array $tables
-     * @return $this
-     */
-    public function setTables(array $tables)
-    {
-        $this->tables = $tables;
-        $this->compiled = null;
-
-        return $this;
-    }
-
-    /**
      * Add tables.
      *
      * @param array $tables

@@ -20,20 +20,6 @@ class Group extends Builder
     protected $columns = [];
 
     /**
-     * Set the columns.
-     *
-     * @param string[] $columns
-     * @return $this
-     */
-    public function setColumns(array $columns)
-    {
-        $this->columns = $columns;
-        $this->compiled = null;
-
-        return $this;
-    }
-
-    /**
      * Add columns.
      *
      * @param string[] $columns

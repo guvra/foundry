@@ -20,29 +20,6 @@ class Values extends Builder
     protected $values = [];
 
     /**
-     * Set the values to insert.
-     *
-     * @param array $values
-     * @return $this
-     */
-    public function setValues(array $values)
-    {
-        if (empty($values)) {
-            return $this;
-        }
-
-        if (!is_array(current($values))) {
-            $this->values = [$values];
-        } else {
-            $this->values = $values;
-        }
-
-        $this->compiled = null;
-
-        return $this;
-    }
-
-    /**
      * Add values to insert.
      *
      * @param array $values

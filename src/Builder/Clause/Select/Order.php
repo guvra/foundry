@@ -20,20 +20,6 @@ class Order extends Builder
     protected $orders = [];
 
     /**
-     * Set the orders.
-     *
-     * @param string[] $orders
-     * @return $this
-     */
-    public function setOrders(array $orders)
-    {
-        $this->orders = $orders;
-        $this->compiled = null;
-
-        return $this;
-    }
-
-    /**
      * Add orders.
      *
      * @param string[] $orders
