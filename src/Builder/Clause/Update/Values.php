@@ -20,7 +20,7 @@ class Values extends Builder
     protected $values = [];
 
     /**
-     * Set the table.
+     * Set the values.
      *
      * @param array $values
      * @return $this
@@ -28,6 +28,20 @@ class Values extends Builder
     public function setValues(array $values)
     {
         $this->values = $values;
+        $this->compiled = null;
+
+        return $this;
+    }
+
+    /**
+     * Add values.
+     *
+     * @param array $values
+     * @return $this
+     */
+    public function addValues(array $values)
+    {
+        $this->values = array_merge($this->values, $values);
         $this->compiled = null;
 
         return $this;

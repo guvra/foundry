@@ -53,7 +53,7 @@ class Select extends StatementBuilder
 
         /** @var Columns $part */
         $part = $this->getPart('columns');
-        $part->setColumns($columns);
+        $part->addColumns($columns);
         $this->compiled = null;
 
         return $this;
@@ -89,7 +89,7 @@ class Select extends StatementBuilder
 
         /** @var From $part */
         $part = $this->getPart('from');
-        $part->setTables($tables);
+        $part->addTables($tables);
         $this->compiled = null;
 
         return $this;
@@ -109,7 +109,7 @@ class Select extends StatementBuilder
 
         /** @var Group $part */
         $part = $this->getPart('group');
-        $part->setColumns($columns);
+        $part->addColumns($columns);
         $this->compiled = null;
 
         return $this;
@@ -129,7 +129,7 @@ class Select extends StatementBuilder
 
         /** @var Order $part */
         $part = $this->getPart('order');
-        $part->setOrders($orders);
+        $part->addOrders($orders);
         $this->compiled = null;
 
         return $this;

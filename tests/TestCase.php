@@ -96,9 +96,7 @@ abstract class TestCase extends BaseTestCase
      */
     protected function createSelect()
     {
-        return $this->connection
-            ->select()
-            ->from('accounts');
+        return $this->connection->select();
     }
 
     /**

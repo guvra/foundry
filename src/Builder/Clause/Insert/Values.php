@@ -20,7 +20,7 @@ class Values extends Builder
     protected $values = [];
 
     /**
-     * Add values to insert.
+     * Set the values to insert.
      *
      * @param array $values
      * @return $this
@@ -32,9 +32,32 @@ class Values extends Builder
         }
 
         if (!is_array(current($values))) {
-            array_push($this->values, $values);
+            $this->values = [$values];
         } else {
             $this->values = $values;
+        }
+
+        $this->compiled = null;
+
+        return $this;
+    }
+
+    /**
+     * Add values to insert.
+     *
+     * @param array $values
+     * @return $this
+     */
+    public function addValues(array $values)
+    {
+        if (empty($values)) {
+            return $this;
+        }
+
+        if (!is_array(current($values))) {
+            $this->values[] = $values;
+        } else {
+            $this->values = array_merge($this->values, $values);
         }
 
         $this->compiled = null;

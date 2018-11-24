@@ -22,12 +22,26 @@ class From extends Builder
     /**
      * Set the tables.
      *
-     * @param string[] $tables
+     * @param array $tables
      * @return $this
      */
     public function setTables(array $tables)
     {
         $this->tables = $tables;
+        $this->compiled = null;
+
+        return $this;
+    }
+
+    /**
+     * Add tables.
+     *
+     * @param array $tables
+     * @return $this
+     */
+    public function addTables(array $tables)
+    {
+        $this->tables = array_merge($this->tables, $tables);
         $this->compiled = null;
 
         return $this;

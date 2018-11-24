@@ -34,6 +34,20 @@ class Order extends Builder
     }
 
     /**
+     * Add orders.
+     *
+     * @param string[] $orders
+     * @return $this
+     */
+    public function addOrders(array $orders)
+    {
+        $this->orders = array_merge($this->orders, $orders);
+        $this->compiled = null;
+
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function compile()

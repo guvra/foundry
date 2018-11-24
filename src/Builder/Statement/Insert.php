@@ -65,7 +65,7 @@ class Insert extends StatementBuilder
     {
         /** @var Columns $part */
         $part = $this->getPart('columns');
-        $part->setColumns($columns);
+        $part->addColumns($columns);
         $this->compiled = null;
 
         return $this;
@@ -81,7 +81,7 @@ class Insert extends StatementBuilder
     {
         /** @var Values $part */
         $part = $this->getPart('values');
-        $part->setValues($values);
+        $part->addValues($values);
         $this->compiled = null;
 
         return $this;

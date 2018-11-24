@@ -15,7 +15,7 @@ class StatementTest extends TestCase
     public function testFetchAll()
     {
         $this->withTestTables(function () {
-            $query = $this->createSelect();
+            $query = $this->createSelect()->from('accounts');
 
             $statement = $this->connection->query($query);
             $values = $statement->fetchAll();
@@ -35,7 +35,7 @@ class StatementTest extends TestCase
     public function testFetchRow()
     {
         $this->withTestTables(function () {
-            $query = $this->createSelect();
+            $query = $this->createSelect()->from('accounts');
 
             $statement = $this->connection->query($query);
             $value = $statement->fetchRow();
@@ -49,7 +49,7 @@ class StatementTest extends TestCase
     public function testFetchColumn()
     {
         $this->withTestTables(function () {
-            $query = $this->createSelect();
+            $query = $this->createSelect()->from('accounts');
 
             $statement = $this->connection->query($query);
             $values = $statement->fetchColumn();
@@ -63,7 +63,7 @@ class StatementTest extends TestCase
     public function testFetchOne()
     {
         $this->withTestTables(function () {
-            $query = $this->createSelect()->columns('account_id');
+            $query = $this->createSelect()->from('accounts')->columns('account_id');
 
             $statement = $this->connection->query($query);
             $value = $statement->fetchOne();

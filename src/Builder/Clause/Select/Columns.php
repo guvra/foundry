@@ -34,6 +34,20 @@ class Columns extends Builder
     }
 
     /**
+     * Add columns.
+     *
+     * @param array $columns
+     * @return $this
+     */
+    public function addColumns(array $columns)
+    {
+        $this->columns = array_merge($this->columns, $columns);
+        $this->compiled = null;
+
+        return $this;
+    }
+
+    /**
      * {@inheritdoc}
      */
     protected function compile()

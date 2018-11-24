@@ -55,7 +55,7 @@ class Update extends StatementBuilder
     {
         /** @var Values $part */
         $part = $this->getPart('values');
-        $part->setValues($values);
+        $part->addValues($values);
         $this->compiled = null;
 
         return $this;

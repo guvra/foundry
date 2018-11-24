@@ -38,6 +38,14 @@ class InsertTest extends TestCase
             ->values([[0, 10, 20], [30, 40, 50]]);
 
         $this->assertCompiles('INSERT INTO table (col1, col2) VALUES (0,10,20),(30,40,50)', $query);
+
+        $query = $this->createInsert()
+            ->into('table')
+            ->columns(['col1', 'col2'])
+            ->values([0, 10, 20])
+            ->values([[30, 40, 50]]);
+
+        $this->assertCompiles('INSERT INTO table (col1, col2) VALUES (0,10,20),(30,40,50)', $query);
     }
 
     public function testEmptyValues()

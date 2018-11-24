@@ -27,7 +27,7 @@ class SelectTest extends TestCase
 {
     public function testDistinct()
     {
-        $query = $this->createSelect()->distinct(false);
+        $query = $this->createSelect()->from('accounts')->distinct(false);
         $this->assertCompiles('SELECT * FROM accounts', $query);
 
         $query->reset(Select::PART_DISTINCT);
@@ -41,15 +41,17 @@ class SelectTest extends TestCase
 
     public function testFrom()
     {
-        $query = $this->createSelect();
+        $query = $this->createSelect()->from('accounts');
         $this->assertCompiles('SELECT * FROM accounts', $query);
 
         $query->from(['c' => 'categories']);
-        $this->assertCompiles('SELECT * FROM categories AS c', $query);
+        $this->assertCompiles('SELECT * FROM accounts, categories AS c', $query);
 
+        $query->reset(Select::PART_FROM);
         $query->from(['accounts', 'transactions']);
         $this->assertCompiles('SELECT * FROM accounts, transactions', $query);
 
+        $query->reset(Select::PART_FROM);
         $query->from(['a' => 'accounts', 't' => 'transactions']);
         $this->assertCompiles('SELECT * FROM accounts AS a, transactions AS t', $query);
 
@@ -59,28 +61,30 @@ class SelectTest extends TestCase
 
     public function testColumns()
     {
-        $query = $this->createSelect();
+        $query = $this->createSelect()->from('accounts');
         $this->assertCompiles('SELECT * FROM accounts', $query);
 
         $query->columns('name');
         $this->assertCompiles('SELECT name FROM accounts', $query);
 
         $query->columns('accounts.balance');
-        $this->assertCompiles('SELECT accounts.balance FROM accounts', $query);
+        $this->assertCompiles('SELECT name, accounts.balance FROM accounts', $query);
 
+        $query->reset(Select::PART_COLUMNS);
         $query->columns(['accounts.name', 'accounts.balance']);
         $this->assertCompiles('SELECT accounts.name, accounts.balance FROM accounts', $query);
 
+        $query->reset(Select::PART_COLUMNS);
         $query->columns(['n' => 'accounts.name', 'b' => 'accounts.balance']);
         $this->assertCompiles('SELECT accounts.name AS n, accounts.balance AS b FROM accounts', $query);
 
+        $query->reset(Select::PART_COLUMNS);
         $query->columns(['min' => 'MIN(balance)']);
         $this->assertCompiles('SELECT MIN(balance) AS min FROM accounts', $query);
 
         $query->reset(Select::PART_COLUMNS);
         $this->assertCompiles('SELECT * FROM accounts', $query);
 
-        $query->reset(Select::PART_COLUMNS);
         $query->reset(Select::PART_FROM);
         $query->columns(1);
         $this->assertCompiles('SELECT 1', $query);
@@ -88,8 +92,8 @@ class SelectTest extends TestCase
 
     public function testSubQueryColumn()
     {
-        $query = $this->createSelect();
-        $query->columns(['max' => $this->createSelect()->columns('MAX(balance)')]);
+        $query = $this->createSelect()->from('accounts');
+        $query->columns(['max' => $this->createSelect()->from('accounts')->columns('MAX(balance)')]);
         $this->assertCompiles('SELECT (SELECT MAX(balance) FROM accounts) AS max FROM accounts', $query);
     }
 
@@ -100,7 +104,7 @@ class SelectTest extends TestCase
         $this->assertCompiles('SELECT * FROM transactions GROUP BY account_id', $query);
 
         $query->group('category_id');
-        $this->assertCompiles('SELECT * FROM transactions GROUP BY category_id', $query);
+        $this->assertCompiles('SELECT * FROM transactions GROUP BY account_id, category_id', $query);
 
         $query->reset(Select::PART_GROUP);
         $query->group(['category_id', 'account_id']);
@@ -112,14 +116,15 @@ class SelectTest extends TestCase
 
     public function testOrderBy()
     {
-        $query = $this->createSelect()->order('balance DESC');
+        $query = $this->createSelect()->from('accounts')->order('balance DESC');
         $this->assertCompiles('SELECT * FROM accounts ORDER BY balance DESC', $query);
 
         $query->order('name ASC');
-        $this->assertCompiles('SELECT * FROM accounts ORDER BY name ASC', $query);
-
-        $query->order(['balance DESC', 'name ASC']);
         $this->assertCompiles('SELECT * FROM accounts ORDER BY balance DESC, name ASC', $query);
+
+        $query->reset(Select::PART_ORDER);
+        $query->order(['balance ASC', 'name DESC']);
+        $this->assertCompiles('SELECT * FROM accounts ORDER BY balance ASC, name DESC', $query);
 
         $query->reset(SELECT::PART_ORDER);
         $this->assertCompiles('SELECT * FROM accounts', $query);
@@ -127,7 +132,7 @@ class SelectTest extends TestCase
 
     public function testLimit()
     {
-        $query = $this->createSelect()->limit(0, 0);
+        $query = $this->createSelect()->from('accounts')->limit(0, 0);
         $this->assertCompiles('SELECT * FROM accounts', $query);
 
         $query->limit(10);
@@ -150,12 +155,14 @@ class SelectTest extends TestCase
     {
         // Tests only the HasJoin trait, Join builder is tested in a separate file
         $query = $this->createSelect()->from(['a' => 'accounts']);
+        $query->columns(['t.*', 'a.name']);
         $query->join(['t' => 'transactions'], 't.account_id = a.account_id');
         $this->assertCompiles(
-            'SELECT * FROM accounts AS a JOIN transactions AS t ON t.account_id = a.account_id',
+            'SELECT t.*, a.name FROM accounts AS a JOIN transactions AS t ON t.account_id = a.account_id',
             $query
         );
 
+        $query->reset(Select::PART_COLUMNS);
         $query->reset(SELECT::PART_JOIN);
         $query->joinLeft(['t' => 'transactions'], 't.account_id = a.account_id');
         $this->assertCompiles(
@@ -185,7 +192,7 @@ class SelectTest extends TestCase
     public function testWhere()
     {
         // Tests only the HasWhere trait, Condition/ConditionGroup builders are tested in a separate file
-        $query = $this->createSelect()->where('balance', '>', 1000);
+        $query = $this->createSelect()->from('accounts')->where('balance', '>', 1000);
         $this->assertCompiles('SELECT * FROM accounts WHERE (balance > 1000)', $query);
         $query->orWhere('balance', '<', 1000);
         $this->assertCompiles('SELECT * FROM accounts WHERE (balance > 1000) OR (balance < 1000)', $query);
@@ -218,7 +225,7 @@ class SelectTest extends TestCase
     public function testHaving()
     {
         // Tests only the HasHaving trait, Condition/ConditionGroup builders are tested in a separate file
-        $query = $this->createSelect()->having('balance', '>', 1000);
+        $query = $this->createSelect()->from('accounts')->having('balance', '>', 1000);
         $this->assertCompiles('SELECT * FROM accounts HAVING (balance > 1000)', $query);
         $query->orHaving('balance', '<', 1000);
         $this->assertCompiles('SELECT * FROM accounts HAVING (balance > 1000) OR (balance < 1000)', $query);
@@ -250,12 +257,12 @@ class SelectTest extends TestCase
 
     public function testUnion()
     {
-        $query = $this->createSelect();
+        $query = $this->createSelect()->from('accounts');
 
-        $query->union($this->createSelect()->reset(Select::PART_FROM)->from('accs'));
+        $query->union($this->createSelect()->from('accs'));
         $this->assertCompiles('SELECT * FROM accounts UNION SELECT * FROM accs', $query);
 
-        $query->union($this->createSelect()->reset(Select::PART_FROM)->from('a'), true);
+        $query->union($this->createSelect()->from('a'), true);
         $this->assertCompiles('SELECT * FROM accounts UNION SELECT * FROM accs UNION ALL SELECT * FROM a', $query);
 
         $query->reset(SELECT::PART_UNION);
