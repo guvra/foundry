@@ -68,11 +68,13 @@ class Condition extends Builder
 
         // Allow creating complex queries when using a callback as the column
         if (!$operator) {
-            return is_callable($column) ? $this->buildCallable($column, 'conditionGroup') : $column;
+            return is_object($column) && $column instanceof \Closure
+                ? $this->buildCallable($column, 'conditionGroup')
+                : $column;
         }
 
         // Allow building sub queries with callback functions
-        if (is_callable($column)) {
+        if (is_object($column) && $column instanceof \Closure) {
             $column = $this->buildCallable($column, 'select', true);
         }
 

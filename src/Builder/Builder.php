@@ -84,7 +84,7 @@ abstract class Builder implements BuilderInterface
      */
     protected function parseSubQuery($value, bool $enclose = true)
     {
-        if (is_callable($value)) {
+        if (is_object($value) && $value instanceof \Closure) {
             $subQuery = $this->builderFactory->create('select');
             call_user_func($value, $subQuery);
             $value = $subQuery->toString();
