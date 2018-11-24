@@ -9,8 +9,8 @@ Foundry is a simple yet powerful SQL query builder written in PHP.
 - [Create a db connection](docs/connection.md)
 - [Build a SELECT query](docs/builder/select.md)
 - [Build an INSERT query](docs/builder/insert.md)
-- [Build a DELETE query](docs/builder/insert.md)
-- [Build an UPDATE query](docs/builder/insert.md)
+- [Build a DELETE query](docs/builder/delete.md)
+- [Build an UPDATE query](docs/builder/update.md)
 - [Execute the queries](docs/queries.md)
 
 ## Usage Example
