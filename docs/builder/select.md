@@ -8,7 +8,7 @@ use Foundry\Parameter;
 $select = $connection
     ->select()
     ->from('transactions')
-    ->join('accounts', 'accounts.account_id transactions.account_id')
+    ->join('accounts', 'accounts.account_id = transactions.account_id')
     ->where('accounts.name', 'like', new Parameter('name'))
     ->orWhere('accounts.balance', 'between', [0, 1000])
     ->order('transactions.date desc');
